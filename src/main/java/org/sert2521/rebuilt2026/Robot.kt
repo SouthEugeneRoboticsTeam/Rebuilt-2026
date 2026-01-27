@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj.TimedRobot
 import edu.wpi.first.wpilibj.util.WPILibVersion
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
-import org.sert2521.rebuilt2026.commands.Autos
+import edu.wpi.first.wpilibj2.command.Commands
 
 /**
  * The functions in this object (which basically functions as a singleton class) are called automatically
@@ -19,84 +19,71 @@ import org.sert2521.rebuilt2026.commands.Autos
  * the `Main.kt` file in the project. (If you use the IDE's Rename or Move refactorings when renaming the
  * object or package, it will get changed everywhere.)
  */
-object Robot : TimedRobot()
-{
+object Robot : TimedRobot() {
 
     private var autonomousCommand: Command? = null
 
 
-    init
-    {
+    init {
         // Kotlin initializer block, which effectually serves as the constructor code.
         // https://kotlinlang.org/docs/classes.html#constructors
         // This work can also be done in the inherited `robotInit()` method. But as of the 2025 season the 
         // `robotInit` method's Javadoc encourages using the constructor and the official templates
         // moved initialization code out `robotInit` and into the constructor. We follow suit in Kotlin.
-        
+
         // Report the use of the Kotlin Language for "FRC Usage Report" statistics.
         // Please retain this line so that Kotlin's growing use by teams is seen by FRC/WPI.
         HAL.report(tResourceType.kResourceType_Language, tInstances.kLanguage_Kotlin, 0, WPILibVersion.Version)
         // Access the RobotContainer object so that it is initialized. This will perform all our
         // button bindings, and put our autonomous chooser on the dashboard.
-        RobotContainer
+        Input
     }
 
 
-    override fun robotPeriodic()
-    {
+    override fun robotPeriodic() {
         CommandScheduler.getInstance().run()
     }
 
-    override fun disabledInit()
-    {
+    override fun disabledInit() {
 
     }
 
-    override fun disabledPeriodic()
-    {
+    override fun disabledPeriodic() {
 
     }
 
-    override fun autonomousInit()
-    {
-        autonomousCommand = RobotContainer.getAutonomousCommand()
-        autonomousCommand?.schedule()
+    override fun autonomousInit() {
+        autonomousCommand = Commands.none()
+        CommandScheduler.getInstance().schedule(autonomousCommand)
     }
 
-    override fun autonomousPeriodic()
-    {
+    override fun autonomousPeriodic() {
 
     }
 
-    override fun teleopInit()
-    {
+    override fun teleopInit() {
         autonomousCommand?.cancel()
     }
 
     /** This method is called periodically during operator control.  */
-    override fun teleopPeriodic()
-    {
+    override fun teleopPeriodic() {
 
     }
 
-    override fun testInit()
-    {
+    override fun testInit() {
         // Cancels all running commands at the start of test mode.
         CommandScheduler.getInstance().cancelAll()
     }
 
-    override fun testPeriodic()
-    {
+    override fun testPeriodic() {
 
     }
 
-    override fun simulationInit()
-    {
+    override fun simulationInit() {
 
     }
 
-    override fun simulationPeriodic()
-    {
+    override fun simulationPeriodic() {
 
     }
 }

@@ -1,0 +1,10 @@
+Don't use any SmartMechanisms.
+I think they're inflexible and generally after using them I don't really like them.
+
+Use SmartMotorControllers, they're good and I like them.
+
+Grintake: Two NEOs, one on the pivot, one on the intake.
+
+Indexer: Two NEOs, one on main, one on kicker. Also a beambreak to detect when main should run.
+
+HoodedShooter: Three NEOs, one on hood, two on the flywheel, one flywheel motor following the other.
