@@ -10,6 +10,9 @@ import yams.gearing.MechanismGearing
 object ElectronicIDs {
     const val GRINTAKE_ROLLER_MOTOR_ID = 1
     const val GRINTAKE_WRIST_MOTOR_ID = 2
+
+    const val KICKER_MOTOR_ID = 3
+    const val INDEXER_MOTOR_ID = 4
 }
 
 object GrintakeConstants {

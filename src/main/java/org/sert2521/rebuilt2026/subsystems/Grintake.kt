@@ -7,6 +7,7 @@ import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.units.Units.Amps
 import edu.wpi.first.units.Units.KilogramSquareMeters
 import edu.wpi.first.units.Units.Rotations
+import edu.wpi.first.units.measure.Angle
 import edu.wpi.first.wpilibj.DutyCycle
 import edu.wpi.first.wpilibj.motorcontrol.Spark
 import edu.wpi.first.wpilibj2.command.Command
@@ -39,15 +40,19 @@ object Grintake : SubsystemBase() {
         .withIdleMode(SmartMotorControllerConfig.MotorMode.BRAKE)
         .withGearing(GrintakeConstants.wristGearing)
 
+    // TODO: Remove this as it is the same as the wristSMC that you wrote later
     private val smc = SparkWrapper(wristMotor, DCMotor.getNEO(1), wristMotorConfig)
 
+    // TODO: This is a smart mechanism. Remove it if you can.
+    //  Use the function I wrote for wristSMC.setPosition instead
     private val wristConfig = ArmConfig(smc)
         .withHardLimit(GrintakeConstants.hardMin, GrintakeConstants.hardMax)
         .withTelemetry("Wrist", SmartMotorControllerConfig.TelemetryVerbosity.LOW)
         .withStartingPosition(Rotations.of(0.0))
-
     private val wrist = Arm(wristConfig)
 
+
+    // TODO: Fix capitalization on these two
     private val RollersSMC = SparkWrapper(
         rollerMotor, DCMotor.getNEO(1),
         rollerMotorConfig
@@ -75,13 +80,19 @@ object Grintake : SubsystemBase() {
         RollersSMC.dutyCycle = dutyCycle
     }
 
+    private fun setWristMotorAngle(angle: Angle){
+        WristSMC.setPosition(angle)
+    }
+
     fun stow(): Command {
+        // TODO: Add idle after and make it also stop the roller motor
         return runOnce{
             wrist.setAngle(GrintakeConstants.stowPosition)
         }
     }
 
     fun intake(): Command {
+        // TODO: Add idle after
         return runOnce {
             wrist.setAngle(GrintakeConstants.intakePosition)
             setRollerMotor(GrintakeConstants.intakeSpeed)
@@ -89,6 +100,7 @@ object Grintake : SubsystemBase() {
     }
 
     fun reverse(): Command {
+        // TODO: Add idle after
         return runOnce {
             setRollerMotor(GrintakeConstants.reverseSpeed)
         }
