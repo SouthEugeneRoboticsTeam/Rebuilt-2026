@@ -40,25 +40,12 @@ object Grintake : SubsystemBase() {
         .withIdleMode(SmartMotorControllerConfig.MotorMode.BRAKE)
         .withGearing(GrintakeConstants.wristGearing)
 
-    // TODO: Remove this as it is the same as the wristSMC that you wrote later
-    private val smc = SparkWrapper(wristMotor, DCMotor.getNEO(1), wristMotorConfig)
-
-    // TODO: This is a smart mechanism. Remove it if you can.
-    //  Use the function I wrote for wristSMC.setPosition instead
-    private val wristConfig = ArmConfig(smc)
-        .withHardLimit(GrintakeConstants.hardMin, GrintakeConstants.hardMax)
-        .withTelemetry("Wrist", SmartMotorControllerConfig.TelemetryVerbosity.LOW)
-        .withStartingPosition(Rotations.of(0.0))
-    private val wrist = Arm(wristConfig)
-
-
-    // TODO: Fix capitalization on these two
-    private val RollersSMC = SparkWrapper(
+    private val rollersSMC = SparkWrapper(
         rollerMotor, DCMotor.getNEO(1),
         rollerMotorConfig
     )
 
-    private val WristSMC = SparkWrapper(
+    private val wristSMC = SparkWrapper(
         wristMotor, DCMotor.getNEO(1),
         wristMotorConfig
     )
@@ -67,42 +54,46 @@ object Grintake : SubsystemBase() {
 
     init{
         defaultCommand = stow()
-        telemetry.setupTelemetry("Grintake", RollersSMC)
-        telemetry.setupTelemetry("Grintake", WristSMC)
+        telemetry.setupTelemetry("Grintake", rollersSMC)
+        telemetry.setupTelemetry("Grintake", wristSMC)
     }
 
     override fun periodic() {
-        RollersSMC.updateTelemetry()
-        WristSMC.updateTelemetry()
+        rollersSMC.updateTelemetry()
+        wristSMC.updateTelemetry()
     }
 
     private fun setRollerMotor(dutyCycle: Double) {
-        RollersSMC.dutyCycle = dutyCycle
+        rollersSMC.dutyCycle = dutyCycle
     }
 
     private fun setWristMotorAngle(angle: Angle){
-        WristSMC.setPosition(angle)
+        wristSMC.setPosition(angle)
     }
 
     fun stow(): Command {
-        // TODO: Add idle after and make it also stop the roller motor
         return runOnce{
-            wrist.setAngle(GrintakeConstants.stowPosition)
-        }
+            setWristMotorAngle(GrintakeConstants.stowPosition)
+            setRollerMotor(0.0)
+        }.andThen(
+            Commands.idle()
+        )
     }
 
     fun intake(): Command {
-        // TODO: Add idle after
         return runOnce {
-            wrist.setAngle(GrintakeConstants.intakePosition)
+            setWristMotorAngle(GrintakeConstants.intakePosition)
             setRollerMotor(GrintakeConstants.intakeSpeed)
-        }
+        }.andThen(
+            Commands.idle()
+        )
     }
 
     fun reverse(): Command {
-        // TODO: Add idle after
         return runOnce {
             setRollerMotor(GrintakeConstants.reverseSpeed)
-        }
+        }.andThen(
+            Commands.idle()
+        )
     }
 }
