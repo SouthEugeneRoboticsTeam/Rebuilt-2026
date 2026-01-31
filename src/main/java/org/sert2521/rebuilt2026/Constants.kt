@@ -2,8 +2,6 @@ package org.sert2521.rebuilt2026
 
 import edu.wpi.first.units.Units.Degrees
 import edu.wpi.first.units.Units.Rotations
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine
-import org.sert2521.rebuilt2026.util.HSGoal
 import yams.gearing.GearBox
 import yams.gearing.MechanismGearing
 
@@ -13,6 +11,8 @@ object ElectronicIDs {
 
     const val KICKER_MOTOR_ID = 3
     const val INDEXER_MOTOR_ID = 4
+
+    const val INDEXER_BEAM_BREAK_ID = 0
 }
 
 object GrintakeConstants {
@@ -38,7 +38,7 @@ object GrintakeConstants {
 }
 
 object IndexerConstants {
-    val IndexerGearing = MechanismGearing(
+    val indexerGearing = MechanismGearing(
         GearBox.fromReductionStages(
             1.0
         )
