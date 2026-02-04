@@ -69,9 +69,10 @@ object HoodedShooter : SubsystemBase() {
         rollerSMC.simIterate()
     }
 
-    private fun setVelocitiesCommand(velocity: AngularVelocity): Command {
+    private fun setVelocitiesCommand(flywheelsVelocity: AngularVelocity, rollerDutyCycle:Double): Command {
         return runOnce {
-            leaderSMC.setVelocity(velocity)
+            leaderSMC.setVelocity(flywheelsVelocity)
+            rollerSMC.dutyCycle = rollerDutyCycle
         }
     }
 }
