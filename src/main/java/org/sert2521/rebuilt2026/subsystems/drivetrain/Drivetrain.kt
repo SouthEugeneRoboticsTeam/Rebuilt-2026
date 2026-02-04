@@ -108,7 +108,7 @@ object Drivetrain : SubsystemBase() {
         moduleStates = getModuleStates()
         DogLog.log("Drivetrain/SwerveModuleStates/Measured", moduleStates)
 
-        val chassisSpeeds = kinematics.toChassisSpeeds(moduleStates)
+        val chassisSpeeds = kinematics.toChassisSpeeds(*moduleStates)
         DogLog.log("Drivetrain/ChassisSpeeds/Measured", chassisSpeeds)
         DogLog.log(
             "Drivetrain/ChassisSpeeds/Measured Drive Speed",

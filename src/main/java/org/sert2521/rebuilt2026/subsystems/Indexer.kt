@@ -12,7 +12,7 @@ import yams.motorcontrollers.local.SparkWrapper
 import yams.telemetry.MechanismTelemetry
 
 object Indexer : SubsystemBase() {
-    private val indexerMotor = SparkMax(ElectronicIDs, SparkLowLevel.MotorType.kBrushless)
+    private val indexerMotor = SparkMax(ElectronicIDs.INDEXER_MOTOR_ID, SparkLowLevel.MotorType.kBrushless)
 
     private val indexerMotorConfig = SmartMotorControllerConfig(this)
         .withGearing(IndexerConstants.IndexerGearing)
