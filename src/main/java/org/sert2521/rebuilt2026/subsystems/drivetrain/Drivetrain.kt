@@ -1,5 +1,6 @@
 package org.sert2521.rebuilt2026.subsystems.drivetrain
 
+import com.ctre.phoenix6.configs.MountPoseConfigs
 import com.ctre.phoenix6.hardware.CANcoder
 import com.ctre.phoenix6.hardware.Pigeon2
 import com.revrobotics.spark.SparkLowLevel
@@ -15,6 +16,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics
 import edu.wpi.first.math.kinematics.SwerveModulePosition
 import edu.wpi.first.math.kinematics.SwerveModuleState
 import edu.wpi.first.math.system.plant.DCMotor
+import edu.wpi.first.units.Units.Degrees
 import edu.wpi.first.units.Units.Radians
 import edu.wpi.first.units.measure.Angle
 import edu.wpi.first.wpilibj.DriverStation
@@ -78,6 +80,7 @@ object Drivetrain : SubsystemBase() {
         )
     }
 
+    private val gyroConfig = MountPoseConfigs().withMountPoseRoll(Degrees.of(-90.0))
     private val gyro = Pigeon2(13)
     private val gyroYaw = gyro.yaw.asSupplier()
 
@@ -97,6 +100,8 @@ object Drivetrain : SubsystemBase() {
 
     init {
         SmartDashboard.putData(field)
+
+        gyro.configurator.apply(gyroConfig)
     }
 
     override fun periodic() {
