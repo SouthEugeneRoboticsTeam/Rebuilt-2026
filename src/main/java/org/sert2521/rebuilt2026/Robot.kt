@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.util.WPILibVersion
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
 import edu.wpi.first.wpilibj2.command.Commands
+import org.sert2521.rebuilt2026.subsystems.drivetrain.Drivetrain
 
 /**
  * The functions in this object (which basically functions as a singleton class) are called automatically
@@ -37,6 +38,7 @@ object Robot : TimedRobot() {
         // Access the RobotContainer object so that it is initialized. This will perform all our
         // button bindings, and put our autonomous chooser on the dashboard.
         Input
+        Drivetrain
     }
 
 

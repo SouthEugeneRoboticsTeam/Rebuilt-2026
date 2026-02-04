@@ -43,15 +43,16 @@ object Drivetrain : SubsystemBase() {
             .withGearing(SwerveConstants.driveGearing)
             .withMotorInverted(true)
             .withStatorCurrentLimit(SwerveConstants.driveCurrentLimit)
-            .withTelemetry("Drive Motor", SmartMotorControllerConfig.TelemetryVerbosity.LOW)
+            .withTelemetry("$moduleName Drive Motor", SmartMotorControllerConfig.TelemetryVerbosity.HIGH)
 
         val angleConfig = SmartMotorControllerConfig(this)
             .withIdleMode(SmartMotorControllerConfig.MotorMode.BRAKE)
             .withGearing(SwerveConstants.angleGearing)
+            .withClosedLoopController(SwerveConstants.ANGLE_P, 0.0, SwerveConstants.ANGLE_D)
             .withContinuousWrapping(-Radians.of(PI), Radians.of(PI))
             .withStatorCurrentLimit(SwerveConstants.angleCurrentLimit)
             .withMotorInverted(true)
-            .withTelemetry("Angle Motor", SmartMotorControllerConfig.TelemetryVerbosity.HIGH)
+            .withTelemetry("$moduleName Angle Motor", SmartMotorControllerConfig.TelemetryVerbosity.HIGH)
 
         val driveSMC = SparkWrapper(driveMotor, DCMotor.getNEO(1), driveConfig)
         val angleSMC = SparkWrapper(angleMotor, DCMotor.getNEO(1), angleConfig)
