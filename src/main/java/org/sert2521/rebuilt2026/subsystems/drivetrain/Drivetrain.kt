@@ -32,14 +32,14 @@ import kotlin.math.hypot
 
 object Drivetrain : SubsystemBase() {
     private fun createModule(
-        driveMotor: SparkMax, angleMotor: SparkMax, absoluteEncoder:CANcoder,
-        moduleName:String, location: Translation2d, rotationZero: Angle
-    ):SwerveModule{
+        driveMotor: SparkMax, angleMotor: SparkMax, absoluteEncoder: CANcoder,
+        moduleName: String, location: Translation2d, rotationZero: Angle
+    ): SwerveModule {
         val driveConfig = SmartMotorControllerConfig(this)
             .withIdleMode(SmartMotorControllerConfig.MotorMode.BRAKE)
             .withWheelDiameter(SwerveConstants.wheelRadius.times(2.0))
             .withFeedforward(SimpleMotorFeedforward(SwerveConstants.DRIVE_S, SwerveConstants.DRIVE_V))
-            .withClosedLoopController(SwerveConstants.DRIVE_P, 0.0 ,SwerveConstants.DRIVE_D)
+            .withClosedLoopController(SwerveConstants.DRIVE_P, 0.0, SwerveConstants.DRIVE_D)
             .withGearing(SwerveConstants.driveGearing)
             .withMotorInverted(true)
             .withStatorCurrentLimit(SwerveConstants.driveCurrentLimit)
@@ -147,7 +147,7 @@ object Drivetrain : SubsystemBase() {
         DogLog.log("Drivetrain/SwerveModuleStates/Optimized Setpoints", optimizedStates)
     }
 
-    fun getGyroAngle():Angle{
+    fun getGyroAngle(): Angle {
         return gyroYaw.get()
     }
 
@@ -158,12 +158,12 @@ object Drivetrain : SubsystemBase() {
         return Array(4) { modules[it].config.getOptimizedState(states[it]) }
     }
 
-    fun getModulePositions():Array<SwerveModulePosition>{
-        return Array(4){ modules[it].position }
+    fun getModulePositions(): Array<SwerveModulePosition> {
+        return Array(4) { modules[it].position }
     }
 
-    fun getModuleStates():Array<SwerveModuleState>{
-        return Array(4){ modules[it].state }
+    fun getModuleStates(): Array<SwerveModuleState> {
+        return Array(4) { modules[it].state }
     }
 
     fun stopDrivePID() {
@@ -186,7 +186,7 @@ object Drivetrain : SubsystemBase() {
         poseEstimator.resetPose(pose)
     }
 
-    fun setRotation(rotation: Rotation2d){
+    fun setRotation(rotation: Rotation2d) {
         poseEstimator.resetRotation(rotation)
     }
 }

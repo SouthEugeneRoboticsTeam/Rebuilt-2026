@@ -44,7 +44,7 @@ object Grintake : SubsystemBase() {
 
     private val telemetry = MechanismTelemetry()
 
-    init{
+    init {
         defaultCommand = stow()
         telemetry.setupTelemetry("Grintake", rollerSMC)
         telemetry.setupTelemetry("Grintake", wristSMC)
@@ -59,12 +59,12 @@ object Grintake : SubsystemBase() {
         rollerSMC.dutyCycle = dutyCycle
     }
 
-    private fun setWristMotorAngle(angle: Angle){
+    private fun setWristMotorAngle(angle: Angle) {
         wristSMC.setPosition(angle)
     }
 
     fun stow(): Command {
-        return runOnce{
+        return runOnce {
             setWristMotorAngle(GrintakeConstants.stowPosition)
             setRollerMotor(0.0)
         }.andThen(

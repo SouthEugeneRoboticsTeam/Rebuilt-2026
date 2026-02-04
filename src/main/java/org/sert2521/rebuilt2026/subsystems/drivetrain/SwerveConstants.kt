@@ -10,7 +10,7 @@ import yams.gearing.MechanismGearing
 
 object SwerveConstants {
     val driveGearing = MechanismGearing(GearBox.fromReductionStages(6.75))
-    val angleGearing = MechanismGearing(GearBox.fromReductionStages(150.0/7.0))
+    val angleGearing = MechanismGearing(GearBox.fromReductionStages(150.0 / 7.0))
 
     val wheelRadius: Distance = Units.Inches.of(2.0)
     const val WHEEL_COF = 1.54
@@ -23,8 +23,8 @@ object SwerveConstants {
         Translation2d(-Units.Meters.of(0.552450), -Units.Meters.of(0.552450))
     )
     val moduleZeroRotations = arrayOf(
-        Rotations.of(1.0-0.927734),
-        Rotations.of(1.0-0.652832),
+        Rotations.of(1.0 - 0.927734),
+        Rotations.of(1.0 - 0.652832),
         Rotations.of(0.001465),
         Rotations.of(-0.143066)
     )
