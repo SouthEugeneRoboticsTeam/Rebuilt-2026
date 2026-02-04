@@ -10,6 +10,7 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator
 import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.geometry.Translation2d
+import edu.wpi.first.math.kinematics.ChassisSpeeds
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics
 import edu.wpi.first.math.kinematics.SwerveModulePosition
 import edu.wpi.first.math.kinematics.SwerveModuleState
@@ -17,7 +18,6 @@ import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.units.Units.Radians
 import edu.wpi.first.units.measure.Angle
 import edu.wpi.first.wpilibj.DriverStation
-import edu.wpi.first.wpilibj.motorcontrol.Spark
 import edu.wpi.first.wpilibj.smartdashboard.Field2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.SubsystemBase
@@ -123,8 +123,33 @@ object Drivetrain : SubsystemBase() {
         }
     }
 
+    fun driveRobotRelative(speeds: ChassisSpeeds) {
+        val discreteSpeeds = ChassisSpeeds.discretize(speeds, 0.02)
+        DogLog.log("Drivetrain/ChassisSpeeds/Setpoints", speeds)
+        DogLog.log(
+            "Drivetrain/ChassisSpeeds/Setpoint Drive Speed",
+            hypot(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond)
+        )
+
+        val setpointStates = kinematics.toSwerveModuleStates(discreteSpeeds)
+        SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, SwerveConstants.maxSpeed)
+
+        DogLog.log("Drivetrain/SwerveModuleStates/Setpoints", setpointStates)
+
+        // Modules are set here
+        val optimizedStates = setModuleStates(*setpointStates)
+        DogLog.log("Drivetrain/SwerveModuleStates/Optimized Setpoints", optimizedStates)
+    }
+
     fun getGyroAngle():Angle{
         return gyroYaw.get()
+    }
+
+    private fun setModuleStates(vararg states: SwerveModuleState): Array<SwerveModuleState> {
+        modules.forEachIndexed { index, module ->
+            module.setSwerveModuleState(states[index])
+        }
+        return Array(4) { modules[it].config.getOptimizedState(states[it]) }
     }
 
     fun getModulePositions():Array<SwerveModulePosition>{

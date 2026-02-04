@@ -1,10 +1,14 @@
 package org.sert2521.rebuilt2026
 
+import edu.wpi.first.math.geometry.Rotation2d
+import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.GenericHID
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.Commands
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
+import org.sert2521.rebuilt2026.subsystems.drivetrain.Drivetrain
+import kotlin.jvm.optionals.getOrElse
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -35,8 +39,21 @@ object Input {
     private val visionAlign = driverController.rightTrigger() // YIPPEEE I love this 2026 change
     private val outtake = driverController.rightBumper()
 
+    private var rotationOffset = Rotation2d.kZero
+
+
     init {
 
+
+        resetRotOffset.onTrue(Commands.runOnce({
+            if (DriverStation.getAlliance().getOrElse { DriverStation.Alliance.Blue } == DriverStation.Alliance.Red) {
+                Drivetrain.setRotation(Rotation2d.k180deg)
+                rotationOffset = Rotation2d.k180deg
+            } else {
+                Drivetrain.setRotation(Rotation2d.kZero)
+                rotationOffset = Rotation2d.kZero
+            }
+        }))
     }
 
     fun getLeftX(): Double {
@@ -49,6 +66,10 @@ object Input {
 
     fun getRightRot(): Double {
         return -driverController.rightX
+    }
+
+    fun getRotOffset(): Rotation2d {
+        return rotationOffset
     }
 
     private fun setRumble(amount: Double) {

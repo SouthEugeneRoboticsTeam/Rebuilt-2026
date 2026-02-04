@@ -13,6 +13,10 @@ object ElectronicIDs {
 
     const val KICKER_MOTOR_ID = 3
     const val INDEXER_MOTOR_ID = 4
+
+    const val SHOOTER_LEADER_MOTOR_ID = 5
+    const val SHOOTER_FOLLOWER_MOTOR_ID = 6
+    const val SHOOTER_ROLLER_MOTOR_ID = 7
 }
 
 object GrintakeConstants {
@@ -63,9 +67,25 @@ object IndexerConstants {
 }
 
 object HoodedShooterConstants {
+    const val P = 0.0
+    const val D = 0.0
+    const val S = 0.0
+    const val V = 0.0
+    const val A = 0.0
 
+    val shooterGearing = MechanismGearing(
+        GearBox.fromReductionStages(
+            0.0
+        )
+    )
+
+    val rollerGearing = MechanismGearing(
+        GearBox.fromReductionStages(
+            0.0
+        )
+    )
 }
 
-object OtherConstants {
+object OtherConstsants {
 
 }

@@ -62,4 +62,8 @@ object SwerveConstants {
     val maxSpeed = Units.MetersPerSecond.of(4.571)
 
     const val SYS_ID_FF_RAMP_RATE = 1.0
+
+    const val DRIVE_SPEED = 4.5
+
+    const val ROT_SPEED = 4.0
 }
