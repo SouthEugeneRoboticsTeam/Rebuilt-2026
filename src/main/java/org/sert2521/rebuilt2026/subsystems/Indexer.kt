@@ -6,14 +6,14 @@ import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.units.Units.Amps
 import edu.wpi.first.wpilibj.DigitalInput
 import edu.wpi.first.wpilibj2.command.Command
+import edu.wpi.first.wpilibj2.command.Commands
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.sert2521.rebuilt2026.ElectronicIDs
 import org.sert2521.rebuilt2026.IndexerConstants
 import yams.motorcontrollers.SmartMotorControllerConfig
 import yams.motorcontrollers.local.SparkWrapper
+import yams.telemetry.MechanismTelemetry
 
-object IndexerSubsystem : SubsystemBase() {
-    private val indexerMotor = SparkMax(ElectronicIDs.INDEXER_MOTOR_ID, SparkLowLevel.MotorType.kBrushless)
 object Indexer : SubsystemBase() {
     private val indexerMotor = SparkMax(ElectronicIDs.INDEXER_MOTOR_ID, SparkLowLevel.MotorType.kBrushless)
 
@@ -45,6 +45,15 @@ object Indexer : SubsystemBase() {
         return beambreak.get()
     }
 
+    private val telemetry = MechanismTelemetry()
+
+    init{
+        defaultCommand = default()
+
+        telemetry.setupTelemetry("Indexer", indexerSMC)
+        telemetry.setupTelemetry("Indexer", kickerSMC)
+    }
+
     override fun periodic() {
         indexerSMC.updateTelemetry()
         kickerSMC.updateTelemetry()
@@ -62,17 +71,42 @@ object Indexer : SubsystemBase() {
         kickerSMC.dutyCycle = dutyCycle
     }
 
+    private fun default(): Command {
+        return runOnce {
+            setIndexerMotor(IndexerConstants.MAIN_DEFAULT)
+            setKickerMotor(IndexerConstants.KICKER_DEFAULT)
+        }.andThen(
+            Commands.idle()
+        )
+    }
+
     fun index(): Command {
-    return runOnce {
-            setIndexerMotor(0.0)
-            setKickerMotor(0.0)
+        return run {
+            if (getBeamBreakBlocked()) {
+                setIndexerMotor(IndexerConstants.MAIN_INDEXING)
+                setKickerMotor(IndexerConstants.KICKER_INDEXING)
+            }else {
+                setIndexerMotor(IndexerConstants.MAIN_DEFAULT)
+                setKickerMotor(IndexerConstants.KICKER_DEFAULT)
+            }
         }
     }
 
-    fun kick(): Command{
+    fun shoot(): Command{
         return runOnce {
-            setIndexerMotor(0.0)
-            setKickerMotor(0.0)
-        }
+            setIndexerMotor(IndexerConstants.MAIN_KICKING)
+            setKickerMotor(IndexerConstants.KICKER_KICKING)
+        }.andThen(
+            Commands.idle()
+        )
+    }
+
+    fun reverse(): Command {
+        return runOnce {
+            setIndexerMotor(IndexerConstants.MAIN_REVERSE)
+            setKickerMotor(IndexerConstants.KICKER_REVERSE)
+        }.andThen(
+            Commands.idle()
+        )
     }
 }

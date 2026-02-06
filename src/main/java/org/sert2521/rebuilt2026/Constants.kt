@@ -1,6 +1,7 @@
 package org.sert2521.rebuilt2026
 
 import edu.wpi.first.units.Units.Degrees
+import edu.wpi.first.units.Units.RPM
 import edu.wpi.first.units.Units.Rotations
 import yams.gearing.GearBox
 import yams.gearing.MechanismGearing
@@ -84,6 +85,10 @@ object HoodedShooterConstants {
             0.0
         )
     )
+
+    val shootTarget = RPM.of(0.0)
+
+    val shootRollerDutyCycle = 0.0
 }
 
 object OtherConstsants {

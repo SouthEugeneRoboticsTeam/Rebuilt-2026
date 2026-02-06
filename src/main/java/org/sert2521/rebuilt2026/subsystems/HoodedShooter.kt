@@ -8,12 +8,14 @@ import edu.wpi.first.units.Units.Amps
 import edu.wpi.first.units.Units.RPM
 import edu.wpi.first.units.measure.AngularVelocity
 import edu.wpi.first.wpilibj2.command.Command
+import edu.wpi.first.wpilibj2.command.Commands
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.sert2521.rebuilt2026.ElectronicIDs
 import org.sert2521.rebuilt2026.HoodedShooterConstants
 import yams.motorcontrollers.SmartMotorControllerConfig
 import yams.motorcontrollers.local.SparkWrapper
 import yams.telemetry.MechanismTelemetry
+import java.util.function.Supplier
 
 object HoodedShooter : SubsystemBase() {
         private val motorLeader = SparkMax(ElectronicIDs.SHOOTER_LEADER_MOTOR_ID, SparkLowLevel.MotorType.kBrushless)
@@ -50,7 +52,7 @@ object HoodedShooter : SubsystemBase() {
         private var shooterSetpoint = RPM.zero()
 
         init {
-            // defaultCommand = holdCommand(::shooterSetpoint)
+            defaultCommand = holdCommand(::shooterSetpoint)
 
             telemetry.setupTelemetry("HoodedShooter", leaderSMC)
             telemetry.setupTelemetry("HoodedShooter", followerSMC)
@@ -69,9 +71,28 @@ object HoodedShooter : SubsystemBase() {
         rollerSMC.simIterate()
     }
 
-    private fun setVelocitiesCommand(velocity: AngularVelocity): Command {
+    private fun setVelocitiesCommand(velocity: AngularVelocity, rollersOutput:Double): Command {
         return runOnce {
             leaderSMC.setVelocity(velocity)
+            rollerSMC.dutyCycle = rollersOutput
+            shooterSetpoint = velocity
         }
+    }
+
+    private fun holdCommand(velocity: Supplier<AngularVelocity>):Command {
+        return runOnce{
+            leaderSMC.setVelocity(velocity.get())
+            shooterSetpoint = velocity.get()
+        }.andThen(
+            Commands.idle()
+        )
+    }
+
+    fun rev():Command {
+        return setVelocitiesCommand(HoodedShooterConstants.shootTarget, HoodedShooterConstants.shootRollerDutyCycle)
+    }
+
+    fun stop(): Command {
+        return setVelocitiesCommand(HoodedShooterConstants.shootTarget, HoodedShooterConstants.shootRollerDutyCycle)
     }
 }
