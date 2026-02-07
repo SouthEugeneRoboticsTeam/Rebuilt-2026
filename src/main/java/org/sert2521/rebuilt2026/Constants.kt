@@ -1,5 +1,6 @@
 package org.sert2521.rebuilt2026
 
+import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.units.Units.Degrees
 import edu.wpi.first.units.Units.RPM
 import edu.wpi.first.units.Units.Rotations
@@ -92,5 +93,5 @@ object HoodedShooterConstants {
 }
 
 object OtherConstsants {
-
+    val targetVisionPose = Pose2d()
 }

@@ -7,6 +7,9 @@ import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.Commands
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
+import org.sert2521.rebuilt2026.subsystems.Grintake
+import org.sert2521.rebuilt2026.subsystems.HoodedShooter
+import org.sert2521.rebuilt2026.subsystems.Indexer
 import org.sert2521.rebuilt2026.subsystems.drivetrain.Drivetrain
 import kotlin.jvm.optionals.getOrElse
 
@@ -26,9 +29,11 @@ object Input {
     private val gunnerController = CommandJoystick(1)
 
     // TODO: Check and change these
-    private val intake = gunnerController.button(0)
-    private val reverseIntake = gunnerController.button(1)
-    private val revPass = gunnerController.button(2)
+    private val intake = gunnerController.button(1)
+    private val reverseIntake = gunnerController.button(2)
+    private val revPass = gunnerController.button(3)
+    private val reverseIndex = gunnerController.button(4)
+    private val spit = gunnerController.button(5)
 
     private val manualIndex = gunnerController.button(6)
     private val hoodToStow = gunnerController.button(7)
@@ -43,7 +48,22 @@ object Input {
 
 
     init {
+        outtake.whileTrue(HoodedShooter.shoot()
+            .alongWith(
+                Commands.waitSeconds(0.35)
+                    .andThen(Indexer.shoot())
+            )
+        )
+        outtake.whileFalse(HoodedShooter.stop())
 
+        intake.whileTrue(Grintake.intake())
+        spit.whileTrue(Grintake.reverse()
+            .alongWith(Indexer.reverse())
+        )
+        reverseIndex.whileTrue(Grintake.reverse())
+        reverseIndex.whileTrue(Indexer.reverse())
+
+        manualIndex.whileTrue(Indexer.index())
 
         resetRotOffset.onTrue(Commands.runOnce({
             if (DriverStation.getAlliance().getOrElse { DriverStation.Alliance.Blue } == DriverStation.Alliance.Red) {
@@ -54,6 +74,9 @@ object Input {
                 rotationOffset = Rotation2d.kZero
             }
         }))
+    }
+    fun getJoystickInputs(): Triple<Double, Double, Double> {
+        return Triple(getLeftX(), getLeftY(), getRightRot())
     }
 
     fun getLeftX(): Double {
@@ -77,7 +100,8 @@ object Input {
     }
 
     fun rumbleBlip(): Command {
-        return Commands.runOnce({ setRumble(0.8) }).andThen(Commands.waitSeconds(0.2))
+        return Commands.runOnce({ setRumble(0.8) })
+            .andThen(Commands.waitSeconds(0.2))
             .andThen(Commands.runOnce({ setRumble(0.0) }))
     }
 }

@@ -88,7 +88,7 @@ object HoodedShooter : SubsystemBase() {
         )
     }
 
-    fun rev():Command {
+    fun shoot():Command {
         return setVelocitiesCommand(HoodedShooterConstants.shootTarget, HoodedShooterConstants.shootRollerDutyCycle)
     }
 
