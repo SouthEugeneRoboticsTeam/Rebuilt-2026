@@ -4,6 +4,7 @@ import com.revrobotics.spark.SparkLowLevel
 import com.revrobotics.spark.SparkMax
 import edu.wpi.first.math.controller.SimpleMotorFeedforward
 import edu.wpi.first.math.system.plant.DCMotor
+import edu.wpi.first.math.Pair
 import edu.wpi.first.units.Units.Amps
 import edu.wpi.first.units.Units.RPM
 import edu.wpi.first.units.measure.AngularVelocity
@@ -31,10 +32,7 @@ object HoodedShooter : SubsystemBase() {
             .withTelemetry("Shooter Motor Leader", SmartMotorControllerConfig.TelemetryVerbosity.LOW)
             .withStatorCurrentLimit(Amps.of(40.0))
             .withMotorInverted(false)
-
-        private val motorConfigFollower = motorConfigLeader.clone()
-            .withMotorInverted(true)
-            .withTelemetry("Shooter Motor Follower", SmartMotorControllerConfig.TelemetryVerbosity.LOW)
+            .withFollowers(Pair.of(motorFollower, /*inverted=*/ true))
 
         private val motorConfigRoller = SmartMotorControllerConfig(this)
             .withControlMode(SmartMotorControllerConfig.ControlMode.OPEN_LOOP)
@@ -45,7 +43,6 @@ object HoodedShooter : SubsystemBase() {
             .withTelemetry("Shooter Motor Roller", SmartMotorControllerConfig.TelemetryVerbosity.LOW)
 
         private val leaderSMC = SparkWrapper(motorLeader, DCMotor.getNEO(1), motorConfigLeader)
-        private val followerSMC = SparkWrapper(motorFollower, DCMotor.getNEO(1), motorConfigFollower)
         private val rollerSMC = SparkWrapper(motorRoller, DCMotor.getNEO(1), motorConfigRoller)
         private val telemetry = MechanismTelemetry()
 
@@ -55,19 +52,16 @@ object HoodedShooter : SubsystemBase() {
             defaultCommand = holdCommand(::shooterSetpoint)
 
             telemetry.setupTelemetry("HoodedShooter", leaderSMC)
-            telemetry.setupTelemetry("HoodedShooter", followerSMC)
             telemetry.setupTelemetry("HoodedShooter", rollerSMC)
         }
 
         override fun periodic() {
             leaderSMC.updateTelemetry()
-            followerSMC.updateTelemetry()
             rollerSMC.updateTelemetry()
         }
 
     override fun simulationPeriodic() {
         leaderSMC.simIterate()
-        followerSMC.simIterate()
         rollerSMC.simIterate()
     }
 

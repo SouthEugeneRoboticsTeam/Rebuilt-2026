@@ -29,9 +29,10 @@ object SwerveConstants {
         Rotations.of(-0.143066)
     )
 
-    val encoderIDs = arrayOf(1, 2, 3, 4)
-    val driveIDs = arrayOf(5, 6, 7, 8)
-    val angleIDs = arrayOf(9, 10, 11, 12)
+    // FIXME: fix all ids
+    val encoderIDs = arrayOf(101, 102, 103, 104)
+    val driveIDs = arrayOf(105, 106, 107, 108)
+    val angleIDs = arrayOf(109, 110, 111, 112)
 
     // TODO: Tune
     const val DRIVE_P = 0.0

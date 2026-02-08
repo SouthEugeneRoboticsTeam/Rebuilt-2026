@@ -19,6 +19,7 @@ object Grintake : SubsystemBase() {
     private val wristMotor = SparkMax(ElectronicIDs.GRINTAKE_WRIST_MOTOR_ID, SparkLowLevel.MotorType.kBrushless)
 
     private val rollerMotorConfig = SmartMotorControllerConfig(this)
+        .withClosedLoopController(GrintakeConstants.rollerP, 0.0, GrintakeConstants.rollerD)
         .withGearing(GrintakeConstants.rollerGearing)
         .withMotorInverted(false)
         .withIdleMode(SmartMotorControllerConfig.MotorMode.BRAKE)
@@ -26,6 +27,7 @@ object Grintake : SubsystemBase() {
         .withStatorCurrentLimit(Amps.of(40.0))
 
     private val wristMotorConfig = SmartMotorControllerConfig(this)
+        .withClosedLoopController(GrintakeConstants.wristP, 0.0, GrintakeConstants.wristD)
         .withTelemetry("Wrist Motor", SmartMotorControllerConfig.TelemetryVerbosity.LOW)
         .withMotorInverted(false)
         .withStatorCurrentLimit(Amps.of(40.0))
