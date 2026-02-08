@@ -22,14 +22,19 @@ object ElectronicIDs {
 }
 
 object GrintakeConstants {
+    const val rollerP = 0.0
+    const val rollerD = 0.0
+    const val wristP = 0.0
+    const val wristD = 0.0
+
     val rollerGearing = MechanismGearing(
         GearBox.fromReductionStages(
-            //add reduction stages
+            1.0  // FIXME: add reduction stages
         )
     )
     val wristGearing = MechanismGearing(
         GearBox.fromReductionStages(
-            //add reduction stages
+            1.0  // FIXEM: add reduction stages
         )
     )
 
@@ -77,13 +82,13 @@ object HoodedShooterConstants {
 
     val shooterGearing = MechanismGearing(
         GearBox.fromReductionStages(
-            0.0
+            1.0  // FIXME: Add reduction stages.
         )
     )
 
     val rollerGearing = MechanismGearing(
         GearBox.fromReductionStages(
-            0.0
+            1.0  // FIXME: Add reducton stages.
         )
     )
 
