@@ -178,6 +178,10 @@ object Drivetrain : SubsystemBase() {
         }
     }
 
+    fun getChassisSpeeds():ChassisSpeeds{
+        return kinematics.toChassisSpeeds(*moduleStates)
+    }
+
     fun getPose(): Pose2d {
         return poseEstimator.estimatedPosition
     }
