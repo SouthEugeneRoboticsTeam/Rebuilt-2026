@@ -7,7 +7,7 @@ import org.sert2521.rebuilt2026.subsystems.drivetrain.Drivetrain
 import org.sert2521.rebuilt2026.subsystems.drivetrain.SwerveConstants
 import kotlin.math.pow
 
-class JoystickDrive(private val fieldOriented:Boolean = false) : Command() {
+class JoystickDrive(private val fieldOriented: Boolean = false) : Command() {
     private var targetChassisSpeeds = ChassisSpeeds()
 
     init {
