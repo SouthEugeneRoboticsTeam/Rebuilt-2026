@@ -2,8 +2,10 @@ package org.sert2521.rebuilt2026.subsystems
 
 import com.revrobotics.spark.SparkLowLevel
 import com.revrobotics.spark.SparkMax
+import edu.wpi.first.math.filter.Debouncer
 import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.units.Units.Amps
+import edu.wpi.first.units.Units.Rotations
 import edu.wpi.first.units.measure.Angle
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.Commands
@@ -19,15 +21,13 @@ object Grintake : SubsystemBase() {
     private val wristMotor = SparkMax(ElectronicIDs.GRINTAKE_WRIST_MOTOR_ID, SparkLowLevel.MotorType.kBrushless)
 
     private val rollerMotorConfig = SmartMotorControllerConfig(this)
-        .withClosedLoopController(GrintakeConstants.rollerP, 0.0, GrintakeConstants.rollerD)
         .withGearing(GrintakeConstants.rollerGearing)
         .withMotorInverted(false)
         .withIdleMode(SmartMotorControllerConfig.MotorMode.BRAKE)
         .withTelemetry("Roller Motor", SmartMotorControllerConfig.TelemetryVerbosity.LOW)
         .withStatorCurrentLimit(Amps.of(40.0))
-
     private val wristMotorConfig = SmartMotorControllerConfig(this)
-        .withClosedLoopController(GrintakeConstants.wristP, 0.0, GrintakeConstants.wristD)
+        .withClosedLoopController(GrintakeConstants.WRIST_P, 0.0, GrintakeConstants.WRIST_D)
         .withTelemetry("Wrist Motor", SmartMotorControllerConfig.TelemetryVerbosity.LOW)
         .withMotorInverted(false)
         .withStatorCurrentLimit(Amps.of(40.0))
@@ -38,16 +38,18 @@ object Grintake : SubsystemBase() {
         rollerMotor, DCMotor.getNEO(1),
         rollerMotorConfig
     )
-
     private val wristSMC = SparkWrapper(
         wristMotor, DCMotor.getNEO(1),
         wristMotorConfig
     )
 
+    private val currentDebouncer = Debouncer(0.5, Debouncer.DebounceType.kRising)
+
     private val telemetry = MechanismTelemetry()
 
     init {
-        defaultCommand = stow()
+        defaultCommand = reZero()
+
         telemetry.setupTelemetry("Grintake", rollerSMC)
         telemetry.setupTelemetry("Grintake", wristSMC)
     }
@@ -74,10 +76,29 @@ object Grintake : SubsystemBase() {
         )
     }
 
+    fun reZero():Command{
+        return runOnce {
+            setRollerMotor(0.0)
+            wristSMC.dutyCycle = GrintakeConstants.REZERO_SPEED
+        }.andThen(
+            Commands.idle()
+        ).until{
+            currentDebouncer.calculate(
+                wristSMC.statorCurrent > GrintakeConstants.reZeroThreshold
+            )
+        }.andThen(
+            runOnce{
+                wristSMC.setEncoderPosition(Rotations.zero())
+            }
+        ).andThen(
+            stow()
+        )
+    }
+
     fun intake(): Command {
         return runOnce {
             setWristMotorAngle(GrintakeConstants.intakePosition)
-            setRollerMotor(GrintakeConstants.intakeSpeed)
+            setRollerMotor(GrintakeConstants.INTAKE_SPEED)
         }.andThen(
             Commands.idle()
         )
@@ -85,7 +106,7 @@ object Grintake : SubsystemBase() {
 
     fun reverse(): Command {
         return runOnce {
-            setRollerMotor(GrintakeConstants.reverseSpeed)
+            setRollerMotor(GrintakeConstants.REVERSE_SPEED)
         }.andThen(
             Commands.idle()
         )

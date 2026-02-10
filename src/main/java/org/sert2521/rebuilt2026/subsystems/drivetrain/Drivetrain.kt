@@ -21,8 +21,6 @@ import edu.wpi.first.units.Units.Degrees
 import edu.wpi.first.units.Units.Radians
 import edu.wpi.first.units.Units.RotationsPerSecond
 import edu.wpi.first.units.measure.Angle
-import edu.wpi.first.units.measure.AngularVelocity
-import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj.smartdashboard.Field2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
@@ -34,7 +32,6 @@ import yams.mechanisms.config.SwerveModuleConfig
 import yams.mechanisms.swerve.SwerveModule
 import yams.motorcontrollers.SmartMotorControllerConfig
 import yams.motorcontrollers.local.SparkWrapper
-import javax.swing.text.StyleConstants.Orientation
 import kotlin.math.PI
 import kotlin.math.hypot
 

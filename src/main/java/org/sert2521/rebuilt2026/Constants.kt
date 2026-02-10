@@ -1,51 +1,51 @@
 package org.sert2521.rebuilt2026
 
 import edu.wpi.first.math.geometry.Pose2d
-import edu.wpi.first.units.Units.Degrees
-import edu.wpi.first.units.Units.RPM
-import edu.wpi.first.units.Units.Rotations
+import edu.wpi.first.units.Units.*
 import yams.gearing.GearBox
 import yams.gearing.MechanismGearing
 
 object ElectronicIDs {
-    const val GRINTAKE_ROLLER_MOTOR_ID = 1
-    const val GRINTAKE_WRIST_MOTOR_ID = 2
+    const val GRINTAKE_ROLLER_MOTOR_ID = 21
+    const val GRINTAKE_WRIST_MOTOR_ID = 22
 
-    const val KICKER_MOTOR_ID = 3
-    const val INDEXER_MOTOR_ID = 4
+    const val INDEXER_MOTOR_ID = 31
+    const val KICKER_MOTOR_ID = 32
 
-    const val SHOOTER_LEADER_MOTOR_ID = 5
-    const val SHOOTER_FOLLOWER_MOTOR_ID = 6
-    const val SHOOTER_ROLLER_MOTOR_ID = 7
+    const val SHOOTER_LEADER_MOTOR_ID = 41
+    const val SHOOTER_FOLLOWER_MOTOR_ID = 42
+    const val SHOOTER_ROLLER_MOTOR_ID = 43
 
     const val INDEXER_BEAM_BREAK_ID = 0
 }
 
 object GrintakeConstants {
-    const val rollerP = 0.0
-    const val rollerD = 0.0
-    const val wristP = 0.0
-    const val wristD = 0.0
+    const val WRIST_P = 0.0
+    const val WRIST_D = 0.0
 
     val rollerGearing = MechanismGearing(
         GearBox.fromReductionStages(
-            1.0  // FIXME: add reduction stages
+            24.0/12.0,
+            36.0/24.0
         )
     )
     val wristGearing = MechanismGearing(
         GearBox.fromReductionStages(
-            1.0  // FIXEM: add reduction stages
+            3.0,
+            4.0,
+            54.0/24.0,
+            56.0/24.0
         )
     )
 
     val stowPosition = Degrees.of(0.0)
     val intakePosition = Degrees.of(0.0)
 
-    val intakeSpeed = 0.2
-    val reverseSpeed = -0.2
+    const val INTAKE_SPEED = 0.2
+    const val REVERSE_SPEED = -0.2
 
-    val hardMin = Rotations.of(0.0)
-    val hardMax = Rotations.of(0.0)
+    const val REZERO_SPEED = -0.2
+    val reZeroThreshold = Amps.of(20.0)
 }
 
 object IndexerConstants {
@@ -82,18 +82,17 @@ object HoodedShooterConstants {
 
     val shooterGearing = MechanismGearing(
         GearBox.fromReductionStages(
-            1.0  // FIXME: Add reduction stages.
+            1.0  // Don't fix me, this is the actual gear ratio
         )
     )
 
     val rollerGearing = MechanismGearing(
         GearBox.fromReductionStages(
-            1.0  // FIXME: Add reducton stages.
+            1.0  // Also don't fix me, this is again the actual gear ratio
         )
     )
 
     val shootTarget = RPM.of(0.0)
-
     val shootRollerDutyCycle = 0.0
 }
 

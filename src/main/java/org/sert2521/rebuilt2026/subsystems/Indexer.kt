@@ -16,6 +16,7 @@ import yams.telemetry.MechanismTelemetry
 
 object Indexer : SubsystemBase() {
     private val indexerMotor = SparkMax(ElectronicIDs.INDEXER_MOTOR_ID, SparkLowLevel.MotorType.kBrushless)
+    private val kickerMotor = SparkMax(ElectronicIDs.KICKER_MOTOR_ID, SparkLowLevel.MotorType.kBrushless)
 
     private val indexerMotorConfig = SmartMotorControllerConfig(this)
         .withGearing(IndexerConstants.indexerGearing)
@@ -24,11 +25,6 @@ object Indexer : SubsystemBase() {
         .withStatorCurrentLimit(Amps.of(40.0))
         .withMotorInverted(false)
         .withControlMode(SmartMotorControllerConfig.ControlMode.OPEN_LOOP)
-
-    private val indexerSMC = SparkWrapper(indexerMotor, DCMotor.getNEO(1), indexerMotorConfig)
-
-    private val kickerMotor = SparkMax(ElectronicIDs.KICKER_MOTOR_ID, SparkLowLevel.MotorType.kBrushless)
-
     private val kickerMotorConfig = SmartMotorControllerConfig(this)
         .withGearing(IndexerConstants.kickerGearing)
         .withIdleMode(SmartMotorControllerConfig.MotorMode.BRAKE)
@@ -37,12 +33,13 @@ object Indexer : SubsystemBase() {
         .withMotorInverted(false)
         .withControlMode(SmartMotorControllerConfig.ControlMode.OPEN_LOOP)
 
+    private val indexerSMC = SparkWrapper(indexerMotor, DCMotor.getNEO(1), indexerMotorConfig)
     private val kickerSMC = SparkWrapper(kickerMotor, DCMotor.getNEO(1), kickerMotorConfig)
 
     private val beambreak = DigitalInput(ElectronicIDs.INDEXER_BEAM_BREAK_ID)
 
-    private fun getBeamBreakBlocked ():Boolean{
-        return beambreak.get()
+    private fun getBeamBreakBlocked():Boolean{
+        return !beambreak.get()
     }
 
     private val telemetry = MechanismTelemetry()
