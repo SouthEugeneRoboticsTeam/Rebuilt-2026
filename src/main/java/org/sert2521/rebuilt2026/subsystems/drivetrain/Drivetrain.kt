@@ -10,6 +10,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator
 import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.geometry.Rotation2d
+import edu.wpi.first.math.geometry.Rotation3d
 import edu.wpi.first.math.geometry.Translation2d
 import edu.wpi.first.math.kinematics.ChassisSpeeds
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics
@@ -18,15 +19,22 @@ import edu.wpi.first.math.kinematics.SwerveModuleState
 import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.units.Units.Degrees
 import edu.wpi.first.units.Units.Radians
+import edu.wpi.first.units.Units.RotationsPerSecond
 import edu.wpi.first.units.measure.Angle
+import edu.wpi.first.units.measure.AngularVelocity
 import edu.wpi.first.wpilibj.DriverStation
+import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj.smartdashboard.Field2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.SubsystemBase
+import limelight.Limelight
+import limelight.networktables.LimelightPoseEstimator
+import limelight.networktables.Orientation3d
 import yams.mechanisms.config.SwerveModuleConfig
 import yams.mechanisms.swerve.SwerveModule
 import yams.motorcontrollers.SmartMotorControllerConfig
 import yams.motorcontrollers.local.SparkWrapper
+import javax.swing.text.StyleConstants.Orientation
 import kotlin.math.PI
 import kotlin.math.hypot
 
@@ -84,18 +92,24 @@ object Drivetrain : SubsystemBase() {
     private val gyroConfig = MountPoseConfigs().withMountPoseRoll(Degrees.of(-90.0))
     private val gyro = Pigeon2(13)
     private val gyroYaw = gyro.yaw.asSupplier()
+    private val gyroPitch = gyro.pitch.asSupplier()
+    private val gyroRoll = gyro.roll.asSupplier()
 
     private val kinematics = SwerveDriveKinematics(*SwerveConstants.moduleTranslations)
     private var moduleStates = Array(4) { modules[it].state }
 
+    private val moduleLock = { false }
+    private var moduleLockPrevReference = Array(4) { Rotation2d.kZero }
+
     private val poseEstimator = SwerveDrivePoseEstimator(
         kinematics,
-        Rotation2d.kZero,
+        Rotation2d(gyroYaw.get()),
         Array(4) { modules[it].position },
         Pose2d.kZero
     )
 
-    // TODO: Add limelight hopefully
+    private val limelight = Limelight("limelight")
+    private val limelightPoseEstimator = limelight.createPoseEstimator(LimelightPoseEstimator.EstimationMode.MEGATAG2)
 
     private val field = Field2d()
 
@@ -103,13 +117,17 @@ object Drivetrain : SubsystemBase() {
         SmartDashboard.putData(field)
 
         gyro.configurator.apply(gyroConfig)
+        poseEstimator.setVisionMeasurementStdDevs(VisionConstants.visionStdv)
+
+        DogLog.log("Drivetrain/SwerveModuleStates/Setpoints", Array(4) { SwerveModuleState() })
+        DogLog.log("Drivetrain/SwerveModuleStates/Optimized Setpoints", Array(4) { SwerveModuleState() })
     }
 
     override fun periodic() {
         modules.forEach { it.updateTelemetry() }
         modules.forEach { it.seedAzimuthEncoder() }
 
-        poseEstimator.update(Rotation2d(getGyroAngle()), getModulePositions())
+        poseEstimator.update(Rotation2d(gyroYaw.get()), getModulePositions())
 
         moduleStates = getModuleStates()
         DogLog.log("Drivetrain/SwerveModuleStates/Measured", moduleStates)
@@ -123,10 +141,9 @@ object Drivetrain : SubsystemBase() {
 
         DogLog.log("Drivetrain/Rotation", poseEstimator.estimatedPosition.rotation)
 
-        if (DriverStation.isDisabled()) {
-            DogLog.log("Drivetrain/SwerveModuleStates/Setpoints", Array(4) { SwerveModuleState() })
-            DogLog.log("Drivetrain/SwerveModuleStates/Optimized Setpoints", Array(4) { SwerveModuleState() })
-        }
+        updateVision()
+
+        field.robotPose = poseEstimator.estimatedPosition
     }
 
     fun driveRobotRelative(speeds: ChassisSpeeds) {
@@ -147,13 +164,14 @@ object Drivetrain : SubsystemBase() {
         DogLog.log("Drivetrain/SwerveModuleStates/Optimized Setpoints", optimizedStates)
     }
 
-    fun getGyroAngle():Angle{
-        return gyroYaw.get()
-    }
-
     private fun setModuleStates(vararg states: SwerveModuleState): Array<SwerveModuleState> {
         modules.forEachIndexed { index, module ->
-            module.setSwerveModuleState(states[index])
+            if (moduleLock()) {
+                states[index].angle = moduleLockPrevReference[index]
+                module.setSwerveModuleState(states[index])
+            } else {
+                module.setSwerveModuleState(states[index])
+            }
         }
         return Array(4) { modules[it].config.getOptimizedState(states[it]) }
     }
@@ -164,6 +182,30 @@ object Drivetrain : SubsystemBase() {
 
     fun getModuleStates():Array<SwerveModuleState>{
         return Array(4){ modules[it].state }
+    }
+
+    fun updateVision(){
+        limelight.settings.withRobotOrientation(
+            Orientation3d(
+                Rotation3d(gyroRoll.get(), gyroPitch.get(), gyroYaw.get()),
+                RotationsPerSecond.zero(),
+                RotationsPerSecond.zero(),
+                RotationsPerSecond.zero()
+            )
+        )
+
+        val estimatedPose = limelightPoseEstimator.poseEstimate
+        if (estimatedPose.isEmpty) {
+            return
+        }
+        if (estimatedPose.get().pose.rotation.measureX > VisionConstants.rotationThreshold){
+            return
+        }
+        if (estimatedPose.get().pose.rotation.measureY > VisionConstants.rotationThreshold){
+            return
+        }
+
+        poseEstimator.addVisionMeasurement(estimatedPose.get().pose.toPose2d(), Timer.getFPGATimestamp())
     }
 
     fun stopDrivePID() {
@@ -188,5 +230,9 @@ object Drivetrain : SubsystemBase() {
 
     fun setRotation(rotation: Rotation2d){
         poseEstimator.resetRotation(rotation)
+    }
+
+    fun setModulePrevReference(){
+        moduleLockPrevReference = Array(4) { moduleStates[it].angle }
     }
 }

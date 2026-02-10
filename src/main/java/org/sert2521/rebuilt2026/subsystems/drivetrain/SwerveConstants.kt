@@ -1,8 +1,9 @@
 package org.sert2521.rebuilt2026.subsystems.drivetrain
 
-import edu.wpi.first.math.geometry.Rotation2d
+import edu.wpi.first.math.VecBuilder
 import edu.wpi.first.math.geometry.Translation2d
 import edu.wpi.first.units.Units
+import edu.wpi.first.units.Units.Degrees
 import edu.wpi.first.units.Units.Rotations
 import edu.wpi.first.units.measure.Distance
 import yams.gearing.GearBox
@@ -30,9 +31,9 @@ object SwerveConstants {
     )
 
     // FIXME: fix all ids
-    val encoderIDs = arrayOf(101, 102, 103, 104)
-    val driveIDs = arrayOf(105, 106, 107, 108)
-    val angleIDs = arrayOf(109, 110, 111, 112)
+    val encoderIDs = arrayOf(1, 2, 3, 4)
+    val driveIDs = arrayOf(5, 6, 7, 8)
+    val angleIDs = arrayOf(9, 10, 11, 12)
 
     // TODO: Tune
     const val DRIVE_P = 0.0
@@ -41,9 +42,9 @@ object SwerveConstants {
     const val DRIVE_V = 0.0
     val driveCurrentLimit = Units.Amps.of(40.0)
 
-    // TODO: Tune
-    const val ANGLE_P = 0.0
-    const val ANGLE_D = 0.0
+
+    const val ANGLE_P = 45.0
+    const val ANGLE_D = 1.0
     val angleCurrentLimit = Units.Amps.of(40.0)
 
     // TODO: Tune
@@ -67,4 +68,10 @@ object SwerveConstants {
     const val DRIVE_SPEED = 4.5
 
     const val ROT_SPEED = 4.0
+}
+
+object VisionConstants {
+    val rotationThreshold = Degrees.of(3.0)
+
+    val visionStdv = VecBuilder.fill(0.3, 0.3, Double.POSITIVE_INFINITY)
 }
