@@ -5,10 +5,16 @@ import edu.wpi.first.wpilibj2.command.Command
 import org.sert2521.rebuilt2026.Input
 import org.sert2521.rebuilt2026.subsystems.drivetrain.Drivetrain
 import org.sert2521.rebuilt2026.subsystems.drivetrain.SwerveConstants
+import kotlin.math.atan
+import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.hypot
 import kotlin.math.pow
+import kotlin.math.sin
 
-class JoystickDrive(private val fieldOriented: Boolean = false) : Command() {
+class JoystickDrive(private val fieldOriented: Boolean = true) : Command() {
     private var targetChassisSpeeds = ChassisSpeeds()
+
 
     init {
         addRequirements(Drivetrain)
@@ -19,11 +25,25 @@ class JoystickDrive(private val fieldOriented: Boolean = false) : Command() {
     }
 
     override fun execute() {
-        targetChassisSpeeds = ChassisSpeeds(
-            Input.getLeftX().pow(3) * SwerveConstants.DRIVE_SPEED,
-            Input.getLeftY().pow(3) * SwerveConstants.DRIVE_SPEED,
-            Input.getRightRot().pow(3) * SwerveConstants.ROT_SPEED
-        )
+        val theta = atan2(Input.getLeftY(), Input.getLeftX())
+        val mag = hypot(Input.getLeftY(), Input.getLeftX())
+        if (mag<1.0){
+            val corrMag = mag.pow(3)
+            targetChassisSpeeds = ChassisSpeeds(
+                sin(theta) * corrMag * SwerveConstants.DRIVE_SPEED,
+                cos(theta) * corrMag * SwerveConstants.DRIVE_SPEED,
+                Input.getRightRot().pow(3) * SwerveConstants.ROT_SPEED
+            )
+        } else {
+            val y = sin(theta)
+            val x = cos(theta)
+            targetChassisSpeeds = ChassisSpeeds(
+                y * SwerveConstants.DRIVE_SPEED,
+                x * SwerveConstants.DRIVE_SPEED,
+                Input.getRightRot().pow(3) * SwerveConstants.ROT_SPEED
+            )
+        }
+
 
         if (fieldOriented) {
             Drivetrain.driveRobotRelative(

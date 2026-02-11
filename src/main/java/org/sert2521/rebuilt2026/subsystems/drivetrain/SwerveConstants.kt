@@ -39,12 +39,12 @@ object SwerveConstants {
     const val DRIVE_P = 0.0
     const val DRIVE_D = 0.0
     const val DRIVE_S = 0.0
-    const val DRIVE_V = 0.0
+    const val DRIVE_V = 0.85
     val driveCurrentLimit = Units.Amps.of(40.0)
 
 
-    const val ANGLE_P = 45.0
-    const val ANGLE_D = 1.0
+    const val ANGLE_P = 8.0
+    const val ANGLE_D = 0.0
     val angleCurrentLimit = Units.Amps.of(40.0)
 
     // TODO: Tune
@@ -65,9 +65,9 @@ object SwerveConstants {
 
     const val SYS_ID_FF_RAMP_RATE = 1.0
 
-    const val DRIVE_SPEED = 4.5
+    const val DRIVE_SPEED = 2.0
 
-    const val ROT_SPEED = 4.0
+    const val ROT_SPEED = 3.0
 }
 
 object VisionConstants {

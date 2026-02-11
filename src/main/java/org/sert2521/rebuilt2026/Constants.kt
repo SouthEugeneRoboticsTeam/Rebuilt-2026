@@ -12,15 +12,15 @@ object ElectronicIDs {
     const val INDEXER_MOTOR_ID = 31
     const val KICKER_MOTOR_ID = 32
 
-    const val SHOOTER_LEADER_MOTOR_ID = 41
-    const val SHOOTER_FOLLOWER_MOTOR_ID = 42
+    const val FLYWHEEL_LEFT_ID = 41
+    const val FLYWHEEL_RIGHT_ID = 42
     const val SHOOTER_ROLLER_MOTOR_ID = 43
 
     const val INDEXER_BEAM_BREAK_ID = 0
 }
 
 object GrintakeConstants {
-    const val WRIST_P = 0.0
+    const val WRIST_P = 6.4
     const val WRIST_D = 0.0
 
     val rollerGearing = MechanismGearing(
@@ -38,11 +38,11 @@ object GrintakeConstants {
         )
     )
 
-    val stowPosition = Degrees.of(0.0)
-    val intakePosition = Degrees.of(0.0)
+    val stowPosition = Rotations.of(0.07)
+    val intakePosition = Rotations.of(0.39)
 
-    const val INTAKE_SPEED = 0.2
-    const val REVERSE_SPEED = -0.2
+    const val INTAKE_SPEED = 0.0
+    const val REVERSE_SPEED = -0.0
 
     const val REZERO_SPEED = -0.2
     val reZeroThreshold = Amps.of(20.0)
@@ -77,7 +77,7 @@ object HoodedShooterConstants {
     const val P = 0.0
     const val D = 0.0
     const val S = 0.0
-    const val V = 0.0
+    const val V = 0.0021
     const val A = 0.0
 
     val shooterGearing = MechanismGearing(

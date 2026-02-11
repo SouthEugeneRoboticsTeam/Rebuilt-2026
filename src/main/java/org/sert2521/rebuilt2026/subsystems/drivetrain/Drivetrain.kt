@@ -1,6 +1,7 @@
 package org.sert2521.rebuilt2026.subsystems.drivetrain
 
 import com.ctre.phoenix6.configs.MountPoseConfigs
+import com.ctre.phoenix6.configs.Pigeon2FeaturesConfigs
 import com.ctre.phoenix6.hardware.CANcoder
 import com.ctre.phoenix6.hardware.Pigeon2
 import com.revrobotics.spark.SparkLowLevel
@@ -28,6 +29,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase
 import limelight.Limelight
 import limelight.networktables.LimelightPoseEstimator
 import limelight.networktables.Orientation3d
+import org.sert2521.rebuilt2026.commands.JoystickDrive
 import yams.mechanisms.config.SwerveModuleConfig
 import yams.mechanisms.swerve.SwerveModule
 import yams.motorcontrollers.SmartMotorControllerConfig
@@ -86,7 +88,10 @@ object Drivetrain : SubsystemBase() {
         )
     }
 
-    private val gyroConfig = MountPoseConfigs().withMountPoseRoll(Degrees.of(-90.0))
+    private val gyroConfig = MountPoseConfigs().withMountPoseRoll(Degrees.zero()).withMountPoseYaw(Degrees.zero()).withMountPosePitch(Degrees.zero())
+    private val gyroMoreConfig = Pigeon2FeaturesConfigs().withEnableCompass(false)
+        .withDisableTemperatureCompensation(false)
+        .withDisableNoMotionCalibration(false)
     private val gyro = Pigeon2(13)
     private val gyroYaw = gyro.yaw.asSupplier()
     private val gyroPitch = gyro.pitch.asSupplier()
@@ -113,7 +118,10 @@ object Drivetrain : SubsystemBase() {
     init {
         SmartDashboard.putData(field)
 
-        gyro.configurator.apply(gyroConfig)
+        defaultCommand = JoystickDrive()
+
+        // gyro.configurator.apply(gyroConfig)
+        gyro.configurator.apply(gyroMoreConfig)
         poseEstimator.setVisionMeasurementStdDevs(VisionConstants.visionStdv)
 
         DogLog.log("Drivetrain/SwerveModuleStates/Setpoints", Array(4) { SwerveModuleState() })
@@ -136,7 +144,9 @@ object Drivetrain : SubsystemBase() {
             hypot(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond)
         )
 
-        DogLog.log("Drivetrain/Rotation", poseEstimator.estimatedPosition.rotation)
+        DogLog.log("Drivetrain/Yaw", gyroYaw.get())
+        DogLog.log("Drivetrain/Pitch", gyroPitch.get())
+        DogLog.log("Drivetrain/Roll", gyroRoll.get())
 
         updateVision()
 

@@ -18,7 +18,7 @@ object Input {
     private val gunnerController = CommandJoystick(1)
 
     // TODO: Check and change these
-    private val intake = gunnerController.button(1)
+    private val intake = driverController.rightBumper()
     private val reverseIntake = gunnerController.button(2)
     private val revPass = gunnerController.button(3)
     private val reverseIndex = gunnerController.button(4)
@@ -31,7 +31,7 @@ object Input {
 
     private val resetRotOffset = driverController.y()
     private val visionAlign = driverController.rightTrigger() // YIPPEEE I love this 2026 change
-    private val outtake = driverController.rightBumper()
+    private val outtake = driverController.leftBumper()
 
     private var rotationOffset = Rotation2d.kZero
 

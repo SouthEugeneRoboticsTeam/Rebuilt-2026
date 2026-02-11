@@ -25,11 +25,12 @@ object Grintake : SubsystemBase() {
         .withMotorInverted(false)
         .withIdleMode(SmartMotorControllerConfig.MotorMode.BRAKE)
         .withTelemetry("Roller Motor", SmartMotorControllerConfig.TelemetryVerbosity.LOW)
+        .withControlMode(SmartMotorControllerConfig.ControlMode.OPEN_LOOP)
         .withStatorCurrentLimit(Amps.of(40.0))
     private val wristMotorConfig = SmartMotorControllerConfig(this)
         .withClosedLoopController(GrintakeConstants.WRIST_P, 0.0, GrintakeConstants.WRIST_D)
-        .withTelemetry("Wrist Motor", SmartMotorControllerConfig.TelemetryVerbosity.LOW)
-        .withMotorInverted(false)
+        .withTelemetry("Wrist Motor", SmartMotorControllerConfig.TelemetryVerbosity.HIGH)
+        .withMotorInverted(true)
         .withStatorCurrentLimit(Amps.of(40.0))
         .withIdleMode(SmartMotorControllerConfig.MotorMode.BRAKE)
         .withGearing(GrintakeConstants.wristGearing)
@@ -48,7 +49,7 @@ object Grintake : SubsystemBase() {
     private val telemetry = MechanismTelemetry()
 
     init {
-        defaultCommand = reZero()
+        defaultCommand = stow()
 
         telemetry.setupTelemetry("Grintake", rollerSMC)
         telemetry.setupTelemetry("Grintake", wristSMC)

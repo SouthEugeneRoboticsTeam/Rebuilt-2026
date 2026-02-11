@@ -15,11 +15,10 @@ import org.sert2521.rebuilt2026.HoodedShooterConstants
 import yams.motorcontrollers.SmartMotorControllerConfig
 import yams.motorcontrollers.local.SparkWrapper
 import yams.telemetry.MechanismTelemetry
-import java.util.function.Supplier
 
 object HoodedShooter : SubsystemBase() {
-    private val motorLeft = SparkMax(ElectronicIDs.SHOOTER_LEADER_MOTOR_ID, SparkLowLevel.MotorType.kBrushless)
-    private val motorRight = SparkMax(ElectronicIDs.SHOOTER_FOLLOWER_MOTOR_ID, SparkLowLevel.MotorType.kBrushless)
+    private val motorLeft = SparkMax(ElectronicIDs.FLYWHEEL_LEFT_ID, SparkLowLevel.MotorType.kBrushless)
+    private val motorRight = SparkMax(ElectronicIDs.FLYWHEEL_RIGHT_ID, SparkLowLevel.MotorType.kBrushless)
     private val motorRoller = SparkMax(ElectronicIDs.SHOOTER_ROLLER_MOTOR_ID, SparkLowLevel.MotorType.kBrushless)
 
     private val flywheelMotorConfigLeft = SmartMotorControllerConfig(this)
@@ -37,9 +36,20 @@ object HoodedShooter : SubsystemBase() {
         .withStatorCurrentLimit(Amps.of(40.0))
         .withMotorInverted(false)
 
-    private val flywheelMotorConfigRight = flywheelMotorConfigLeft.clone()
-        .withMotorInverted(true)
+    private val flywheelMotorConfigRight = SmartMotorControllerConfig(this)
+        .withClosedLoopController(HoodedShooterConstants.P, 0.0, HoodedShooterConstants.D)
+        .withFeedforward(
+            SimpleMotorFeedforward(
+                HoodedShooterConstants.S,
+                HoodedShooterConstants.V,
+                HoodedShooterConstants.A
+            )
+        )
+        .withGearing(HoodedShooterConstants.shooterGearing)
+        .withIdleMode(SmartMotorControllerConfig.MotorMode.BRAKE)
         .withTelemetry("Flywheel Motor Right", SmartMotorControllerConfig.TelemetryVerbosity.LOW)
+        .withStatorCurrentLimit(Amps.of(40.0))
+        .withMotorInverted(true)
 
     private val motorConfigRoller = SmartMotorControllerConfig(this)
         .withControlMode(SmartMotorControllerConfig.ControlMode.OPEN_LOOP)
