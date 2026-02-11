@@ -21,34 +21,26 @@ object HoodedShooter : SubsystemBase() {
     private val motorRight = SparkMax(ElectronicIDs.FLYWHEEL_RIGHT_ID, SparkLowLevel.MotorType.kBrushless)
     private val motorRoller = SparkMax(ElectronicIDs.SHOOTER_ROLLER_MOTOR_ID, SparkLowLevel.MotorType.kBrushless)
 
-    private val flywheelMotorConfigLeft = SmartMotorControllerConfig(this)
-        .withClosedLoopController(HoodedShooterConstants.P, 0.0, HoodedShooterConstants.D)
-        .withFeedforward(
-            SimpleMotorFeedforward(
-                HoodedShooterConstants.S,
-                HoodedShooterConstants.V,
-                HoodedShooterConstants.A
+    private val flywheelMotorConfig = {
+        SmartMotorControllerConfig(this)
+            .withClosedLoopController(HoodedShooterConstants.P, 0.0, HoodedShooterConstants.D)
+            .withFeedforward(
+                SimpleMotorFeedforward(
+                    HoodedShooterConstants.S,
+                    HoodedShooterConstants.V,
+                    HoodedShooterConstants.A
+                )
             )
-        )
-        .withGearing(HoodedShooterConstants.shooterGearing)
-        .withIdleMode(SmartMotorControllerConfig.MotorMode.BRAKE)
-        .withTelemetry("Flywheel Motor Left", SmartMotorControllerConfig.TelemetryVerbosity.LOW)
-        .withStatorCurrentLimit(Amps.of(40.0))
-        .withMotorInverted(false)
+            .withGearing(HoodedShooterConstants.shooterGearing)
+            .withIdleMode(SmartMotorControllerConfig.MotorMode.BRAKE)
+            .withStatorCurrentLimit(Amps.of(40.0))
+    }
 
-    private val flywheelMotorConfigRight = SmartMotorControllerConfig(this)
-        .withClosedLoopController(HoodedShooterConstants.P, 0.0, HoodedShooterConstants.D)
-        .withFeedforward(
-            SimpleMotorFeedforward(
-                HoodedShooterConstants.S,
-                HoodedShooterConstants.V,
-                HoodedShooterConstants.A
-            )
-        )
-        .withGearing(HoodedShooterConstants.shooterGearing)
-        .withIdleMode(SmartMotorControllerConfig.MotorMode.BRAKE)
+    private val flywheelMotorConfigLeft = flywheelMotorConfig()
+        .withTelemetry("Flywheel Motor Left", SmartMotorControllerConfig.TelemetryVerbosity.LOW)
+        .withMotorInverted(false)
+    private val flywheelMotorConfigRight = flywheelMotorConfig()
         .withTelemetry("Flywheel Motor Right", SmartMotorControllerConfig.TelemetryVerbosity.LOW)
-        .withStatorCurrentLimit(Amps.of(40.0))
         .withMotorInverted(true)
 
     private val motorConfigRoller = SmartMotorControllerConfig(this)
