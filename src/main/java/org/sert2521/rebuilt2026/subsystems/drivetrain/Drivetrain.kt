@@ -18,9 +18,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics
 import edu.wpi.first.math.kinematics.SwerveModulePosition
 import edu.wpi.first.math.kinematics.SwerveModuleState
 import edu.wpi.first.math.system.plant.DCMotor
-import edu.wpi.first.units.Units.Degrees
-import edu.wpi.first.units.Units.Radians
-import edu.wpi.first.units.Units.RotationsPerSecond
+import edu.wpi.first.units.Units.*
 import edu.wpi.first.units.measure.Angle
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj.smartdashboard.Field2d
@@ -245,5 +243,20 @@ object Drivetrain : SubsystemBase() {
 
     fun setModulePrevReference(){
         moduleLockPrevReference = Array(4) { moduleStates[it].angle }
+    }
+
+    fun runFFCharacterization(output:Double){
+        modules.forEach {
+            it.driveMotorController.voltage = Volts.of(output)
+            it.azimuthMotorController.setPosition(Rotations.of(0.0))
+        }
+    }
+
+    fun getFFCharacterizationVelocity():Double{
+        var output = 0.0
+        modules.forEach {
+            output += it.state.speedMetersPerSecond
+        }
+        return output / 4.0
     }
 }
