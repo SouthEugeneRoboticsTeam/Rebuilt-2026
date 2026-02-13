@@ -19,12 +19,11 @@ object Input {
 
     // TODO: Check and change these
     private val intake = driverController.rightBumper()
-    private val reverseIntake = gunnerController.button(2)
     private val revPass = gunnerController.button(3)
-    private val reverseIndex = gunnerController.button(4)
+    private val reverseIndex = gunnerController.button(2)
     private val spit = gunnerController.button(5)
 
-    private val manualIndex = gunnerController.button(6)
+    private val manualIndex = gunnerController.button(1)
     private val hoodToStow = gunnerController.button(7)
     private val hoodToPassHalf = gunnerController.button(8)
     private val hoodToPassFull = gunnerController.button(9)
@@ -49,10 +48,9 @@ object Input {
         spit.whileTrue(Grintake.reverse()
             .alongWith(Indexer.reverse())
         )
-        reverseIndex.whileTrue(Grintake.reverse())
         reverseIndex.whileTrue(Indexer.reverse())
 
-        manualIndex.whileTrue(Indexer.index())
+        manualIndex.whileTrue(Indexer.manualIndex())
 
         resetRotOffset.onTrue(Commands.runOnce({
             if (DriverStation.getAlliance().getOrElse { DriverStation.Alliance.Blue } == DriverStation.Alliance.Red) {

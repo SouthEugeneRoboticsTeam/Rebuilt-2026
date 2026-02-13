@@ -62,15 +62,15 @@ object IndexerConstants {
     const val MAIN_DEFAULT = 0.0
     const val KICKER_DEFAULT = 0.0
 
-    const val MAIN_INDEXING = 0.0
-    const val KICKER_INDEXING = 0.0
+    const val MAIN_INDEXING = 1.0
+    const val KICKER_INDEXING = -0.8
 
-    const val MAIN_KICKING = 0.0
-    const val KICKER_KICKING = 0.0
+    const val MAIN_KICKING = 0.4
+    const val KICKER_KICKING = 0.4
     const val KICK_TIME = 0.0
 
-    const val MAIN_REVERSE = 0.0
-    const val KICKER_REVERSE = 0.0
+    const val MAIN_REVERSE = -0.4
+    const val KICKER_REVERSE = -0.4
 }
 
 object HoodedShooterConstants {
@@ -92,7 +92,7 @@ object HoodedShooterConstants {
         )
     )
 
-    val shootTarget = RPM.of(0.0)
+    val shootTarget = RPM.of(1000.0)
     val shootRollerDutyCycle = 0.0
 }
 

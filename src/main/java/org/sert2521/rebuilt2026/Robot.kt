@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.util.WPILibVersion
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
 import edu.wpi.first.wpilibj2.command.Commands
+import org.sert2521.rebuilt2026.commands.DrivetrainFeedforwardSysId
 import org.sert2521.rebuilt2026.subsystems.Grintake
 import org.sert2521.rebuilt2026.subsystems.HoodedShooter
 import org.sert2521.rebuilt2026.subsystems.drivetrain.Drivetrain
@@ -41,6 +42,7 @@ object Robot : TimedRobot() {
         // button bindings, and put our autonomous chooser on the dashboard.
         Input
         Drivetrain
+        HoodedShooter
     }
 
 
@@ -57,7 +59,7 @@ object Robot : TimedRobot() {
     }
 
     override fun autonomousInit() {
-        autonomousCommand = Commands.none()
+        autonomousCommand = DrivetrainFeedforwardSysId().withStuff()
         CommandScheduler.getInstance().schedule(autonomousCommand)
     }
 

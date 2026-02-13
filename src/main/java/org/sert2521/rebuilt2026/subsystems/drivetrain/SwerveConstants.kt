@@ -36,10 +36,10 @@ object SwerveConstants {
     val angleIDs = arrayOf(9, 10, 11, 12)
 
     // TODO: Tune
-    const val DRIVE_P = 0.0
+    const val DRIVE_P = 0.1
     const val DRIVE_D = 0.0
-    const val DRIVE_S = 0.0
-    const val DRIVE_V = 0.85
+    const val DRIVE_S =	0.1
+    const val DRIVE_V = 0.82444
     val driveCurrentLimit = Units.Amps.of(40.0)
 
 

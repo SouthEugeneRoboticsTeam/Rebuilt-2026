@@ -44,7 +44,7 @@ object Grintake : SubsystemBase() {
         wristMotorConfig
     )
 
-    private val currentDebouncer = Debouncer(0.5, Debouncer.DebounceType.kRising)
+    private val currentDebouncer = Debouncer(1.0, Debouncer.DebounceType.kRising)
 
     private val telemetry = MechanismTelemetry()
 

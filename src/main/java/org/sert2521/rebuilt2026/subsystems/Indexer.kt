@@ -21,16 +21,16 @@ object Indexer : SubsystemBase() {
     private val indexerMotorConfig = SmartMotorControllerConfig(this)
         .withGearing(IndexerConstants.indexerGearing)
         .withIdleMode(SmartMotorControllerConfig.MotorMode.BRAKE)
-        .withTelemetry("Indexer Motor", SmartMotorControllerConfig.TelemetryVerbosity.LOW)
+        .withTelemetry("Indexer Motor", SmartMotorControllerConfig.TelemetryVerbosity.HIGH)
         .withStatorCurrentLimit(Amps.of(40.0))
-        .withMotorInverted(false)
+        .withMotorInverted(true)
         .withControlMode(SmartMotorControllerConfig.ControlMode.OPEN_LOOP)
     private val kickerMotorConfig = SmartMotorControllerConfig(this)
         .withGearing(IndexerConstants.kickerGearing)
         .withIdleMode(SmartMotorControllerConfig.MotorMode.BRAKE)
-        .withTelemetry("Kicker Motor", SmartMotorControllerConfig.TelemetryVerbosity.LOW)
+        .withTelemetry("Kicker Motor", SmartMotorControllerConfig.TelemetryVerbosity.HIGH)
         .withStatorCurrentLimit(Amps.of(40.0))
-        .withMotorInverted(false)
+        .withMotorInverted(true)
         .withControlMode(SmartMotorControllerConfig.ControlMode.OPEN_LOOP)
 
     private val indexerSMC = SparkWrapper(indexerMotor, DCMotor.getNEO(1), indexerMotorConfig)
@@ -72,6 +72,15 @@ object Indexer : SubsystemBase() {
         return runOnce {
             setIndexerMotor(IndexerConstants.MAIN_DEFAULT)
             setKickerMotor(IndexerConstants.KICKER_DEFAULT)
+        }.andThen(
+            Commands.idle()
+        )
+    }
+
+    fun manualIndex():Command{
+        return runOnce {
+            setIndexerMotor(IndexerConstants.MAIN_INDEXING)
+            setKickerMotor(IndexerConstants.KICKER_INDEXING)
         }.andThen(
             Commands.idle()
         )

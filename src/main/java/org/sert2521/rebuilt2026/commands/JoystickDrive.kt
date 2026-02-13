@@ -21,7 +21,7 @@ class JoystickDrive(private val fieldOriented: Boolean = true) : Command() {
     }
 
     override fun initialize() {
-        Drivetrain.stopDrivePID()
+        Drivetrain.startDrivePID()
     }
 
     override fun execute() {

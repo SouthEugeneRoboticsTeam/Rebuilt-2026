@@ -37,10 +37,10 @@ object HoodedShooter : SubsystemBase() {
     }
 
     private val flywheelMotorConfigLeft = flywheelMotorConfig()
-        .withTelemetry("Flywheel Motor Left", SmartMotorControllerConfig.TelemetryVerbosity.LOW)
+        .withTelemetry("Flywheel Motor Left", SmartMotorControllerConfig.TelemetryVerbosity.HIGH)
         .withMotorInverted(false)
     private val flywheelMotorConfigRight = flywheelMotorConfig()
-        .withTelemetry("Flywheel Motor Right", SmartMotorControllerConfig.TelemetryVerbosity.LOW)
+        .withTelemetry("Flywheel Motor Right", SmartMotorControllerConfig.TelemetryVerbosity.HIGH)
         .withMotorInverted(true)
 
     private val motorConfigRoller = SmartMotorControllerConfig(this)

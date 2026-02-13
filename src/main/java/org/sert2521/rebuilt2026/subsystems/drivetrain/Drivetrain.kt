@@ -86,10 +86,7 @@ object Drivetrain : SubsystemBase() {
         )
     }
 
-    private val gyroConfig = MountPoseConfigs().withMountPoseRoll(Degrees.zero()).withMountPoseYaw(Degrees.zero()).withMountPosePitch(Degrees.zero())
-    private val gyroMoreConfig = Pigeon2FeaturesConfigs().withEnableCompass(false)
-        .withDisableTemperatureCompensation(false)
-        .withDisableNoMotionCalibration(false)
+    private val gyroConfig = MountPoseConfigs().withMountPoseRoll(Degrees.of(-5.93248176574707)).withMountPoseYaw(Degrees.of(118.74869537353516)).withMountPosePitch(Degrees.of(-79.23535919189453))
     private val gyro = Pigeon2(13)
     private val gyroYaw = gyro.yaw.asSupplier()
     private val gyroPitch = gyro.pitch.asSupplier()
@@ -118,8 +115,7 @@ object Drivetrain : SubsystemBase() {
 
         defaultCommand = JoystickDrive()
 
-        // gyro.configurator.apply(gyroConfig)
-        gyro.configurator.apply(gyroMoreConfig)
+        gyro.configurator.apply(gyroConfig)
         poseEstimator.setVisionMeasurementStdDevs(VisionConstants.visionStdv)
 
         DogLog.log("Drivetrain/SwerveModuleStates/Setpoints", Array(4) { SwerveModuleState() })
@@ -255,7 +251,7 @@ object Drivetrain : SubsystemBase() {
     fun getFFCharacterizationVelocity():Double{
         var output = 0.0
         modules.forEach {
-            output += it.state.speedMetersPerSecond
+            output += it.driveMotorController.mechanismVelocity.`in`(RotationsPerSecond)
         }
         return output / 4.0
     }
