@@ -19,6 +19,8 @@ object Input {
 
     // TODO: Check and change these
     private val intake = driverController.rightBumper()
+    private val outtake = driverController.leftBumper()
+    private val revTest = driverController.leftTrigger()
     private val revPass = gunnerController.button(3)
     private val reverseIndex = gunnerController.button(2)
     private val spit = gunnerController.button(5)
@@ -30,7 +32,7 @@ object Input {
 
     private val resetRotOffset = driverController.y()
     private val visionAlign = driverController.rightTrigger() // YIPPEEE I love this 2026 change
-    private val outtake = driverController.leftBumper()
+
 
     private var rotationOffset = Rotation2d.kZero
 
@@ -43,6 +45,9 @@ object Input {
             )
         )
         outtake.whileFalse(HoodedShooter.stop())
+
+        revTest.onTrue(HoodedShooter.rev())
+        revTest.onFalse(HoodedShooter.stop())
 
         intake.whileTrue(Grintake.intake())
         spit.whileTrue(Grintake.reverse()

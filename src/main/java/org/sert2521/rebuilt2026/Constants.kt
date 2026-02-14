@@ -51,22 +51,23 @@ object GrintakeConstants {
 object IndexerConstants {
     val indexerGearing = MechanismGearing(
         GearBox.fromReductionStages(
-            1.0
+            4.0,
+            28.0/24.0
         )
     )
     val kickerGearing = MechanismGearing(
         GearBox.fromReductionStages(
-            1.0
+            3.0
         )
     )
     const val MAIN_DEFAULT = 0.0
     const val KICKER_DEFAULT = 0.0
 
-    const val MAIN_INDEXING = 1.0
-    const val KICKER_INDEXING = -0.8
+    const val MAIN_INDEXING = 0.2
+    const val KICKER_INDEXING = -0.4
 
-    const val MAIN_KICKING = 0.4
-    const val KICKER_KICKING = 0.4
+    const val MAIN_KICKING = 1.0
+    const val KICKER_KICKING = 1.0
     const val KICK_TIME = 0.0
 
     const val MAIN_REVERSE = -0.4
@@ -77,12 +78,12 @@ object HoodedShooterConstants {
     const val P = 0.0
     const val D = 0.0
     const val S = 0.0
-    const val V = 0.0021
+    const val V = 0.152
     const val A = 0.0
 
     val shooterGearing = MechanismGearing(
         GearBox.fromReductionStages(
-            1.0  // Don't fix me, this is the actual gear ratio
+            24.0 / 20.0 // Don't fix me, this is the actual gear ratio
         )
     )
 
@@ -92,7 +93,8 @@ object HoodedShooterConstants {
         )
     )
 
-    val shootTarget = RPM.of(1000.0)
+
+    val shootTarget = RPM.of(3000.0)
     val shootRollerDutyCycle = 0.0
 }
 

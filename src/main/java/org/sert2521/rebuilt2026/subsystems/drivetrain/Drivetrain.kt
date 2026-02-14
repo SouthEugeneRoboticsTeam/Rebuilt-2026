@@ -46,6 +46,8 @@ object Drivetrain : SubsystemBase() {
             .withFeedforward(SimpleMotorFeedforward(SwerveConstants.DRIVE_S, SwerveConstants.DRIVE_V))
             .withClosedLoopController(SwerveConstants.DRIVE_P, 0.0, SwerveConstants.DRIVE_D)
             .withGearing(SwerveConstants.driveGearing)
+            .withOpenLoopRampRate(Seconds.zero())
+            .withClosedLoopRampRate(Seconds.zero())
             .withMotorInverted(true)
             .withStatorCurrentLimit(SwerveConstants.driveCurrentLimit)
             .withTelemetry("$moduleName Drive Motor", SmartMotorControllerConfig.TelemetryVerbosity.HIGH)
@@ -56,6 +58,8 @@ object Drivetrain : SubsystemBase() {
             .withClosedLoopController(SwerveConstants.ANGLE_P, 0.0, SwerveConstants.ANGLE_D)
             .withContinuousWrapping(-Radians.of(PI), Radians.of(PI))
             .withStatorCurrentLimit(SwerveConstants.angleCurrentLimit)
+            .withOpenLoopRampRate(Seconds.zero())
+            .withClosedLoopRampRate(Seconds.zero())
             .withMotorInverted(true)
             .withTelemetry("$moduleName Angle Motor", SmartMotorControllerConfig.TelemetryVerbosity.HIGH)
 

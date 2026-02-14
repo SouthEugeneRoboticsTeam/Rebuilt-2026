@@ -59,7 +59,7 @@ object HoodedShooter : SubsystemBase() {
     private var shooterSetpoint = RPM.zero()
 
     init {
-        defaultCommand = rev().andThen(Commands.idle(this))
+        defaultCommand = run {}
 
         telemetry.setupTelemetry("HoodedShooter", flywheelLeftSMC)
         telemetry.setupTelemetry("HoodedShooter", flywheelRightSMC)
