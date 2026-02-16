@@ -32,7 +32,7 @@ object HoodedShooter : SubsystemBase() {
                 )
             )
             .withGearing(HoodedShooterConstants.shooterGearing)
-            .withIdleMode(SmartMotorControllerConfig.MotorMode.BRAKE)
+            .withIdleMode(SmartMotorControllerConfig.MotorMode.COAST)
             .withStatorCurrentLimit(Amps.of(40.0))
     }
 
@@ -59,7 +59,7 @@ object HoodedShooter : SubsystemBase() {
     private var shooterSetpoint = RPM.zero()
 
     init {
-        defaultCommand = run {}
+        defaultCommand = run{}
 
         telemetry.setupTelemetry("HoodedShooter", flywheelLeftSMC)
         telemetry.setupTelemetry("HoodedShooter", flywheelRightSMC)

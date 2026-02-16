@@ -19,10 +19,10 @@ object Input {
 
     // TODO: Check and change these
     private val intake = driverController.rightBumper()
-    private val outtake = driverController.leftBumper()
-    private val revTest = driverController.leftTrigger()
-    private val revPass = gunnerController.button(3)
-    private val reverseIndex = gunnerController.button(2)
+    private val outtake = gunnerController.button(2)
+
+    private val revTest = gunnerController.button(4)
+    private val reverseIndex = gunnerController.button(3)
     private val spit = gunnerController.button(5)
 
     private val manualIndex = gunnerController.button(1)
@@ -31,25 +31,19 @@ object Input {
     private val hoodToPassFull = gunnerController.button(9)
 
     private val resetRotOffset = driverController.y()
-    private val visionAlign = driverController.rightTrigger() // YIPPEEE I love this 2026 change
+    private val visionAlign = driverController.a() // YIPPEEE I love this 2026 change
 
 
     private var rotationOffset = Rotation2d.kZero
 
 
     init {
-        outtake.whileTrue(HoodedShooter.shoot()
-            .alongWith(
-                Commands.waitSeconds(0.35)
-                    .andThen(Indexer.shoot())
-            )
-        )
-        outtake.whileFalse(HoodedShooter.stop())
+        outtake.whileTrue(Indexer.shoot().alongWith(HoodedShooter.shoot()))
 
-        revTest.onTrue(HoodedShooter.rev())
-        revTest.onFalse(HoodedShooter.stop())
+        revTest.whileTrue(HoodedShooter.rev())
 
-        intake.whileTrue(Grintake.intake())
+
+        intake.whileTrue(Grintake.intake().alongWith(Indexer.manualIndex()))
         spit.whileTrue(Grintake.reverse()
             .alongWith(Indexer.reverse())
         )

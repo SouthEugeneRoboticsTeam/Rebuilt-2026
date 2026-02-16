@@ -24,7 +24,7 @@ object Grintake : SubsystemBase() {
         .withGearing(GrintakeConstants.rollerGearing)
         .withMotorInverted(false)
         .withIdleMode(SmartMotorControllerConfig.MotorMode.BRAKE)
-        .withTelemetry("Roller Motor", SmartMotorControllerConfig.TelemetryVerbosity.LOW)
+        .withTelemetry("Roller Motor", SmartMotorControllerConfig.TelemetryVerbosity.HIGH)
         .withControlMode(SmartMotorControllerConfig.ControlMode.OPEN_LOOP)
         .withStatorCurrentLimit(Amps.of(40.0))
     private val wristMotorConfig = SmartMotorControllerConfig(this)

@@ -65,9 +65,9 @@ object SwerveConstants {
 
     const val SYS_ID_FF_RAMP_RATE = 1.0
 
-    const val DRIVE_SPEED = 2.0
+    const val DRIVE_SPEED = 2.5
 
-    const val ROT_SPEED = 3.0
+    const val ROT_SPEED = 1.9
 }
 
 object VisionConstants {

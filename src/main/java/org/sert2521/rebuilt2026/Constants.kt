@@ -1,5 +1,6 @@
 package org.sert2521.rebuilt2026
 
+import dev.doglog.DogLog
 import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.units.Units.*
 import yams.gearing.GearBox
@@ -39,10 +40,10 @@ object GrintakeConstants {
     )
 
     val stowPosition = Rotations.of(0.07)
-    val intakePosition = Rotations.of(0.39)
+    val intakePosition = Rotations.of(0.42) - Degrees.of(1.0)
 
-    const val INTAKE_SPEED = 0.0
-    const val REVERSE_SPEED = -0.0
+    const val INTAKE_SPEED = 1.0
+    const val REVERSE_SPEED = 0.0
 
     const val REZERO_SPEED = -0.2
     val reZeroThreshold = Amps.of(20.0)
@@ -60,11 +61,12 @@ object IndexerConstants {
             3.0
         )
     )
+
     const val MAIN_DEFAULT = 0.0
     const val KICKER_DEFAULT = 0.0
 
-    const val MAIN_INDEXING = 0.2
-    const val KICKER_INDEXING = -0.4
+    const val MAIN_INDEXING = 0.4
+    const val KICKER_INDEXING = -0.8
 
     const val MAIN_KICKING = 1.0
     const val KICKER_KICKING = 1.0
@@ -75,15 +77,15 @@ object IndexerConstants {
 }
 
 object HoodedShooterConstants {
-    const val P = 0.0
-    const val D = 0.0
+    const val P = 0.02
+    const val D = 0.001
     const val S = 0.0
     const val V = 0.152
     const val A = 0.0
 
     val shooterGearing = MechanismGearing(
         GearBox.fromReductionStages(
-            24.0 / 20.0 // Don't fix me, this is the actual gear ratio
+            24.0 / 20.0
         )
     )
 
@@ -94,8 +96,8 @@ object HoodedShooterConstants {
     )
 
 
-    val shootTarget = RPM.of(3000.0)
-    val shootRollerDutyCycle = 0.0
+    val shootTarget = RPM.of(2600.0)
+    val shootRollerDutyCycle = 0.5
 }
 
 object OtherConstsants {
