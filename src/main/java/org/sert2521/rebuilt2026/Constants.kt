@@ -17,7 +17,7 @@ object ElectronicIDs {
     const val FLYWHEEL_RIGHT_ID = 42
     const val SHOOTER_ROLLER_MOTOR_ID = 43
 
-    const val INDEXER_BEAM_BREAK_ID = 0
+    const val INDEXER_BEAM_BREAK_ID = 1
 }
 
 object GrintakeConstants {
@@ -96,8 +96,8 @@ object HoodedShooterConstants {
     )
 
 
-    val shootTarget = RPM.of(2600.0)
-    val shootRollerDutyCycle = 0.5
+    val shootTarget = RPM.of(2800.0)
+    val shootRollerDutyCycle = -0.3
 }
 
 object OtherConstsants {

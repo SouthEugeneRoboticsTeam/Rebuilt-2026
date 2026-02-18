@@ -43,7 +43,7 @@ object Input {
         revTest.whileTrue(HoodedShooter.rev())
 
 
-        intake.whileTrue(Grintake.intake().alongWith(Indexer.manualIndex()))
+        intake.whileTrue(Grintake.intake().alongWith(Indexer.index()))
         spit.whileTrue(Grintake.reverse()
             .alongWith(Indexer.reverse())
         )

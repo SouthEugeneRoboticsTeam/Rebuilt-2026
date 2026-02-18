@@ -2,6 +2,7 @@ package org.sert2521.rebuilt2026.subsystems
 
 import com.revrobotics.spark.SparkLowLevel
 import com.revrobotics.spark.SparkMax
+import dev.doglog.DogLog
 import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.units.Units.Amps
 import edu.wpi.first.units.Units.Seconds
@@ -22,7 +23,7 @@ object Indexer : SubsystemBase() {
     private val indexerMotorConfig = SmartMotorControllerConfig(this)
         .withGearing(IndexerConstants.indexerGearing)
         .withIdleMode(SmartMotorControllerConfig.MotorMode.BRAKE)
-        .withTelemetry("Indexer Motor", SmartMotorControllerConfig.TelemetryVerbosity.HIGH)
+        .withTelemetry("Indexer Motor", SmartMotorControllerConfig.TelemetryVerbosity.LOW)
         .withStatorCurrentLimit(Amps.of(40.0))
         .withMotorInverted(true)
         .withOpenLoopRampRate(Seconds.zero())
@@ -31,7 +32,7 @@ object Indexer : SubsystemBase() {
     private val kickerMotorConfig = SmartMotorControllerConfig(this)
         .withGearing(IndexerConstants.kickerGearing)
         .withIdleMode(SmartMotorControllerConfig.MotorMode.BRAKE)
-        .withTelemetry("Kicker Motor", SmartMotorControllerConfig.TelemetryVerbosity.HIGH)
+        .withTelemetry("Kicker Motor", SmartMotorControllerConfig.TelemetryVerbosity.LOW)
         .withStatorCurrentLimit(Amps.of(60.0))
         .withMotorInverted(true)
         .withOpenLoopRampRate(Seconds.zero())
@@ -59,6 +60,8 @@ object Indexer : SubsystemBase() {
     override fun periodic() {
         indexerSMC.updateTelemetry()
         kickerSMC.updateTelemetry()
+
+        DogLog.log("Beambreak", getBeamBreakBlocked())
     }
 
     override fun simulationPeriodic() {
