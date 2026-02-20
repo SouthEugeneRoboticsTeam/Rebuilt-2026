@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.Commands
 import org.sert2521.rebuilt2026.subsystems.Grintake
 import org.sert2521.rebuilt2026.subsystems.HoodedShooter
+import org.sert2521.rebuilt2026.subsystems.Indexer
 import org.sert2521.rebuilt2026.subsystems.drivetrain.Drivetrain
 import org.sert2521.rebuilt2026.subsystems.drivetrain.SwerveConstants
 import kotlin.jvm.optionals.getOrElse
@@ -23,13 +24,13 @@ object Autos {
 
     private val namedCommandsList = mapOf(
         "Rev Hub" to HoodedShooter.rev(),
-        "Rev Stop" to HoodedShooter.defaultCommand,
+        "Rev Stop" to HoodedShooter.stop(),
 
         "Intake Down" to Grintake.intake(),
         "Intake Up" to Grintake.stow(),
 
-        "Shoot" to HoodedShooter.shoot(),
-        "Stop Shoot" to HoodedShooter.defaultCommand
+        "Shoot" to HoodedShooter.shoot().alongWith(Indexer.shoot()),
+        "Stop Shoot" to HoodedShooter.rev().alongWith(Indexer.index())
     )
 
     init {
