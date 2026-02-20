@@ -18,10 +18,10 @@ object SwerveConstants {
 
     val moduleNames = arrayOf("Front Left", "Front Right", "Back Left", "Back Right")
     val moduleTranslations = arrayOf(
-        Translation2d(Units.Meters.of(0.552450), Units.Meters.of(0.552450)),
-        Translation2d(Units.Meters.of(0.552450), -Units.Meters.of(0.552450)),
-        Translation2d(-Units.Meters.of(0.552450), Units.Meters.of(0.552450)),
-        Translation2d(-Units.Meters.of(0.552450), -Units.Meters.of(0.552450))
+        Translation2d(Units.Meters.of(0.276225), Units.Meters.of(0.276225)),
+        Translation2d(Units.Meters.of(0.276225), -Units.Meters.of(0.276225)),
+        Translation2d(-Units.Meters.of(0.276225), Units.Meters.of(0.276225)),
+        Translation2d(-Units.Meters.of(0.276225), -Units.Meters.of(0.276225))
     )
     val moduleZeroRotations = arrayOf(
         Rotations.of(1.0 - 0.927734),
