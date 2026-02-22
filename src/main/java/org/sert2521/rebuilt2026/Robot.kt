@@ -16,6 +16,7 @@ import org.sert2521.rebuilt2026.commands.DrivetrainFeedforwardSysId
 import org.sert2521.rebuilt2026.subsystems.Grintake
 import org.sert2521.rebuilt2026.subsystems.HoodedShooter
 import org.sert2521.rebuilt2026.subsystems.drivetrain.Drivetrain
+import java.sql.Driver
 
 /**
  * The functions in this object (which basically functions as a singleton class) are called automatically
@@ -48,9 +49,39 @@ object Robot : TimedRobot() {
         Drivetrain
         autonomousCommand = DrivetrainFeedforwardSysId()
 
-        SmartDashboard.putString("Game Timer", DriverStation.getGameSpecificMessage())
+        SmartDashboard.putString("Game Timer", getAllianceShiftTime() as String)
+        SmartDashboard.putString("Alliance Shift", getAllianceShift())
         // SmartDashboard.putData("PDH", PowerDistribution())
 
+    }
+
+    private fun getAllianceShift(): String {
+        if (DriverStation.getGameSpecificMessage() == "R") {
+            return "Red"
+        } else {
+            return "Blue"
+        }
+        return DriverStation.getAlliance().toString()
+    }
+
+    private fun getAllianceShiftTime(): Any {
+        val matchTime = DriverStation.getMatchTime()
+
+        return if (matchTime > 130) {
+            matchTime - 130
+        } else if (matchTime > 105) {
+            matchTime - 105
+        } else if (matchTime > 80) {
+            matchTime - 80
+        } else if (matchTime > 55) {
+            matchTime - 55
+        } else if (matchTime > 30) {
+            matchTime - 30
+        } else {
+            matchTime
+        }
+
+        return true
     }
 
 
