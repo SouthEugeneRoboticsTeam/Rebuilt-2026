@@ -30,17 +30,18 @@ object SwerveConstants {
         Rotations.of(-0.143066)
     )
 
-    // FIXME: fix all ids
     val encoderIDs = arrayOf(1, 2, 3, 4)
     val driveIDs = arrayOf(5, 6, 7, 8)
     val angleIDs = arrayOf(9, 10, 11, 12)
 
     // TODO: Tune
-    const val DRIVE_P = 0.1
-    const val DRIVE_D = 0.0
+    const val DRIVE_P = 0.2
+    const val DRIVE_I = 0.0
+    const val DRIVE_D = 0.01
     const val DRIVE_S =	0.1
+    const val DRIVE_A = 0.0
     const val DRIVE_V = 0.82444
-    val driveCurrentLimit = Units.Amps.of(40.0)
+    val driveCurrentLimit = Units.Amps.of(60.0)
 
 
     const val ANGLE_P = 8.0
@@ -48,14 +49,14 @@ object SwerveConstants {
     val angleCurrentLimit = Units.Amps.of(40.0)
 
     // TODO: Tune
-    const val AUTO_TRANSLATION_P = 0.0
+    const val AUTO_TRANSLATION_P = 4.0
     const val AUTO_TRANSLATION_I = 0.0
-    const val AUTO_TRANSLATION_D = 0.0
+    const val AUTO_TRANSLATION_D = 0.4
 
     // TODO: Tune
-    const val AUTO_HEADING_P = 0.0
+    const val AUTO_HEADING_P = 5.5
     const val AUTO_HEADING_I = 0.0
-    const val AUTO_HEADING_D = 0.0
+    const val AUTO_HEADING_D = 0.1
 
     // TODO: Tune
     const val VISION_HEADING_P = 0.0

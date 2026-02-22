@@ -23,6 +23,8 @@ import edu.wpi.first.units.measure.Angle
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj.smartdashboard.Field2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
+import edu.wpi.first.wpilibj2.command.CommandScheduler
+import edu.wpi.first.wpilibj2.command.Commands
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import limelight.Limelight
 import limelight.networktables.LimelightPoseEstimator
@@ -32,6 +34,7 @@ import yams.mechanisms.config.SwerveModuleConfig
 import yams.mechanisms.swerve.SwerveModule
 import yams.motorcontrollers.SmartMotorControllerConfig
 import yams.motorcontrollers.local.SparkWrapper
+import kotlin.jvm.javaClass
 import kotlin.math.PI
 import kotlin.math.hypot
 
@@ -43,8 +46,8 @@ object Drivetrain : SubsystemBase() {
         val driveConfig = SmartMotorControllerConfig(this)
             .withIdleMode(SmartMotorControllerConfig.MotorMode.BRAKE)
             .withWheelDiameter(SwerveConstants.wheelRadius.times(2.0))
-            .withFeedforward(SimpleMotorFeedforward(SwerveConstants.DRIVE_S, SwerveConstants.DRIVE_V))
-            .withClosedLoopController(SwerveConstants.DRIVE_P, 0.0, SwerveConstants.DRIVE_D)
+            .withFeedforward(SimpleMotorFeedforward(SwerveConstants.DRIVE_S, SwerveConstants.DRIVE_V, SwerveConstants.DRIVE_A))
+            .withClosedLoopController(SwerveConstants.DRIVE_P, SwerveConstants.DRIVE_I, SwerveConstants.DRIVE_D)
             .withGearing(SwerveConstants.driveGearing)
             .withOpenLoopRampRate(Seconds.zero())
             .withClosedLoopRampRate(Seconds.zero())
@@ -106,11 +109,12 @@ object Drivetrain : SubsystemBase() {
         kinematics,
         Rotation2d(gyroYaw.get()),
         Array(4) { modules[it].position },
-        Pose2d.kZero
+        Pose2d(Translation2d.kZero, Rotation2d(gyroYaw.get()))
     )
 
-    private val limelight = Limelight("limelight")
+    private val limelight = Limelight("limelight-green")
     private val limelightPoseEstimator = limelight.createPoseEstimator(LimelightPoseEstimator.EstimationMode.MEGATAG2)
+    private var gyroOffset = Rotations.zero()
 
     private val field = Field2d()
 
@@ -130,7 +134,11 @@ object Drivetrain : SubsystemBase() {
         modules.forEach { it.updateTelemetry() }
         modules.forEach { it.seedAzimuthEncoder() }
 
-        poseEstimator.update(Rotation2d(gyroYaw.get()), getModulePositions())
+        updatePoseEstimator()
+    }
+
+    fun updatePoseEstimator(){
+        poseEstimator.update(Rotation2d(gyroYaw.get() - gyroOffset), getModulePositions())
 
         moduleStates = getModuleStates()
         DogLog.log("Drivetrain/SwerveModuleStates/Measured", moduleStates)
@@ -192,12 +200,16 @@ object Drivetrain : SubsystemBase() {
     fun updateVision(){
         limelight.settings.withRobotOrientation(
             Orientation3d(
-                Rotation3d(gyroRoll.get(), gyroPitch.get(), gyroYaw.get()),
+                Rotation3d(gyroRoll.get(), gyroPitch.get(), poseEstimator.estimatedPosition.rotation.measure),
                 RotationsPerSecond.zero(),
                 RotationsPerSecond.zero(),
                 RotationsPerSecond.zero()
             )
         )
+
+        if (!limelight.latestResults.isEmpty){
+            DogLog.log("Limelight/Tempurature", limelight.latestResults.get().hardware.temp)
+        }
 
         val estimatedPose = limelightPoseEstimator.poseEstimate
         if (estimatedPose.isEmpty) {
@@ -209,7 +221,9 @@ object Drivetrain : SubsystemBase() {
         if (estimatedPose.get().pose.rotation.measureY > VisionConstants.rotationThreshold){
             return
         }
-
+        if (estimatedPose.get().pose.toPose2d().translation == Translation2d.kZero) {
+            return
+        }
         poseEstimator.addVisionMeasurement(estimatedPose.get().pose.toPose2d(), Timer.getFPGATimestamp())
     }
 
@@ -234,11 +248,12 @@ object Drivetrain : SubsystemBase() {
     }
 
     fun setPose(pose: Pose2d) {
-        poseEstimator.resetPose(pose)
+        poseEstimator.resetTranslation(pose.translation)
+        setRotation(pose.rotation)
     }
 
     fun setRotation(rotation: Rotation2d) {
-        poseEstimator.resetRotation(rotation)
+        gyro.setYaw((rotation).measure)
     }
 
     fun setModulePrevReference(){

@@ -47,12 +47,10 @@ object Robot : TimedRobot() {
         // button bindings, and put our autonomous chooser on the dashboard.
         Input
         Drivetrain
-        autonomousCommand = DrivetrainFeedforwardSysId()
 
         SmartDashboard.putString("Game Timer", getAllianceShiftTime() as String)
         SmartDashboard.putString("Alliance Shift", getAllianceShift())
-        // SmartDashboard.putData("PDH", PowerDistribution())
-
+        Autos
     }
 
     private fun getAllianceShift(): String {
@@ -61,24 +59,24 @@ object Robot : TimedRobot() {
         } else {
             return "Blue"
         }
-        return DriverStation.getAlliance().toString()
+        return (DriverStation.getAlliance()).toString()
     }
 
     private fun getAllianceShiftTime(): Any {
         val matchTime = DriverStation.getMatchTime()
 
         return if (matchTime > 130) {
-            matchTime - 130
+            (matchTime - 130).toString()
         } else if (matchTime > 105) {
-            matchTime - 105
+            (matchTime - 105).toString()
         } else if (matchTime > 80) {
-            matchTime - 80
+            (matchTime - 80).toString()
         } else if (matchTime > 55) {
-            matchTime - 55
+            (matchTime - 55).toString()
         } else if (matchTime > 30) {
-            matchTime - 30
+            (matchTime - 30).toString()
         } else {
-            matchTime
+            matchTime.toString()
         }
 
         return true
@@ -98,7 +96,7 @@ object Robot : TimedRobot() {
     }
 
     override fun autonomousInit() {
-        autonomousCommand = Commands.none()
+        autonomousCommand = Autos.getAutonomousCommand()
         CommandScheduler.getInstance().schedule(autonomousCommand)
     }
 

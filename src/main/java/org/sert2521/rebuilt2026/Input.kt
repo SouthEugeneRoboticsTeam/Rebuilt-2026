@@ -21,9 +21,8 @@ object Input {
     private val intake = driverController.rightBumper()
     private val outtake = gunnerController.button(2)
 
-    private val revTest = gunnerController.button(4)
     private val reverseIndex = gunnerController.button(3)
-    private val spit = gunnerController.button(5)
+    private val spit = gunnerController.button(4)
 
     private val manualIndex = gunnerController.button(1)
     private val hoodToStow = gunnerController.button(7)
@@ -31,6 +30,7 @@ object Input {
     private val hoodToPassFull = gunnerController.button(9)
 
     private val resetRotOffset = driverController.y()
+    private val resetRotReal = driverController.x()
     private val visionAlign = driverController.a() // YIPPEEE I love this 2026 change
 
 
@@ -39,8 +39,6 @@ object Input {
 
     init {
         outtake.whileTrue(Indexer.shoot().alongWith(HoodedShooter.shoot()))
-
-        revTest.whileTrue(HoodedShooter.rev())
 
 
         intake.whileTrue(Grintake.intake().alongWith(Indexer.index()))
@@ -51,13 +49,21 @@ object Input {
 
         manualIndex.whileTrue(Indexer.manualIndex())
 
+        resetRotReal.onTrue(Commands.runOnce({
+            if (DriverStation.getAlliance().getOrElse { DriverStation.Alliance.Blue } == DriverStation.Alliance.Red) {
+                rotationOffset = Rotation2d.k180deg
+                Drivetrain.setRotation(Rotation2d.k180deg)
+            } else {
+                rotationOffset = Rotation2d.kCW_90deg
+                Drivetrain.setRotation(Rotation2d.kCW_90deg)
+            }
+        }))
+
         resetRotOffset.onTrue(Commands.runOnce({
             if (DriverStation.getAlliance().getOrElse { DriverStation.Alliance.Blue } == DriverStation.Alliance.Red) {
-                Drivetrain.setRotation(Rotation2d.k180deg)
-                rotationOffset = Rotation2d.k180deg
+                rotationOffset = Drivetrain.getPose().rotation + Rotation2d.k180deg
             } else {
-                Drivetrain.setRotation(Rotation2d.kZero)
-                rotationOffset = Rotation2d.kZero
+                rotationOffset = Drivetrain.getPose().rotation
             }
         }))
     }

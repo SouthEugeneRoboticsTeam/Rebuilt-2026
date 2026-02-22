@@ -56,4 +56,8 @@ class JoystickDrive(private val fieldOriented: Boolean = true) : Command() {
             Drivetrain.driveRobotRelative(targetChassisSpeeds)
         }
     }
+
+    override fun end(interrupted: Boolean) {
+        Drivetrain.startDrivePID()
+    }
 }

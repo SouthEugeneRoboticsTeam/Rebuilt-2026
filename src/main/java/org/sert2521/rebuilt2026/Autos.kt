@@ -10,9 +10,11 @@ import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.units.Units.*
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.Commands
 import edu.wpi.first.wpilibj2.command.Commands.idle
+import edu.wpi.first.wpilibj2.command.ScheduleCommand
 import org.sert2521.rebuilt2026.subsystems.Grintake
 import org.sert2521.rebuilt2026.subsystems.HoodedShooter
 import org.sert2521.rebuilt2026.subsystems.Indexer
@@ -24,14 +26,15 @@ object Autos {
     private val autoChooser = SendableChooser<Command>()
 
     private val namedCommandsList = mapOf(
-        "Rev Hub" to HoodedShooter.rev(),
-        "Rev Stop" to HoodedShooter.stop(),
+        "Rev Hub" to HoodedShooter.rev().asProxy(),
+        "Rev Stop" to HoodedShooter.stop().asProxy(),
 
-        "Intake Down" to Grintake.intake(),
-        "Intake Up" to Grintake.stow(),
+        "Intake Down" to ScheduleCommand(Grintake.intake().alongWith(Indexer.manualIndex())).asProxy(),
+        "Intake Up" to ScheduleCommand(Grintake.stow().alongWith(Indexer.index())).asProxy(),
 
-        "Shoot" to HoodedShooter.shoot().alongWith(Indexer.shoot()),
-        "Stop Shoot" to HoodedShooter.rev().alongWith(Indexer.index())
+        "Rev" to ScheduleCommand(HoodedShooter.shoot()).asProxy(),
+        "Shoot" to HoodedShooter.shoot().alongWith(Indexer.shoot()).asProxy(),
+        "Stop Shoot" to HoodedShooter.rev().alongWith(Indexer.index()).asProxy(),
     )
 
     init {
@@ -55,8 +58,8 @@ object Autos {
                 )
             ),
             RobotConfig(
-                Pounds.of(115.0),
-                KilogramSquareMeters.of(1.0),
+                Pounds.of(130.0),
+                KilogramSquareMeters.of(4.8858286294),
                 ModuleConfig(
                     SwerveConstants.wheelRadius,
                     SwerveConstants.maxSpeed,
@@ -65,13 +68,17 @@ object Autos {
                     SwerveConstants.driveGearing.mechanismToRotorRatio,
                     Amps.of(40.0),
                     1
-                )
+                ),
+                *SwerveConstants.moduleTranslations
             ),
-            { DriverStation.getAlliance().getOrElse { DriverStation.Alliance.Blue } == DriverStation.Alliance.Red }
+            { DriverStation.getAlliance().getOrElse { DriverStation.Alliance.Blue } == DriverStation.Alliance.Red },
+            Drivetrain
         )
 
-        // autoChooser.addOption("", AutoBuilder.buildAuto(""))
+        autoChooser.addOption("Test", AutoBuilder.buildAuto("Test"))
         autoChooser.setDefaultOption("None", Commands.none())
+
+        SmartDashboard.putData("Autos", autoChooser)
     }
 
     fun getAutonomousCommand():Command{
