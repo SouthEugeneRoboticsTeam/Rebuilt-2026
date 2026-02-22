@@ -17,12 +17,11 @@ object Input {
     private val driverController = CommandXboxController(0)
     private val gunnerController = CommandJoystick(1)
 
-    // TODO: Check and change these
     private val intake = driverController.rightBumper()
     private val outtake = gunnerController.button(2)
 
     private val reverseIndex = gunnerController.button(3)
-    private val spit = gunnerController.button(4)
+    private val rev = gunnerController.button(4)
 
     private val manualIndex = gunnerController.button(1)
     private val hoodToStow = gunnerController.button(7)
@@ -38,13 +37,12 @@ object Input {
 
 
     init {
-        outtake.whileTrue(Indexer.shoot().alongWith(HoodedShooter.shoot()))
+
+        outtake.whileTrue((Indexer.shoot().alongWith(HoodedShooter.shoot())).unless { !HoodedShooter.isRevved() })
 
 
-        intake.whileTrue(Grintake.intake().alongWith(Indexer.index()))
-        spit.whileTrue(Grintake.reverse()
-            .alongWith(Indexer.reverse())
-        )
+        intake.whileTrue(Grintake.intake().alongWith(Indexer.index().asProxy()))
+        rev.onTrue(HoodedShooter.rev())
         reverseIndex.whileTrue(Indexer.reverse())
 
         manualIndex.whileTrue(Indexer.manualIndex())

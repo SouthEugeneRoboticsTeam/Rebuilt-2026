@@ -82,6 +82,7 @@ object HoodedShooterConstants {
     const val S = 0.0
     const val V = 0.152
     const val A = 0.0
+    const val Q = 0.0001
 
     val shooterGearing = MechanismGearing(
         GearBox.fromReductionStages(
