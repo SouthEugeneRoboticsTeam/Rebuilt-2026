@@ -68,12 +68,15 @@ object IndexerConstants {
     const val MAIN_INDEXING = 0.4
     const val KICKER_INDEXING = -0.8
 
-    const val MAIN_KICKING = 1.0
-    const val KICKER_KICKING = 1.0
+    const val MAIN_KICKING = 0.5
+    const val KICKER_KICKING = 0.7
     const val KICK_TIME = 0.0
 
     const val MAIN_REVERSE = -0.4
     const val KICKER_REVERSE = -0.4
+
+    const val PULSE_SHOOT_TIME = 100.0
+    const val PULSE_DELAY_TIME = 0.0
 }
 
 object HoodedShooterConstants {
@@ -82,7 +85,7 @@ object HoodedShooterConstants {
     const val S = 0.0
     const val V = 0.152
     const val A = 0.0
-    const val Q = 0.0001
+    const val Q = 0.07
 
     val shooterGearing = MechanismGearing(
         GearBox.fromReductionStages(
@@ -97,8 +100,8 @@ object HoodedShooterConstants {
     )
 
 
-    val shootTarget = RPM.of(2800.0)
-    val shootRollerDutyCycle = -0.3
+    val shootTarget = RPM.of(2850.0)
+    val shootRollerDutyCycle = 0.0
 }
 
 object OtherConstsants {

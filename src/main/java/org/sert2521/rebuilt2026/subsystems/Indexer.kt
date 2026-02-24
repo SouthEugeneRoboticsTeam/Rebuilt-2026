@@ -12,6 +12,8 @@ import edu.wpi.first.wpilibj2.command.Commands
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.sert2521.rebuilt2026.ElectronicIDs
 import org.sert2521.rebuilt2026.IndexerConstants
+import org.sert2521.rebuilt2026.IndexerConstants.PULSE_DELAY_TIME
+import org.sert2521.rebuilt2026.IndexerConstants.PULSE_SHOOT_TIME
 import yams.motorcontrollers.SmartMotorControllerConfig
 import yams.motorcontrollers.local.SparkWrapper
 import yams.telemetry.MechanismTelemetry
@@ -113,6 +115,12 @@ object Indexer : SubsystemBase() {
         }.andThen(
             Commands.idle()
         )
+    }
+
+    fun pulse(): Command{
+        return shoot().withTimeout(PULSE_SHOOT_TIME)
+            .andThen(index().withTimeout(PULSE_DELAY_TIME))
+            .repeatedly()
     }
 
     fun reverse(): Command {

@@ -65,7 +65,7 @@ object Grintake : SubsystemBase() {
     }
 
     private fun setWristMotorAngle(angle: Angle) {
-        wristSMC.setPosition(angle)
+        // wristSMC.setPosition(angle)
     }
 
     fun stow(): Command {
@@ -80,7 +80,7 @@ object Grintake : SubsystemBase() {
     fun reZero():Command{
         return runOnce {
             setRollerMotor(0.0)
-            wristSMC.dutyCycle = GrintakeConstants.REZERO_SPEED
+            // wristSMC.dutyCycle = GrintakeConstants.REZERO_SPEED
             currentDebouncer.calculate(false)
         }.andThen(
             Commands.idle()

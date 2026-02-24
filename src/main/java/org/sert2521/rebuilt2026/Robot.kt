@@ -16,6 +16,7 @@ import org.sert2521.rebuilt2026.commands.DrivetrainFeedforwardSysId
 import org.sert2521.rebuilt2026.subsystems.Grintake
 import org.sert2521.rebuilt2026.subsystems.HoodedShooter
 import org.sert2521.rebuilt2026.subsystems.drivetrain.Drivetrain
+import org.sert2521.rebuilt2026.util.AllianceShiftUtil
 import java.sql.Driver
 
 /**
@@ -47,44 +48,14 @@ object Robot : TimedRobot() {
         // button bindings, and put our autonomous chooser on the dashboard.
         Input
         Drivetrain
-
-        SmartDashboard.putString("Game Timer", getAllianceShiftTime() as String)
-        SmartDashboard.putString("Alliance Shift", getAllianceShift())
         Autos
     }
 
-    private fun getAllianceShift(): String {
-        if (DriverStation.getGameSpecificMessage() == "R") {
-            return "Red"
-        } else {
-            return "Blue"
-        }
-        return (DriverStation.getAlliance()).toString()
-    }
-
-    private fun getAllianceShiftTime(): Any {
-        val matchTime = DriverStation.getMatchTime()
-
-        return if (matchTime > 130) {
-            (matchTime - 130).toString()
-        } else if (matchTime > 105) {
-            (matchTime - 105).toString()
-        } else if (matchTime > 80) {
-            (matchTime - 80).toString()
-        } else if (matchTime > 55) {
-            (matchTime - 55).toString()
-        } else if (matchTime > 30) {
-            (matchTime - 30).toString()
-        } else {
-            matchTime.toString()
-        }
-
-        return true
-    }
 
 
     override fun robotPeriodic() {
         CommandScheduler.getInstance().run()
+        AllianceShiftUtil.update()
     }
 
     override fun disabledInit() {

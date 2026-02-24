@@ -18,19 +18,18 @@ object Input {
     private val gunnerController = CommandJoystick(1)
 
     private val intake = driverController.rightBumper()
+    private val driverOuttake = driverController.rightTrigger()
+    private val reverseIntake = driverController.leftBumper()
     private val outtake = gunnerController.button(2)
 
     private val reverseIndex = gunnerController.button(3)
     private val rev = gunnerController.button(4)
 
     private val manualIndex = gunnerController.button(1)
-    private val hoodToStow = gunnerController.button(7)
-    private val hoodToPassHalf = gunnerController.button(8)
-    private val hoodToPassFull = gunnerController.button(9)
+
 
     private val resetRotOffset = driverController.y()
     private val resetRotReal = driverController.x()
-    private val visionAlign = driverController.a() // YIPPEEE I love this 2026 change
 
 
     private var rotationOffset = Rotation2d.kZero
@@ -38,10 +37,11 @@ object Input {
 
     init {
 
-        outtake.whileTrue((Indexer.shoot().alongWith(HoodedShooter.shoot())).unless { !HoodedShooter.isRevved() })
+        outtake.whileTrue((Indexer.pulse().alongWith(HoodedShooter.shoot())).unless { !HoodedShooter.isRevved() })
 
-
-        intake.whileTrue(Grintake.intake().alongWith(Indexer.index().asProxy()))
+        intake.whileTrue(Indexer.manualIndex())
+        // intake.whileTrue(Grintake.intake().alongWith(Indexer.index().asProxy()))
+        reverseIntake.whileTrue(Grintake.reverse().alongWith(Indexer.reverse().asProxy()))
         rev.onTrue(HoodedShooter.rev())
         reverseIndex.whileTrue(Indexer.reverse())
 
@@ -52,17 +52,13 @@ object Input {
                 rotationOffset = Rotation2d.k180deg
                 Drivetrain.setRotation(Rotation2d.k180deg)
             } else {
-                rotationOffset = Rotation2d.kCW_90deg
-                Drivetrain.setRotation(Rotation2d.kCW_90deg)
+                rotationOffset = Rotation2d.kZero
+                Drivetrain.setRotation(Rotation2d.kZero)
             }
         }))
 
         resetRotOffset.onTrue(Commands.runOnce({
-            if (DriverStation.getAlliance().getOrElse { DriverStation.Alliance.Blue } == DriverStation.Alliance.Red) {
-                rotationOffset = Drivetrain.getPose().rotation + Rotation2d.k180deg
-            } else {
-                rotationOffset = Drivetrain.getPose().rotation
-            }
+            rotationOffset = Drivetrain.getPose().rotation
         }))
     }
     fun getJoystickInputs(): Triple<Double, Double, Double> {

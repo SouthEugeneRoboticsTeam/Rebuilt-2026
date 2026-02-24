@@ -33,8 +33,8 @@ object Autos {
         "Intake Up" to ScheduleCommand(Grintake.stow().alongWith(Indexer.index())).asProxy(),
 
         "Rev" to ScheduleCommand(HoodedShooter.shoot()).asProxy(),
-        "Shoot" to HoodedShooter.shoot().alongWith(Indexer.shoot()).asProxy(),
-        "Stop Shoot" to HoodedShooter.rev().alongWith(Indexer.index()).asProxy(),
+        "Shoot" to ScheduleCommand(HoodedShooter.shoot().alongWith(Indexer.shoot())).asProxy(),
+        "Stop Shoot" to ScheduleCommand(HoodedShooter.rev().alongWith(Indexer.index())).asProxy(),
     )
 
     init {
@@ -76,6 +76,7 @@ object Autos {
         )
 
         autoChooser.addOption("Test", AutoBuilder.buildAuto("Test"))
+        autoChooser.addOption("CL_N", AutoBuilder.buildAuto("CL_N"))
         autoChooser.setDefaultOption("None", Commands.none())
 
         SmartDashboard.putData("Autos", autoChooser)

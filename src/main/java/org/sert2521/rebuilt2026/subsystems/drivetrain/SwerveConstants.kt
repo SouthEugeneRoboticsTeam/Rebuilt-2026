@@ -68,7 +68,7 @@ object SwerveConstants {
 
     const val DRIVE_SPEED = 2.5
 
-    const val ROT_SPEED = 1.9
+    const val ROT_SPEED = 2.5
 }
 
 object VisionConstants {
