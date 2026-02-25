@@ -1,6 +1,5 @@
 package org.sert2521.rebuilt2026
 
-import dev.doglog.DogLog
 import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.units.Units.*
 import yams.gearing.GearBox
@@ -95,13 +94,14 @@ object HoodedShooterConstants {
 
     val rollerGearing = MechanismGearing(
         GearBox.fromReductionStages(
-            1.0  // Also don't fix me, this is again the actual gear ratio
+            1.0
         )
     )
 
 
-    val shootTarget = RPM.of(2850.0)
-    val shootRollerDutyCycle = 0.0
+    val primaryShootFlywheel = RPM.of(2400.0)
+    val secondaryShootFlywheel = RPM.of(2200.0)
+    val shootRollerDutyCycle = Volts.of(6.0)
 }
 
 object OtherConstsants {

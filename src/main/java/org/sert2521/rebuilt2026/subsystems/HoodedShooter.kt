@@ -3,27 +3,23 @@ package org.sert2521.rebuilt2026.subsystems
 import com.revrobotics.spark.SparkLowLevel
 import com.revrobotics.spark.SparkMax
 import dev.doglog.DogLog
-import edu.wpi.first.math.MathUtil
 import edu.wpi.first.math.controller.PIDController
 import edu.wpi.first.math.controller.SimpleMotorFeedforward
+import edu.wpi.first.math.filter.Debouncer
 import edu.wpi.first.math.system.plant.DCMotor
-import edu.wpi.first.units.AngularVelocityUnit
 import edu.wpi.first.units.Units.Amps
 import edu.wpi.first.units.Units.RPM
 import edu.wpi.first.units.Units.RotationsPerSecond
-import edu.wpi.first.units.Units.RotationsPerSecond
-import edu.wpi.first.units.Units.RotationsPerSecond
 import edu.wpi.first.units.Units.Volts
 import edu.wpi.first.units.measure.AngularVelocity
+import edu.wpi.first.units.measure.Voltage
 import edu.wpi.first.wpilibj2.command.Command
-import edu.wpi.first.wpilibj2.command.Commands
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.sert2521.rebuilt2026.ElectronicIDs
 import org.sert2521.rebuilt2026.HoodedShooterConstants
 import yams.motorcontrollers.SmartMotorControllerConfig
 import yams.motorcontrollers.local.SparkWrapper
 import yams.telemetry.MechanismTelemetry
-import javax.xml.crypto.dsig.spec.RSAPSSParameterSpec
 import kotlin.math.pow
 import kotlin.math.sign
 
@@ -36,6 +32,7 @@ object HoodedShooter : SubsystemBase() {
         HoodedShooterConstants.A)
     private val pidLeft = PIDController(0.0, 0.0, HoodedShooterConstants.D)
     private val pidRight = PIDController(0.0, 0.0, HoodedShooterConstants.D)
+    private val debouncer = Debouncer(1.0, Debouncer.DebounceType.kBoth)
 
     private val flywheelMotorConfig = {
         SmartMotorControllerConfig(this)
@@ -65,7 +62,7 @@ object HoodedShooter : SubsystemBase() {
         .withIdleMode(SmartMotorControllerConfig.MotorMode.BRAKE)
         .withStatorCurrentLimit(Amps.of(40.0))
         .withGearing(HoodedShooterConstants.rollerGearing)
-        .withTelemetry("Hood Rollers Motor", SmartMotorControllerConfig.TelemetryVerbosity.LOW)
+        .withTelemetry("Hood Rollers Motor", SmartMotorControllerConfig.TelemetryVerbosity.HIGH)
 
     private val flywheelLeftSMC = SparkWrapper(motorLeft, DCMotor.getNEO(1), flywheelMotorConfigLeft)
     private val flywheelRightSMC = SparkWrapper(motorRight, DCMotor.getNEO(1), flywheelMotorConfigRight)
@@ -73,10 +70,10 @@ object HoodedShooter : SubsystemBase() {
     private val telemetry = MechanismTelemetry()
 
     private var shooterSetpoint = RotationsPerSecond.zero()
-    private var rollerSetpoint = 0.0
+    private var rollerSetpoint = Volts.of(0.0)
 
     init {
-        defaultCommand = run {}
+        defaultCommand = run { rollerSMC.voltage = rollerSetpoint}
 
         telemetry.setupTelemetry("HoodedShooter", flywheelLeftSMC)
         telemetry.setupTelemetry("HoodedShooter", flywheelRightSMC)
@@ -115,30 +112,55 @@ object HoodedShooter : SubsystemBase() {
         }
     }
 
-    private fun setVelocitiesCommand(flywheelsVelocity: AngularVelocity, rollerDutyCycle: Double): Command {
+    private fun setSetpoints(flywheelVelocity: AngularVelocity, rollerVoltage: Voltage){
+        shooterSetpoint = flywheelVelocity
+        rollerSetpoint = rollerVoltage
+    }
+
+    private fun setVelocitiesCommand(flywheelsVelocityPrimary: AngularVelocity, rollerVoltage: Voltage): Command {
         return runOnce {
-            flywheelLeftSMC.setVelocity(flywheelsVelocity)
-            flywheelRightSMC.setVelocity(flywheelsVelocity)
-            rollerSMC.dutyCycle = rollerDutyCycle
-            shooterSetpoint = flywheelsVelocity
-            rollerSetpoint = rollerDutyCycle
-        }
+            DogLog.log("Target Velocity", flywheelsVelocityPrimary.`in`(RPM))
+            flywheelLeftSMC.setVelocity(flywheelsVelocityPrimary)
+            flywheelRightSMC.setVelocity(flywheelsVelocityPrimary)
+            rollerSMC.voltage = rollerVoltage
+        }.andThen(
+            run {
+                rollerSMC.voltage = rollerVoltage
+            }
+        )
+    }
+
+    private fun shootRoutine(primaryVelocity: AngularVelocity, secondaryVelocity: AngularVelocity, rollerVoltage: Voltage): Command {
+        return runOnce { setSetpoints(primaryVelocity, rollerVoltage) }
+            .andThen(setVelocitiesCommand(primaryVelocity, rollerVoltage))
+            .until { isRevved() }
+            .andThen(runOnce { setSetpoints(primaryVelocity, rollerVoltage) })
+            .andThen(runOnce { DogLog.log("Rev", true) } )
+            .andThen(setVelocitiesCommand(primaryVelocity, rollerVoltage))
+            .until { !isRevved() }
+            .andThen(runOnce { setSetpoints(secondaryVelocity, rollerVoltage) })
+            .andThen(runOnce { DogLog.log("Rev", false) } )
+            .andThen(setVelocitiesCommand(secondaryVelocity, rollerVoltage))
     }
 
     fun shoot():Command {
-        return setVelocitiesCommand(HoodedShooterConstants.shootTarget, HoodedShooterConstants.shootRollerDutyCycle).asProxy()
+        return shootRoutine(
+            HoodedShooterConstants.primaryShootFlywheel,
+            HoodedShooterConstants.secondaryShootFlywheel,
+            HoodedShooterConstants.shootRollerDutyCycle
+        )
     }
 
     fun rev():Command {
-        return setVelocitiesCommand(HoodedShooterConstants.shootTarget, 0.0).asProxy()
+        return setVelocitiesCommand(HoodedShooterConstants.secondaryShootFlywheel, Volts.of(0.0)).asProxy()
     }
 
     fun stop(): Command {
-        return setVelocitiesCommand(RotationsPerSecond.of(0.0), 0.0).asProxy()
+        return setVelocitiesCommand(RotationsPerSecond.of(0.0), Volts.of(0.0)).asProxy()
     }
 
     fun isRevved():Boolean {
-        return MathUtil.isNear((flywheelLeftSMC.mechanismVelocity / 2.0 + flywheelRightSMC.mechanismVelocity / 2.0).`in`(RPM),
-            shooterSetpoint.`in`(RPM), 100.0)
+        println("${shooterSetpoint.`in`(RPM)}   ${flywheelLeftSMC.mechanismVelocity.`in`(RPM)}")
+        return debouncer.calculate(flywheelLeftSMC.mechanismVelocity.`in`(RPM) > shooterSetpoint.`in`(RPM))
     }
 }

@@ -37,7 +37,8 @@ object Input {
 
     init {
 
-        outtake.whileTrue((Indexer.pulse().alongWith(HoodedShooter.shoot())).unless { !HoodedShooter.isRevved() })
+        outtake.whileTrue(Indexer.pulse().unless { !HoodedShooter.isRevved() })
+        outtake.onTrue(HoodedShooter.shoot())
 
         intake.whileTrue(Indexer.manualIndex())
         // intake.whileTrue(Grintake.intake().alongWith(Indexer.index().asProxy()))
