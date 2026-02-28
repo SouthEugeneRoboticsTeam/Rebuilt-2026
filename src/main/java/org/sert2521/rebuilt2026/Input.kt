@@ -7,8 +7,9 @@ import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.Commands
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
+import org.sert2521.rebuilt2026.commands.VisionRotationDrive
 import org.sert2521.rebuilt2026.subsystems.Grintake
-import org.sert2521.rebuilt2026.subsystems.HoodedShooter
+import org.sert2521.rebuilt2026.subsystems.shooter.HoodedShooter
 import org.sert2521.rebuilt2026.subsystems.Indexer
 import org.sert2521.rebuilt2026.subsystems.drivetrain.Drivetrain
 import kotlin.jvm.optionals.getOrElse
@@ -27,6 +28,8 @@ object Input {
 
     private val manualIndex = gunnerController.button(1)
 
+    private val visionAlign = driverController.a()
+
 
     private val resetRotOffset = driverController.y()
     private val resetRotReal = driverController.x()
@@ -40,13 +43,15 @@ object Input {
         outtake.whileTrue(Indexer.pulse().unless { !HoodedShooter.isRevved() })
         outtake.onTrue(HoodedShooter.shoot())
 
-        intake.whileTrue(Indexer.manualIndex())
-        // intake.whileTrue(Grintake.intake().alongWith(Indexer.index().asProxy()))
+        // intake.whileTrue(Indexer.manualIndex())
+        intake.whileTrue(Grintake.intake().alongWith(Indexer.index().asProxy()))
         reverseIntake.whileTrue(Grintake.reverse().alongWith(Indexer.reverse().asProxy()))
         rev.onTrue(HoodedShooter.rev())
         reverseIndex.whileTrue(Indexer.reverse())
 
         manualIndex.whileTrue(Indexer.manualIndex())
+
+        visionAlign.whileTrue(VisionRotationDrive())
 
         resetRotReal.onTrue(Commands.runOnce({
             if (DriverStation.getAlliance().getOrElse { DriverStation.Alliance.Blue } == DriverStation.Alliance.Red) {

@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase
 import limelight.Limelight
 import limelight.networktables.LimelightPoseEstimator
 import limelight.networktables.Orientation3d
+import org.sert2521.rebuilt2026.OtherConstsants
 import org.sert2521.rebuilt2026.commands.JoystickDrive
 import yams.mechanisms.config.SwerveModuleConfig
 import yams.mechanisms.swerve.SwerveModule
@@ -36,6 +37,7 @@ import yams.motorcontrollers.SmartMotorControllerConfig
 import yams.motorcontrollers.local.SparkWrapper
 import kotlin.jvm.javaClass
 import kotlin.math.PI
+import kotlin.math.atan2
 import kotlin.math.hypot
 
 object Drivetrain : SubsystemBase() {
@@ -273,5 +275,11 @@ object Drivetrain : SubsystemBase() {
             output += it.driveMotorController.mechanismVelocity.`in`(RotationsPerSecond)
         }
         return output / 4.0
+    }
+
+    fun getRotationToHub(): Rotation2d{
+        val translation = getPose().translation
+        return Rotation2d(atan2(OtherConstsants.blueHubTranslation.y-translation.y, OtherConstsants.blueHubTranslation.x-translation.x))
+            .rotateBy(Rotation2d.k180deg)
     }
 }

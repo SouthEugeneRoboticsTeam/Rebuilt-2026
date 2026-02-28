@@ -1,6 +1,7 @@
 package org.sert2521.rebuilt2026
 
 import edu.wpi.first.math.geometry.Pose2d
+import edu.wpi.first.math.geometry.Translation2d
 import edu.wpi.first.units.Units.*
 import yams.gearing.GearBox
 import yams.gearing.MechanismGearing
@@ -67,8 +68,8 @@ object IndexerConstants {
     const val MAIN_INDEXING = 0.4
     const val KICKER_INDEXING = -0.8
 
-    const val MAIN_KICKING = 0.5
-    const val KICKER_KICKING = 0.7
+    const val MAIN_KICKING = 0.7
+    const val KICKER_KICKING = 0.9
     const val KICK_TIME = 0.0
 
     const val MAIN_REVERSE = -0.4
@@ -99,11 +100,11 @@ object HoodedShooterConstants {
     )
 
 
-    val primaryShootFlywheel = RPM.of(2400.0)
-    val secondaryShootFlywheel = RPM.of(2200.0)
+    val primaryShootFlywheel = RPM.of(2500.0)
+    val secondaryShootFlywheel = RPM.of(2300.0)
     val shootRollerDutyCycle = Volts.of(6.0)
 }
 
 object OtherConstsants {
-    val targetVisionPose = Pose2d()
+    val blueHubTranslation = Translation2d(4.620755195617676,4.036807537078857)
 }

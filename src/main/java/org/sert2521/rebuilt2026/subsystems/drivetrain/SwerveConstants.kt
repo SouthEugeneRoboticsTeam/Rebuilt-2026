@@ -59,8 +59,8 @@ object SwerveConstants {
     const val AUTO_HEADING_D = 0.1
 
     // TODO: Tune
-    const val VISION_HEADING_P = 0.0
-    const val VISION_HEADING_D = 0.0
+    const val VISION_HEADING_P = 18.0
+    const val VISION_HEADING_D = 2.0
 
     val maxSpeed = Units.MetersPerSecond.of(4.571)
 

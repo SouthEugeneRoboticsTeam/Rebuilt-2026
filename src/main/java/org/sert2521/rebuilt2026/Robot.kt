@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler
 import edu.wpi.first.wpilibj2.command.Commands
 import org.sert2521.rebuilt2026.commands.DrivetrainFeedforwardSysId
 import org.sert2521.rebuilt2026.subsystems.Grintake
-import org.sert2521.rebuilt2026.subsystems.HoodedShooter
+import org.sert2521.rebuilt2026.subsystems.shooter.HoodedShooter
 import org.sert2521.rebuilt2026.subsystems.drivetrain.Drivetrain
 import org.sert2521.rebuilt2026.util.AllianceShiftUtil
 import java.sql.Driver
@@ -59,7 +59,6 @@ object Robot : TimedRobot() {
     }
 
     override fun disabledInit() {
-
     }
 
     override fun disabledPeriodic() {
@@ -67,6 +66,7 @@ object Robot : TimedRobot() {
     }
 
     override fun autonomousInit() {
+        Drivetrain.startDrivePID()
         autonomousCommand = Autos.getAutonomousCommand()
         CommandScheduler.getInstance().schedule(autonomousCommand)
     }
@@ -76,6 +76,7 @@ object Robot : TimedRobot() {
     }
 
     override fun teleopInit() {
+        Drivetrain.stopDrivePID()
         autonomousCommand?.cancel()
         CommandScheduler.getInstance().schedule(Grintake.reZero())
     }
