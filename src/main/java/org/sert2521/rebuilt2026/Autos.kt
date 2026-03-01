@@ -29,8 +29,8 @@ object Autos {
         "Rev Hub" to HoodedShooter.rev().asProxy(),
         "Rev Stop" to HoodedShooter.stop().asProxy(),
 
-        "Intake Down" to ScheduleCommand(Grintake.intake().alongWith(Indexer.manualIndex())).asProxy(),
-        "Intake Up" to ScheduleCommand(Grintake.stow().alongWith(Indexer.index())).asProxy(),
+        "Intake Down" to ScheduleCommand(Grintake.intake()).asProxy(),
+        "Intake Up" to ScheduleCommand(Grintake.stow()).asProxy(),
 
         "Rev" to ScheduleCommand(HoodedShooter.shoot()).asProxy(),
         "Shoot" to ScheduleCommand(HoodedShooter.shoot().alongWith(Indexer.shoot())).asProxy(),
@@ -77,6 +77,7 @@ object Autos {
 
         autoChooser.addOption("Test", AutoBuilder.buildAuto("Test"))
         autoChooser.addOption("CL_N", AutoBuilder.buildAuto("CL_N"))
+        autoChooser.addOption("CL_D", AutoBuilder.buildAuto("CL_D"))
         autoChooser.setDefaultOption("None", Commands.none())
 
         SmartDashboard.putData("Autos", autoChooser)

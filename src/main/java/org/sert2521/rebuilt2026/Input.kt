@@ -19,20 +19,20 @@ object Input {
     private val gunnerController = CommandJoystick(1)
 
     private val intake = driverController.rightBumper()
-    private val driverOuttake = driverController.rightTrigger()
     private val reverseIntake = driverController.leftBumper()
-    private val outtake = gunnerController.button(2)
+    private val outtake = driverController.rightTrigger() //gunnerController.button(2)
 
-    private val reverseIndex = gunnerController.button(3)
-    private val rev = gunnerController.button(4)
+    private val reverseIndex = gunnerController.button(12) // Driver has control for reverse
+    private val rev = driverController.leftTrigger() //gunnerController.button(4)
+    private val revPass = gunnerController.button(7)
 
     private val manualIndex = gunnerController.button(1)
 
-    private val visionAlign = driverController.a()
+    private val visionAlign = driverController.x()
 
 
     private val resetRotOffset = driverController.y()
-    private val resetRotReal = driverController.x()
+    private val resetRotReal = driverController.b()
 
 
     private var rotationOffset = Rotation2d.kZero
@@ -41,12 +41,14 @@ object Input {
     init {
 
         outtake.whileTrue(Indexer.pulse().unless { !HoodedShooter.isRevved() })
-        outtake.onTrue(HoodedShooter.shoot())
+        //outtake.onTrue(HoodedShooter.shoot())
 
         // intake.whileTrue(Indexer.manualIndex())
         intake.whileTrue(Grintake.intake().alongWith(Indexer.index().asProxy()))
         reverseIntake.whileTrue(Grintake.reverse().alongWith(Indexer.reverse().asProxy()))
         rev.onTrue(HoodedShooter.rev())
+        revPass.onTrue(HoodedShooter.revPass())
+
         reverseIndex.whileTrue(Indexer.reverse())
 
         manualIndex.whileTrue(Indexer.manualIndex())

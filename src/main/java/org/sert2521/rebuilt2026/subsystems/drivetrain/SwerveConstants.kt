@@ -35,7 +35,7 @@ object SwerveConstants {
     val angleIDs = arrayOf(9, 10, 11, 12)
 
     // TODO: Tune
-    const val DRIVE_P = 0.2
+    const val DRIVE_P = 0.4
     const val DRIVE_I = 0.0
     const val DRIVE_D = 0.01
     const val DRIVE_S =	0.1
@@ -63,12 +63,13 @@ object SwerveConstants {
     const val VISION_HEADING_D = 2.0
 
     val maxSpeed = Units.MetersPerSecond.of(4.571)
+    val movingThreshold = Units.MetersPerSecond.of(0.2)
 
     const val SYS_ID_FF_RAMP_RATE = 1.0
 
-    const val DRIVE_SPEED = 2.5
+    const val DRIVE_SPEED = 3.5
+    const val ROT_SPEED = 4.5
 
-    const val ROT_SPEED = 2.5
 }
 
 object VisionConstants {

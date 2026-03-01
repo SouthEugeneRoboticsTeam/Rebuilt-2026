@@ -7,6 +7,7 @@ import edu.wpi.first.units.Units.Meters
 import edu.wpi.first.units.Units.RPM
 import edu.wpi.first.units.Units.Volts
 import edu.wpi.first.units.measure.Distance
+import org.sert2521.rebuilt2026.subsystems.drivetrain.Drivetrain
 import org.sert2521.rebuilt2026.subsystems.shooter.HSGoal
 
 object HSMap {
@@ -17,12 +18,11 @@ object HSMap {
         HSMapDatapoint(
             Meters.of(0.0),
             HSGoal(
-                RPM.of(0.0),
-                RPM.of(0.0),
-                Volts.of(0.0)
+                RPM.of(2500.0),
+                RPM.of(2300.0),
+                Volts.of(6.0)
             )
-        ),
-        HSMapDatapoint(0.0,0.0,0.0,0.0),
+        )
     )
 
     private fun interpolateWithDistance(distance: Distance): HSGoal{
@@ -64,7 +64,7 @@ object HSMap {
         )
     }
 
-    fun getGoal(){
-        return
+    fun getGoal(): HSGoal{
+        return interpolateWithDistance(Drivetrain.getDistanceToHub())
     }
 }

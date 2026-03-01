@@ -1,5 +1,6 @@
 package org.sert2521.rebuilt2026
 
+import edu.wpi.first.apriltag.AprilTagFields
 import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.geometry.Translation2d
 import edu.wpi.first.units.Units.*
@@ -72,8 +73,8 @@ object IndexerConstants {
     const val KICKER_KICKING = 0.9
     const val KICK_TIME = 0.0
 
-    const val MAIN_REVERSE = -0.4
-    const val KICKER_REVERSE = -0.4
+    const val MAIN_REVERSE = -1.0
+    const val KICKER_REVERSE = -1.0
 
     const val PULSE_SHOOT_TIME = 100.0
     const val PULSE_DELAY_TIME = 0.0
@@ -99,12 +100,30 @@ object HoodedShooterConstants {
         )
     )
 
-
     val primaryShootFlywheel = RPM.of(2500.0)
     val secondaryShootFlywheel = RPM.of(2300.0)
     val shootRollerDutyCycle = Volts.of(6.0)
+
+    val primaryPassFlywheel = RPM.of(2000.0)
+    val secondaryPassFlywheel = RPM.of(1000.0)
+    val passRollerDutyCycle = Volts.of(12.0)
 }
 
 object OtherConstsants {
+    val fieldWidth = Inches.of(317.6875)
+    val fieldLength = Inches.of(651.25)
+
     val blueHubTranslation = Translation2d(4.620755195617676,4.036807537078857)
+    val redHubTranslation = Translation2d(11.91766357421875, 4.037060737609863)
+
+    val blueBumps = arrayOf(Translation2d(4.0, 2.0), Translation2d(4.0, 2.0).flipWidth())
+    val redBumps = arrayOf(blueBumps[0].flipAlliance(), blueBumps[1].flipAlliance(),)
+}
+
+fun Translation2d.flipWidth(): Translation2d{
+    return Translation2d(this.x, OtherConstsants.fieldWidth.`in`(Meters) - this.y)
+}
+
+fun Translation2d.flipAlliance(): Translation2d{
+    return Translation2d(OtherConstsants.fieldLength.`in`(Meters)-this.x, this.y)
 }

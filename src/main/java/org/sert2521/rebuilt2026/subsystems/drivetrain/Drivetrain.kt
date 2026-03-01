@@ -20,6 +20,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState
 import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.units.Units.*
 import edu.wpi.first.units.measure.Angle
+import edu.wpi.first.units.measure.Distance
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj.smartdashboard.Field2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
@@ -281,5 +282,14 @@ object Drivetrain : SubsystemBase() {
         val translation = getPose().translation
         return Rotation2d(atan2(OtherConstsants.blueHubTranslation.y-translation.y, OtherConstsants.blueHubTranslation.x-translation.x))
             .rotateBy(Rotation2d.k180deg)
+    }
+
+    fun getIsMoving(): Boolean{
+        val chassisSpeeds = getChassisSpeeds()
+        return MetersPerSecond.of(hypot(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond)) > SwerveConstants.movingThreshold
+    }
+
+    fun getDistanceToHub(): Distance {
+        return Meters.of(getPose().translation.getDistance(OtherConstsants.blueHubTranslation))
     }
 }
