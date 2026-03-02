@@ -101,6 +101,9 @@ object Drivetrain : SubsystemBase() {
     private val gyroYaw = gyro.yaw.asSupplier()
     private val gyroPitch = gyro.pitch.asSupplier()
     private val gyroRoll = gyro.roll.asSupplier()
+    private val gyroYawVel = gyro.angularVelocityZWorld.asSupplier()
+    private val gyroRollVel = gyro.angularVelocityXWorld.asSupplier()
+    private val gyroPitchVel = gyro.angularVelocityYWorld.asSupplier()
 
     private val kinematics = SwerveDriveKinematics(*SwerveConstants.moduleTranslations)
     private var moduleStates = Array(4) { modules[it].state }
@@ -203,10 +206,10 @@ object Drivetrain : SubsystemBase() {
     fun updateVision(){
         limelight.settings.withRobotOrientation(
             Orientation3d(
-                Rotation3d(gyroRoll.get(), gyroPitch.get(), poseEstimator.estimatedPosition.rotation.measure),
-                RotationsPerSecond.zero(),
-                RotationsPerSecond.zero(),
-                RotationsPerSecond.zero()
+                Rotation3d(gyroRoll.get(), gyroPitch.get(), gyroYaw.get()),
+                gyroYawVel.get(),
+                gyroPitchVel.get(),
+                gyroRollVel.get()
             )
         )
 
@@ -218,12 +221,12 @@ object Drivetrain : SubsystemBase() {
         if (estimatedPose.isEmpty) {
             return
         }
-        if (estimatedPose.get().pose.rotation.measureX > VisionConstants.rotationThreshold){
-            return
-        }
-        if (estimatedPose.get().pose.rotation.measureY > VisionConstants.rotationThreshold){
-            return
-        }
+//        if (estimatedPose.get().pose.rotation.measureX > VisionConstants.rotationThreshold){
+//            return
+//        }
+//        if (estimatedPose.get().pose.rotation.measureY > VisionConstants.rotationThreshold){
+//            return
+//        }
         if (estimatedPose.get().pose.toPose2d().translation == Translation2d.kZero) {
             return
         }
