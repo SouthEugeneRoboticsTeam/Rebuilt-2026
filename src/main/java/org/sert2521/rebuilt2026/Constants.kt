@@ -41,10 +41,11 @@ object GrintakeConstants {
     )
 
     val stowPosition = Rotations.of(0.07)
-    val intakePosition = Rotations.of(0.42) - Degrees.of(1.0)
+    val depotPosition = Rotations.of(0.42) - Degrees.of(20.0)
+    val intakePosition = Rotations.of(0.42) - Degrees.of(10.0)
 
-    const val INTAKE_SPEED = 1.0
-    const val REVERSE_SPEED = 0.0
+    val intakeVoltage = Volts.of(6.0)
+    val reverseVoltage = Volts.of(0.0)
 
     const val REZERO_SPEED = -0.2
     val reZeroThreshold = Amps.of(20.0)

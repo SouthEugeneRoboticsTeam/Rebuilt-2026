@@ -3,6 +3,7 @@ package org.sert2521.rebuilt2026.subsystems
 import com.revrobotics.spark.SparkLowLevel
 import com.revrobotics.spark.SparkMax
 import dev.doglog.DogLog
+import edu.wpi.first.math.filter.Debouncer
 import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.units.Units.Amps
 import edu.wpi.first.units.Units.Seconds
@@ -25,32 +26,35 @@ object Indexer : SubsystemBase() {
     private val indexerMotorConfig = SmartMotorControllerConfig(this)
         .withGearing(IndexerConstants.indexerGearing)
         .withIdleMode(SmartMotorControllerConfig.MotorMode.BRAKE)
-        .withTelemetry("Indexer Motor", SmartMotorControllerConfig.TelemetryVerbosity.LOW)
+        .withTelemetry("Indexer Motor", SmartMotorControllerConfig.TelemetryVerbosity.MID)
         .withStatorCurrentLimit(Amps.of(40.0))
         .withMotorInverted(true)
-        .withOpenLoopRampRate(Seconds.zero())
-        .withClosedLoopRampRate(Seconds.zero())
+        .withOpenLoopRampRate(Seconds.of(0.25))
+        .withClosedLoopRampRate(Seconds.of(0.25))
         .withControlMode(SmartMotorControllerConfig.ControlMode.OPEN_LOOP)
     private val kickerMotorConfig = SmartMotorControllerConfig(this)
         .withGearing(IndexerConstants.kickerGearing)
         .withIdleMode(SmartMotorControllerConfig.MotorMode.BRAKE)
-        .withTelemetry("Kicker Motor", SmartMotorControllerConfig.TelemetryVerbosity.LOW)
+        .withTelemetry("Kicker Motor", SmartMotorControllerConfig.TelemetryVerbosity.MID)
         .withStatorCurrentLimit(Amps.of(60.0))
         .withMotorInverted(true)
-        .withOpenLoopRampRate(Seconds.zero())
-        .withClosedLoopRampRate(Seconds.zero())
+        .withOpenLoopRampRate(Seconds.of(0.25))
+        .withClosedLoopRampRate(Seconds.of(0.25))
         .withControlMode(SmartMotorControllerConfig.ControlMode.OPEN_LOOP)
 
     private val indexerSMC = SparkWrapper(indexerMotor, DCMotor.getNEO(1), indexerMotorConfig)
     private val kickerSMC = SparkWrapper(kickerMotor, DCMotor.getNEO(1), kickerMotorConfig)
 
     private val beambreak = DigitalInput(ElectronicIDs.INDEXER_BEAM_BREAK_ID)
+    private val fullDebouncer = Debouncer(0.1, Debouncer.DebounceType.kFalling)
+    private var beambreakClear = true
 
     private fun getBeamBreakBlocked():Boolean{
-        return !beambreak.get()
+        return !beambreakClear
     }
 
     private val telemetry = MechanismTelemetry()
+
 
     init{
         defaultCommand = default()
@@ -63,7 +67,11 @@ object Indexer : SubsystemBase() {
         indexerSMC.updateTelemetry()
         kickerSMC.updateTelemetry()
 
+        beambreakClear = fullDebouncer.calculate(beambreak.get())
+
         DogLog.log("Beambreak", getBeamBreakBlocked())
+
+
     }
 
     override fun simulationPeriodic() {

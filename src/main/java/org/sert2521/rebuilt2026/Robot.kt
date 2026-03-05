@@ -49,6 +49,7 @@ object Robot : TimedRobot() {
         Input
         Drivetrain
         Autos
+        SmartDashboard.putData("PDH", PowerDistribution(20, PowerDistribution.ModuleType.kRev))
     }
 
 

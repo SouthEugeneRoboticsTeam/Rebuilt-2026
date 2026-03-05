@@ -20,10 +20,10 @@ object Input {
 
     private val intake = driverController.rightBumper()
     private val reverseIntake = driverController.leftBumper()
-    private val outtake = driverController.rightTrigger() //gunnerController.button(2)
+    private val outtake = gunnerController.button(2)
 
-    private val reverseIndex = gunnerController.button(12) // Driver has control for reverse
-    private val rev = driverController.leftTrigger() //gunnerController.button(4)
+    private val reverseIndex = gunnerController.button(3) // Driver has control for reverse
+    private val rev = gunnerController.button(4)
     private val revPass = gunnerController.button(7)
 
     private val manualIndex = gunnerController.button(1)
@@ -44,10 +44,11 @@ object Input {
         //outtake.onTrue(HoodedShooter.shoot())
 
         // intake.whileTrue(Indexer.manualIndex())
-        intake.whileTrue(Grintake.intake().alongWith(Indexer.index().asProxy()))
+        intake.whileTrue(Grintake.depot().alongWith(Indexer.index().asProxy()))
+        // intake.whileTrue(Grintake.intake())
         reverseIntake.whileTrue(Grintake.reverse().alongWith(Indexer.reverse().asProxy()))
         rev.onTrue(HoodedShooter.rev())
-        revPass.onTrue(HoodedShooter.revPass())
+        revPass.whileTrue(HoodedShooter.revPass())
 
         reverseIndex.whileTrue(Indexer.reverse())
 

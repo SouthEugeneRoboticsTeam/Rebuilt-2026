@@ -20,6 +20,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState
 import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.units.Units.*
 import edu.wpi.first.units.measure.Angle
+import edu.wpi.first.units.measure.Current
 import edu.wpi.first.units.measure.Distance
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj.smartdashboard.Field2d
@@ -121,6 +122,7 @@ object Drivetrain : SubsystemBase() {
     private val limelight = Limelight("limelight-green")
     private val limelightPoseEstimator = limelight.createPoseEstimator(LimelightPoseEstimator.EstimationMode.MEGATAG2)
     private var gyroOffset = Rotations.zero()
+    private var fed = false
 
     private val field = Field2d()
 
@@ -141,6 +143,12 @@ object Drivetrain : SubsystemBase() {
         modules.forEach { it.seedAzimuthEncoder() }
 
         updatePoseEstimator()
+
+        if (!fed) {
+            driveRobotRelative(ChassisSpeeds())
+        }
+
+        fed = false
     }
 
     fun updatePoseEstimator(){
@@ -166,6 +174,8 @@ object Drivetrain : SubsystemBase() {
     }
 
     fun driveRobotRelative(speeds: ChassisSpeeds) {
+        fed = true
+
         val discreteSpeeds = ChassisSpeeds.discretize(speeds, 0.02)
         DogLog.log("Drivetrain/ChassisSpeeds/Setpoints", speeds)
         DogLog.log(
@@ -294,5 +304,11 @@ object Drivetrain : SubsystemBase() {
 
     fun getDistanceToHub(): Distance {
         return Meters.of(getPose().translation.getDistance(OtherConstsants.blueHubTranslation))
+    }
+
+    fun setCurrentLimit(current: Current){
+        modules.forEach {
+            it.driveMotorController.setStatorCurrentLimit(current)
+        }
     }
 }

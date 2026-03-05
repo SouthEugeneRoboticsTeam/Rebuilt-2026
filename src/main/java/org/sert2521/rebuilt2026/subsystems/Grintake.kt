@@ -6,7 +6,9 @@ import edu.wpi.first.math.filter.Debouncer
 import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.units.Units.Amps
 import edu.wpi.first.units.Units.Rotations
+import edu.wpi.first.units.Units.Volts
 import edu.wpi.first.units.measure.Angle
+import edu.wpi.first.units.measure.Voltage
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.Commands
 import edu.wpi.first.wpilibj2.command.SubsystemBase
@@ -24,12 +26,12 @@ object Grintake : SubsystemBase() {
         .withGearing(GrintakeConstants.rollerGearing)
         .withMotorInverted(false)
         .withIdleMode(SmartMotorControllerConfig.MotorMode.BRAKE)
-        .withTelemetry("Roller Motor", SmartMotorControllerConfig.TelemetryVerbosity.LOW)
+        .withTelemetry("Roller Motor", SmartMotorControllerConfig.TelemetryVerbosity.MID)
         .withControlMode(SmartMotorControllerConfig.ControlMode.OPEN_LOOP)
         .withStatorCurrentLimit(Amps.of(40.0))
     private val wristMotorConfig = SmartMotorControllerConfig(this)
         .withClosedLoopController(GrintakeConstants.WRIST_P, 0.0, GrintakeConstants.WRIST_D)
-        .withTelemetry("Wrist Motor", SmartMotorControllerConfig.TelemetryVerbosity.LOW)
+        .withTelemetry("Wrist Motor", SmartMotorControllerConfig.TelemetryVerbosity.MID)
         .withMotorInverted(true)
         .withStatorCurrentLimit(Amps.of(40.0))
         .withIdleMode(SmartMotorControllerConfig.MotorMode.BRAKE)
@@ -60,8 +62,8 @@ object Grintake : SubsystemBase() {
         wristSMC.updateTelemetry()
     }
 
-    private fun setRollerMotor(dutyCycle: Double) {
-        rollerSMC.dutyCycle = dutyCycle
+    private fun setRollerMotor(voltage: Voltage) {
+        rollerSMC.voltage = voltage
     }
 
     private fun setWristMotorAngle(angle: Angle) {
@@ -71,15 +73,17 @@ object Grintake : SubsystemBase() {
     fun stow(): Command {
         return runOnce {
             setWristMotorAngle(GrintakeConstants.stowPosition)
-            setRollerMotor(0.0)
+            setRollerMotor(Volts.zero())
         }.andThen(
-            Commands.idle()
+            run {
+                setRollerMotor(Volts.zero())
+            }
         )
     }
 
     fun reZero():Command{
         return runOnce {
-            setRollerMotor(0.0)
+            setRollerMotor(Volts.zero())
             wristSMC.dutyCycle = GrintakeConstants.REZERO_SPEED
             currentDebouncer.calculate(false)
         }.andThen(
@@ -100,15 +104,39 @@ object Grintake : SubsystemBase() {
     fun intake(): Command {
         return runOnce {
             setWristMotorAngle(GrintakeConstants.intakePosition)
-            setRollerMotor(GrintakeConstants.INTAKE_SPEED)
+            setRollerMotor(GrintakeConstants.intakeVoltage)
         }.andThen(
-            Commands.idle()
+            run {
+                setRollerMotor(GrintakeConstants.intakeVoltage)
+            }
+        )
+    }
+
+    fun depot(): Command{
+        return runOnce {
+            setWristMotorAngle(GrintakeConstants.depotPosition)
+            setRollerMotor(GrintakeConstants.intakeVoltage)
+        }.andThen(
+            run{
+                setRollerMotor(GrintakeConstants.intakeVoltage)
+            }
+        )
+    }
+
+    fun intakeAuto():Command {
+        return runOnce {
+            setWristMotorAngle(GrintakeConstants.intakePosition)
+            setRollerMotor(Volts.of(12.0))
+        }.andThen(
+            run {
+                setRollerMotor(Volts.of(12.0))
+            }
         )
     }
 
     fun reverse(): Command {
         return runOnce {
-            setRollerMotor(GrintakeConstants.REVERSE_SPEED)
+            setRollerMotor(GrintakeConstants.reverseVoltage)
         }.andThen(
             Commands.idle()
         )
