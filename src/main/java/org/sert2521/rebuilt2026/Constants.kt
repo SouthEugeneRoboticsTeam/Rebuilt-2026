@@ -1,7 +1,5 @@
 package org.sert2521.rebuilt2026
 
-import edu.wpi.first.apriltag.AprilTagFields
-import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.geometry.Translation2d
 import edu.wpi.first.units.Units.*
 import yams.gearing.GearBox
@@ -41,9 +39,11 @@ object GrintakeConstants {
     )
 
     val stowPosition = Rotations.of(0.07)
-    val depotPosition = Rotations.of(0.42) - Degrees.of(20.0)
+    val depotPosition = Rotations.of(0.393422)
+    val depotInter = depotPosition - Degrees.of(10.0)
     val intakePosition = Rotations.of(0.42) - Degrees.of(10.0)
 
+    val intakeVoltageAuto = Volts.of(12.0)
     val intakeVoltage = Volts.of(6.0)
     val reverseVoltage = Volts.of(0.0)
 
@@ -68,7 +68,7 @@ object IndexerConstants {
     const val KICKER_DEFAULT = 0.0
 
     const val MAIN_INDEXING = 0.4
-    const val KICKER_INDEXING = -0.8
+    const val KICKER_INDEXING = -0.4
 
     const val MAIN_KICKING = 0.7
     const val KICKER_KICKING = 0.9
@@ -81,13 +81,12 @@ object IndexerConstants {
     const val PULSE_DELAY_TIME = 0.0
 }
 
-object HoodedShooterConstants {
-    const val P = 0.02
-    const val D = 0.001
-    const val S = 0.0
-    const val V = 0.152
-    const val A = 0.0
-    const val Q = 0.07
+object ShooterConstants {
+    const val F_P = 0.02
+    const val F_D = 0.001
+    const val F_S = 0.0
+    const val F_V = 0.152
+    const val F_A = 0.0
 
     val shooterGearing = MechanismGearing(
         GearBox.fromReductionStages(
@@ -98,6 +97,12 @@ object HoodedShooterConstants {
     val rollerGearing = MechanismGearing(
         GearBox.fromReductionStages(
             1.0
+        )
+    )
+
+    val hoodGearing = MechanismGearing(
+        GearBox.fromReductionStages(
+            1.0 // TODO: Change
         )
     )
 

@@ -4,20 +4,15 @@ import dev.doglog.DogLog
 import edu.wpi.first.hal.FRCNetComm.tInstances
 import edu.wpi.first.hal.FRCNetComm.tResourceType
 import edu.wpi.first.hal.HAL
-import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.PowerDistribution
 import edu.wpi.first.wpilibj.TimedRobot
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj.util.WPILibVersion
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
-import edu.wpi.first.wpilibj2.command.Commands
-import org.sert2521.rebuilt2026.commands.DrivetrainFeedforwardSysId
 import org.sert2521.rebuilt2026.subsystems.Grintake
-import org.sert2521.rebuilt2026.subsystems.shooter.HoodedShooter
 import org.sert2521.rebuilt2026.subsystems.drivetrain.Drivetrain
 import org.sert2521.rebuilt2026.util.AllianceShiftUtil
-import java.sql.Driver
 
 /**
  * The functions in this object (which basically functions as a singleton class) are called automatically

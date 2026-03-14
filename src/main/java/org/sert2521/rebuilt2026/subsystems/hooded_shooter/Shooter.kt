@@ -1,4 +1,4 @@
-package org.sert2521.rebuilt2026.subsystems.shooter
+package org.sert2521.rebuilt2026.subsystems.hooded_shooter
 
 import com.revrobotics.spark.SparkLowLevel
 import com.revrobotics.spark.SparkMax
@@ -13,38 +13,36 @@ import edu.wpi.first.units.measure.Voltage
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.sert2521.rebuilt2026.ElectronicIDs
-import org.sert2521.rebuilt2026.HoodedShooterConstants
+import org.sert2521.rebuilt2026.ShooterConstants
 import yams.motorcontrollers.SmartMotorControllerConfig
 import yams.motorcontrollers.local.SparkWrapper
 import yams.telemetry.MechanismTelemetry
 import java.util.function.Supplier
-import kotlin.math.pow
-import kotlin.math.sign
 
-object HoodedShooter : SubsystemBase() {
+object Shooter : SubsystemBase() {
     private val motorLeft = SparkMax(ElectronicIDs.FLYWHEEL_LEFT_ID, SparkLowLevel.MotorType.kBrushless)
     private val motorRight = SparkMax(ElectronicIDs.FLYWHEEL_RIGHT_ID, SparkLowLevel.MotorType.kBrushless)
     private val motorRoller = SparkMax(ElectronicIDs.SHOOTER_ROLLER_MOTOR_ID, SparkLowLevel.MotorType.kBrushless)
 
     private val feedforward = SimpleMotorFeedforward(
-        HoodedShooterConstants.S, HoodedShooterConstants.V,
-        HoodedShooterConstants.A
+        ShooterConstants.F_S, ShooterConstants.F_V,
+        ShooterConstants.F_A
     )
-    private val pidLeft = PIDController(0.0, 0.0, HoodedShooterConstants.D)
-    private val pidRight = PIDController(0.0, 0.0, HoodedShooterConstants.D)
+    private val pidLeft = PIDController(0.0, 0.0, ShooterConstants.F_D)
+    private val pidRight = PIDController(0.0, 0.0, ShooterConstants.F_D)
     private val debouncer = Debouncer(0.2, Debouncer.DebounceType.kFalling)
 
     private val flywheelMotorConfig = {
         SmartMotorControllerConfig(this)
-            .withClosedLoopController(HoodedShooterConstants.P, 0.0, HoodedShooterConstants.D)
+            .withClosedLoopController(ShooterConstants.F_P, 0.0, ShooterConstants.F_D)
             .withFeedforward(
                 SimpleMotorFeedforward(
-                    HoodedShooterConstants.S,
-                    HoodedShooterConstants.V,
-                    HoodedShooterConstants.A
+                    ShooterConstants.F_S,
+                    ShooterConstants.F_V,
+                    ShooterConstants.F_A
                 )
             )
-            .withGearing(HoodedShooterConstants.shooterGearing)
+            .withGearing(ShooterConstants.shooterGearing)
             .withIdleMode(SmartMotorControllerConfig.MotorMode.COAST)
             .withStatorCurrentLimit(Units.Amps.of(40.0))
     }
@@ -61,7 +59,7 @@ object HoodedShooter : SubsystemBase() {
         .withMotorInverted(false)
         .withIdleMode(SmartMotorControllerConfig.MotorMode.BRAKE)
         .withStatorCurrentLimit(Units.Amps.of(40.0))
-        .withGearing(HoodedShooterConstants.rollerGearing)
+        .withGearing(ShooterConstants.rollerGearing)
         .withTelemetry("Hood Rollers Motor", SmartMotorControllerConfig.TelemetryVerbosity.HIGH)
 
     private val flywheelLeftSMC = SparkWrapper(motorLeft, DCMotor.getNEO(1), flywheelMotorConfigLeft)
@@ -127,11 +125,11 @@ object HoodedShooter : SubsystemBase() {
     }
 
     fun revPass(): Command{
-        return setVelocitiesCommand(HoodedShooterConstants::primaryPassFlywheel, HoodedShooterConstants::passRollerDutyCycle)
+        return setVelocitiesCommand(ShooterConstants::primaryPassFlywheel, ShooterConstants::passRollerDutyCycle)
     }
 
     fun rev(): Command {
-        return setVelocitiesCommand(HoodedShooterConstants::primaryShootFlywheel, HoodedShooterConstants::shootRollerDutyCycle).asProxy()
+        return setVelocitiesCommand(ShooterConstants::primaryShootFlywheel, ShooterConstants::shootRollerDutyCycle).asProxy()
     }
 
     fun stop(): Command {

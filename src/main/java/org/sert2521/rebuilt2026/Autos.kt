@@ -13,10 +13,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.Commands
-import edu.wpi.first.wpilibj2.command.Commands.idle
 import edu.wpi.first.wpilibj2.command.ScheduleCommand
 import org.sert2521.rebuilt2026.subsystems.Grintake
-import org.sert2521.rebuilt2026.subsystems.shooter.HoodedShooter
+import org.sert2521.rebuilt2026.subsystems.hooded_shooter.Shooter
 import org.sert2521.rebuilt2026.subsystems.Indexer
 import org.sert2521.rebuilt2026.subsystems.drivetrain.Drivetrain
 import org.sert2521.rebuilt2026.subsystems.drivetrain.SwerveConstants
@@ -26,15 +25,18 @@ object Autos {
     private val autoChooser = SendableChooser<Command>()
 
     private val namedCommandsList = mapOf(
-        "Rev Hub" to HoodedShooter.rev().asProxy(),
-        "Rev Stop" to HoodedShooter.stop().asProxy(),
+        "Rev Hub" to Shooter.rev().asProxy(),
+        "Rev Stop" to Shooter.stop().asProxy(),
 
         "Intake Down" to ScheduleCommand(Grintake.intakeAuto().alongWith(Indexer.manualIndex())).asProxy(),
         "Intake Up" to ScheduleCommand(Grintake.stow().alongWith(Indexer.index())).asProxy(),
 
-        "Rev" to ScheduleCommand(HoodedShooter.shoot()).asProxy(),
-        "Shoot" to ScheduleCommand(HoodedShooter.shoot().alongWith(Indexer.shoot())).asProxy(),
-        "Stop Shoot" to ScheduleCommand(HoodedShooter.rev().alongWith(Indexer.index())).asProxy(),
+        "Depot Inter" to ScheduleCommand(Grintake.depotInter().alongWith(Indexer.manualIndex())).asProxy(),
+        "Depot" to ScheduleCommand(Grintake.depot().alongWith(Indexer.manualIndex())).asProxy(),
+
+        "Rev" to ScheduleCommand(Shooter.shoot()).asProxy(),
+        "Shoot" to ScheduleCommand(Shooter.shoot().alongWith(Indexer.shoot())).asProxy(),
+        "Stop Shoot" to ScheduleCommand(Shooter.rev().alongWith(Indexer.index())).asProxy(),
     )
 
     init {
@@ -78,7 +80,7 @@ object Autos {
         autoChooser.addOption("Test", AutoBuilder.buildAuto("Test"))
         autoChooser.addOption("CL_N", AutoBuilder.buildAuto("CL_N"))
         autoChooser.addOption("CL_N_D", AutoBuilder.buildAuto("CL_N_D"))
-        // autoChooser.addOption("CL_D", AutoBuilder.buildAuto("CL_D"))
+        autoChooser.addOption("CL_D", AutoBuilder.buildAuto("CL_D"))
         autoChooser.setDefaultOption("None", Commands.none())
 
         SmartDashboard.putData("Autos", autoChooser)

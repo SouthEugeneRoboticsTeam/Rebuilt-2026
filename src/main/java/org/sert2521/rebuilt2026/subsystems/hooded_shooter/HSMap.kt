@@ -1,14 +1,12 @@
-package org.sert2521.rebuilt2026.subsystems.shooter
+package org.sert2521.rebuilt2026.subsystems.hooded_shooter
 
 import edu.wpi.first.math.MathUtil
-import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.geometry.Translation2d
+import edu.wpi.first.units.Units.Degrees
 import edu.wpi.first.units.Units.Meters
 import edu.wpi.first.units.Units.RPM
-import edu.wpi.first.units.Units.Volts
 import edu.wpi.first.units.measure.Distance
 import org.sert2521.rebuilt2026.subsystems.drivetrain.Drivetrain
-import org.sert2521.rebuilt2026.subsystems.shooter.HSGoal
 
 object HSMap {
     private val blueAllianceHub = Translation2d()
@@ -20,7 +18,7 @@ object HSMap {
             HSGoal(
                 RPM.of(2500.0),
                 RPM.of(2300.0),
-                Volts.of(6.0)
+                RPM.of()
             )
         )
     )
@@ -56,9 +54,14 @@ object HSMap {
                 nextDatapoint.hsGoal.secondFlywheelsSpeed.`in`(RPM),
                 p
             )),
-            Volts.of(MathUtil.interpolate(
-                lastDatapoint.hsGoal.rollersVoltage.`in`(Volts),
-                nextDatapoint.hsGoal.rollersVoltage.`in`(Volts),
+            RPM.of(MathUtil.interpolate(
+                lastDatapoint.hsGoal.rollerVelocity.`in`(RPM),
+                nextDatapoint.hsGoal.rollerVelocity.`in`(RPM),
+                p
+            )),
+            Degrees.of(MathUtil.interpolate(
+                lastDatapoint.hsGoal.hoodAngle.`in`(Degrees),
+                nextDatapoint.hsGoal.hoodAngle.`in`(Degrees),
                 p
             ))
         )

@@ -36,7 +36,7 @@ object Indexer : SubsystemBase() {
         .withGearing(IndexerConstants.kickerGearing)
         .withIdleMode(SmartMotorControllerConfig.MotorMode.BRAKE)
         .withTelemetry("Kicker Motor", SmartMotorControllerConfig.TelemetryVerbosity.MID)
-        .withStatorCurrentLimit(Amps.of(60.0))
+        .withStatorCurrentLimit(Amps.of(40.0))
         .withMotorInverted(true)
         .withOpenLoopRampRate(Seconds.of(0.25))
         .withClosedLoopRampRate(Seconds.of(0.25))

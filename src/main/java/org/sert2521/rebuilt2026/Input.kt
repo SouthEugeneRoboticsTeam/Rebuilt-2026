@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandJoystick
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
 import org.sert2521.rebuilt2026.commands.VisionRotationDrive
 import org.sert2521.rebuilt2026.subsystems.Grintake
-import org.sert2521.rebuilt2026.subsystems.shooter.HoodedShooter
+import org.sert2521.rebuilt2026.subsystems.hooded_shooter.Shooter
 import org.sert2521.rebuilt2026.subsystems.Indexer
 import org.sert2521.rebuilt2026.subsystems.drivetrain.Drivetrain
 import kotlin.jvm.optionals.getOrElse
@@ -21,6 +21,7 @@ object Input {
     private val intake = driverController.rightBumper()
     private val reverseIntake = driverController.leftBumper()
     private val outtake = gunnerController.button(2)
+    private val stopRev = gunnerController.button(6)
 
     private val reverseIndex = gunnerController.button(3) // Driver has control for reverse
     private val rev = gunnerController.button(4)
@@ -40,15 +41,17 @@ object Input {
 
     init {
 
-        outtake.whileTrue(Indexer.pulse().unless { !HoodedShooter.isRevved() })
+        outtake.whileTrue(Indexer.pulse().unless { !Shooter.isRevved() })
+        stopRev.onTrue(Shooter.stop())
         //outtake.onTrue(HoodedShooter.shoot())
 
         // intake.whileTrue(Indexer.manualIndex())
-        intake.whileTrue(Grintake.depot().alongWith(Indexer.index().asProxy()))
+        intake.whileTrue(Grintake.intake())
+        // intake.whileTrue(Grintake.intake().alongWith(Indexer.index().asProxy()))
         // intake.whileTrue(Grintake.intake())
         reverseIntake.whileTrue(Grintake.reverse().alongWith(Indexer.reverse().asProxy()))
-        rev.onTrue(HoodedShooter.rev())
-        revPass.whileTrue(HoodedShooter.revPass())
+        rev.onTrue(Shooter.rev())
+        revPass.whileTrue(Shooter.revPass())
 
         reverseIndex.whileTrue(Indexer.reverse())
 

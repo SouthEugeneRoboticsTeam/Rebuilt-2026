@@ -22,6 +22,8 @@ import edu.wpi.first.units.Units.*
 import edu.wpi.first.units.measure.Angle
 import edu.wpi.first.units.measure.Current
 import edu.wpi.first.units.measure.Distance
+import edu.wpi.first.wpilibj.DriverStation
+import edu.wpi.first.wpilibj.DriverStation.Alliance
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj.smartdashboard.Field2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
@@ -38,6 +40,7 @@ import yams.mechanisms.swerve.SwerveModule
 import yams.motorcontrollers.SmartMotorControllerConfig
 import yams.motorcontrollers.local.SparkWrapper
 import kotlin.jvm.javaClass
+import kotlin.jvm.optionals.getOrElse
 import kotlin.math.PI
 import kotlin.math.atan2
 import kotlin.math.hypot
@@ -97,7 +100,7 @@ object Drivetrain : SubsystemBase() {
         )
     }
 
-    private val gyroConfig = MountPoseConfigs().withMountPoseRoll(Degrees.of(-5.93248176574707)).withMountPoseYaw(Degrees.of(118.74869537353516)).withMountPosePitch(Degrees.of(-79.23535919189453))
+    private val gyroConfig = MountPoseConfigs().withMountPoseRoll(Degrees.of(-5.9324846267700195)).withMountPoseYaw(Degrees.of(118.74909210205078)).withMountPosePitch(Degrees.of(-79.23545837402344))
     private val gyro = Pigeon2(13)
     private val gyroYaw = gyro.yaw.asSupplier()
     private val gyroPitch = gyro.pitch.asSupplier()
@@ -136,6 +139,7 @@ object Drivetrain : SubsystemBase() {
 
         DogLog.log("Drivetrain/SwerveModuleStates/Setpoints", Array(4) { SwerveModuleState() })
         DogLog.log("Drivetrain/SwerveModuleStates/Optimized Setpoints", Array(4) { SwerveModuleState() })
+
     }
 
     override fun periodic() {
@@ -149,6 +153,8 @@ object Drivetrain : SubsystemBase() {
         }
 
         fed = false
+
+        DogLog.log("Drivetrain/RobotPose", getPose())
     }
 
     fun updatePoseEstimator(){
@@ -231,6 +237,8 @@ object Drivetrain : SubsystemBase() {
         if (estimatedPose.isEmpty) {
             return
         }
+
+        DogLog.log("Drivetrain/EstimatedPose", estimatedPose.get().pose)
 //        if (estimatedPose.get().pose.rotation.measureX > VisionConstants.rotationThreshold){
 //            return
 //        }
@@ -293,8 +301,18 @@ object Drivetrain : SubsystemBase() {
 
     fun getRotationToHub(): Rotation2d{
         val translation = getPose().translation
-        return Rotation2d(atan2(OtherConstsants.blueHubTranslation.y-translation.y, OtherConstsants.blueHubTranslation.x-translation.x))
-            .rotateBy(Rotation2d.k180deg)
+        return if (DriverStation.getAlliance().getOrElse { Alliance.Blue } == Alliance.Blue) {
+            Rotation2d(
+                atan2(
+                    OtherConstsants.blueHubTranslation.y - translation.y,
+                    OtherConstsants.blueHubTranslation.x - translation.x
+                )
+            )
+                .rotateBy(Rotation2d.k180deg)
+        } else {
+            Rotation2d(atan2(OtherConstsants.redHubTranslation.y-translation.y, OtherConstsants.redHubTranslation.x-translation.x))
+                .rotateBy(Rotation2d.k180deg)
+        }
     }
 
     fun getIsMoving(): Boolean{

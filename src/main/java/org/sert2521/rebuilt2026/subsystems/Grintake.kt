@@ -112,13 +112,24 @@ object Grintake : SubsystemBase() {
         )
     }
 
+    fun depotInter(): Command {
+        return runOnce {
+            setWristMotorAngle(GrintakeConstants.depotInter)
+            setRollerMotor(GrintakeConstants.intakeVoltageAuto)
+        }.andThen(
+            run {
+                setRollerMotor(GrintakeConstants.intakeVoltageAuto)
+            }
+        )
+    }
+
     fun depot(): Command{
         return runOnce {
             setWristMotorAngle(GrintakeConstants.depotPosition)
-            setRollerMotor(GrintakeConstants.intakeVoltage)
+            setRollerMotor(GrintakeConstants.intakeVoltageAuto)
         }.andThen(
             run{
-                setRollerMotor(GrintakeConstants.intakeVoltage)
+                setRollerMotor(GrintakeConstants.intakeVoltageAuto)
             }
         )
     }
