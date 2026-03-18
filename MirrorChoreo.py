@@ -61,8 +61,7 @@ def main():
 
     choreoFiles = os.listdir(choreoDirectory)
 
-    #Find only .traj files that do not contain the word "mirrored"
-    trajFiles = [file for file in choreoFiles if file.endswith(".traj") and "M" not in file and "C_" not in file and "D" not in file]
+    trajFiles = [file for file in choreoFiles if file.endswith(".traj") and "M" not in file and "C_" not in file]
 
     for file in trajFiles:
         traj = load_traj(choreoDirectory + "\\" + file)
