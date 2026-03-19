@@ -52,7 +52,7 @@ object Robot : TimedRobot() {
     override fun robotPeriodic() {
         CommandScheduler.getInstance().run()
         AllianceShiftUtil.update()
-        DogLog.log("Distance to Hub", Drivetrain.getDistanceToHub())
+        DogLog.log("Distance to Hub", Drivetrain.distanceTo(OtherConstsants.currentHub))
     }
 
     override fun disabledInit() {

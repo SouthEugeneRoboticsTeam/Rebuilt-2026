@@ -60,6 +60,7 @@ object AllianceShiftUtil {
         val opponent = when (alliance){
             DriverStation.Alliance.Blue -> DriverStation.Alliance.Red
             DriverStation.Alliance.Red -> DriverStation.Alliance.Blue
+            else -> DriverStation.Alliance.Red
         }
 
         val autoWon = if (DriverStation.getGameSpecificMessage() == "R"){
@@ -97,5 +98,9 @@ object AllianceShiftUtil {
                 DriverStation.Alliance.Red -> Color.kRed.toHexString()
             }
         )
+    }
+
+    fun allianceIsBlue():Boolean {
+        return DriverStation.getAlliance().getOrElse { DriverStation.Alliance.Blue } == DriverStation.Alliance.Blue
     }
 }

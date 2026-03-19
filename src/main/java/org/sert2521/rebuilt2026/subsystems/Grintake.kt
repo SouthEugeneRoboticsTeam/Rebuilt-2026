@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.Commands
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.sert2521.rebuilt2026.ElectronicIDs
 import org.sert2521.rebuilt2026.GrintakeConstants
+import org.sert2521.rebuilt2026.TelemetryConstants
 import yams.motorcontrollers.SmartMotorControllerConfig
 import yams.motorcontrollers.local.SparkWrapper
 import yams.telemetry.MechanismTelemetry
@@ -26,12 +27,12 @@ object Grintake : SubsystemBase() {
         .withGearing(GrintakeConstants.rollerGearing)
         .withMotorInverted(false)
         .withIdleMode(SmartMotorControllerConfig.MotorMode.BRAKE)
-        .withTelemetry("Roller Motor", SmartMotorControllerConfig.TelemetryVerbosity.MID)
+        .withTelemetry("Roller Motor", TelemetryConstants.GRINTAKE_TELEMETRY)
         .withControlMode(SmartMotorControllerConfig.ControlMode.OPEN_LOOP)
         .withStatorCurrentLimit(Amps.of(40.0))
     private val wristMotorConfig = SmartMotorControllerConfig(this)
         .withClosedLoopController(GrintakeConstants.WRIST_P, 0.0, GrintakeConstants.WRIST_D)
-        .withTelemetry("Wrist Motor", SmartMotorControllerConfig.TelemetryVerbosity.MID)
+        .withTelemetry("Wrist Motor", TelemetryConstants.GRINTAKE_TELEMETRY)
         .withMotorInverted(true)
         .withStatorCurrentLimit(Amps.of(40.0))
         .withIdleMode(SmartMotorControllerConfig.MotorMode.BRAKE)

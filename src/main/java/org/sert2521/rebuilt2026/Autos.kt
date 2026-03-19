@@ -14,19 +14,21 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.Commands
 import edu.wpi.first.wpilibj2.command.ScheduleCommand
+import org.sert2521.rebuilt2026.commands.HoodedShooterCommands
 import org.sert2521.rebuilt2026.subsystems.Grintake
-import org.sert2521.rebuilt2026.subsystems.hooded_shooter.Shooter
+import org.sert2521.rebuilt2026.subsystems.hooded_shooter.Flywheel
 import org.sert2521.rebuilt2026.subsystems.Indexer
 import org.sert2521.rebuilt2026.subsystems.drivetrain.Drivetrain
 import org.sert2521.rebuilt2026.subsystems.drivetrain.SwerveConstants
+import org.sert2521.rebuilt2026.subsystems.hooded_shooter.Hood
 import kotlin.jvm.optionals.getOrElse
 
 object Autos {
     private val autoChooser = SendableChooser<Command>()
 
     private val namedCommandsList = mapOf(
-        "Rev Hub" to Shooter.rev().asProxy(),
-        "Rev Stop" to Shooter.stop().asProxy(),
+        "Rev Hub" to HoodedShooterCommands.revStatic().asProxy(),
+        "Rev Stop" to HoodedShooterCommands.stop(),
 
         "Intake Down" to ScheduleCommand(Grintake.intakeAuto().alongWith(Indexer.manualIndex())).asProxy(),
         "Intake Up" to ScheduleCommand(Grintake.stow().alongWith(Indexer.index())).asProxy(),
@@ -34,9 +36,9 @@ object Autos {
         "Depot Inter" to ScheduleCommand(Grintake.depotInter().alongWith(Indexer.manualIndex())).asProxy(),
         "Depot" to ScheduleCommand(Grintake.depot().alongWith(Indexer.manualIndex())).asProxy(),
 
-        "Rev" to ScheduleCommand(Shooter.shoot()).asProxy(),
-        "Shoot" to ScheduleCommand(Shooter.shoot().alongWith(Indexer.shoot())).asProxy(),
-        "Stop Shoot" to ScheduleCommand(Shooter.rev().alongWith(Indexer.index())).asProxy(),
+        "Rev" to ScheduleCommand(HoodedShooterCommands.revStatic()).asProxy(),
+        "Shoot" to ScheduleCommand(HoodedShooterCommands.revStatic().alongWith(Indexer.shoot())).asProxy(),
+        "Stop Shoot" to ScheduleCommand(HoodedShooterCommands.revStatic().alongWith(Indexer.index())).asProxy(),
     )
 
     init {

@@ -15,6 +15,7 @@ import org.sert2521.rebuilt2026.ElectronicIDs
 import org.sert2521.rebuilt2026.IndexerConstants
 import org.sert2521.rebuilt2026.IndexerConstants.PULSE_DELAY_TIME
 import org.sert2521.rebuilt2026.IndexerConstants.PULSE_SHOOT_TIME
+import org.sert2521.rebuilt2026.TelemetryConstants
 import yams.motorcontrollers.SmartMotorControllerConfig
 import yams.motorcontrollers.local.SparkWrapper
 import yams.telemetry.MechanismTelemetry
@@ -26,7 +27,7 @@ object Indexer : SubsystemBase() {
     private val indexerMotorConfig = SmartMotorControllerConfig(this)
         .withGearing(IndexerConstants.indexerGearing)
         .withIdleMode(SmartMotorControllerConfig.MotorMode.BRAKE)
-        .withTelemetry("Indexer Motor", SmartMotorControllerConfig.TelemetryVerbosity.MID)
+        .withTelemetry("Indexer Motor", TelemetryConstants.INDEXER_TELEMETRY)
         .withStatorCurrentLimit(Amps.of(40.0))
         .withMotorInverted(true)
         .withOpenLoopRampRate(Seconds.of(0.25))
@@ -35,7 +36,7 @@ object Indexer : SubsystemBase() {
     private val kickerMotorConfig = SmartMotorControllerConfig(this)
         .withGearing(IndexerConstants.kickerGearing)
         .withIdleMode(SmartMotorControllerConfig.MotorMode.BRAKE)
-        .withTelemetry("Kicker Motor", SmartMotorControllerConfig.TelemetryVerbosity.MID)
+        .withTelemetry("Kicker Motor", TelemetryConstants.INDEXER_TELEMETRY)
         .withStatorCurrentLimit(Amps.of(40.0))
         .withMotorInverted(true)
         .withOpenLoopRampRate(Seconds.of(0.25))

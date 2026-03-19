@@ -1,7 +1,6 @@
 package org.sert2521.rebuilt2026.subsystems.drivetrain
 
 import com.ctre.phoenix6.configs.MountPoseConfigs
-import com.ctre.phoenix6.configs.Pigeon2FeaturesConfigs
 import com.ctre.phoenix6.hardware.CANcoder
 import com.ctre.phoenix6.hardware.Pigeon2
 import com.revrobotics.spark.SparkLowLevel
@@ -27,19 +26,17 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj.smartdashboard.Field2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
-import edu.wpi.first.wpilibj2.command.CommandScheduler
-import edu.wpi.first.wpilibj2.command.Commands
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import limelight.Limelight
 import limelight.networktables.LimelightPoseEstimator
 import limelight.networktables.Orientation3d
 import org.sert2521.rebuilt2026.OtherConstsants
+import org.sert2521.rebuilt2026.TelemetryConstants
 import org.sert2521.rebuilt2026.commands.JoystickDrive
 import yams.mechanisms.config.SwerveModuleConfig
 import yams.mechanisms.swerve.SwerveModule
 import yams.motorcontrollers.SmartMotorControllerConfig
 import yams.motorcontrollers.local.SparkWrapper
-import kotlin.jvm.javaClass
 import kotlin.jvm.optionals.getOrElse
 import kotlin.math.PI
 import kotlin.math.atan2
@@ -52,15 +49,15 @@ object Drivetrain : SubsystemBase() {
     ): SwerveModule {
         val driveConfig = SmartMotorControllerConfig(this)
             .withIdleMode(SmartMotorControllerConfig.MotorMode.BRAKE)
-            .withWheelDiameter(SwerveConstants.wheelRadius.times(2.0))
+            .withWheelRadius(SwerveConstants.wheelRadius)
             .withFeedforward(SimpleMotorFeedforward(SwerveConstants.DRIVE_S, SwerveConstants.DRIVE_V, SwerveConstants.DRIVE_A))
             .withClosedLoopController(SwerveConstants.DRIVE_P, SwerveConstants.DRIVE_I, SwerveConstants.DRIVE_D)
             .withGearing(SwerveConstants.driveGearing)
-            .withOpenLoopRampRate(Seconds.zero())
-            .withClosedLoopRampRate(Seconds.zero())
+            .withOpenLoopRampRate(Seconds.of(0.75))
+            .withClosedLoopRampRate(Seconds.of(0.25))
             .withMotorInverted(true)
             .withStatorCurrentLimit(SwerveConstants.driveCurrentLimit)
-            .withTelemetry("$moduleName Drive Motor", SmartMotorControllerConfig.TelemetryVerbosity.MID)
+            .withTelemetry("$moduleName Drive Motor", TelemetryConstants.DRIVETRAIN_DRIVE_TELEMETRY)
 
         val angleConfig = SmartMotorControllerConfig(this)
             .withIdleMode(SmartMotorControllerConfig.MotorMode.BRAKE)
@@ -68,10 +65,10 @@ object Drivetrain : SubsystemBase() {
             .withClosedLoopController(SwerveConstants.ANGLE_P, 0.0, SwerveConstants.ANGLE_D)
             .withContinuousWrapping(-Radians.of(PI), Radians.of(PI))
             .withStatorCurrentLimit(SwerveConstants.angleCurrentLimit)
-            .withOpenLoopRampRate(Seconds.zero())
-            .withClosedLoopRampRate(Seconds.zero())
+            .withOpenLoopRampRate(Seconds.of(0.25))
+            .withClosedLoopRampRate(Seconds.of(0.25))
             .withMotorInverted(true)
-            .withTelemetry("$moduleName Angle Motor", SmartMotorControllerConfig.TelemetryVerbosity.MID)
+            .withTelemetry("$moduleName Angle Motor", TelemetryConstants.DRIVETRAIN_ANGLE_TELEMETRY)
 
         val driveSMC = SparkWrapper(driveMotor, DCMotor.getNEO(1), driveConfig)
         val angleSMC = SparkWrapper(angleMotor, DCMotor.getNEO(1), angleConfig)
@@ -163,7 +160,7 @@ object Drivetrain : SubsystemBase() {
         moduleStates = getModuleStates()
         DogLog.log("Drivetrain/SwerveModuleStates/Measured", moduleStates)
 
-        val chassisSpeeds = kinematics.toChassisSpeeds(*moduleStates)
+        val chassisSpeeds = getChassisSpeeds()
         DogLog.log("Drivetrain/ChassisSpeeds/Measured", chassisSpeeds)
         DogLog.log(
             "Drivetrain/ChassisSpeeds/Measured Drive Speed",
@@ -229,22 +226,12 @@ object Drivetrain : SubsystemBase() {
             )
         )
 
-        if (!limelight.latestResults.isEmpty){
-            DogLog.log("Limelight/Tempurature", limelight.latestResults.get().hardware.temp)
-        }
-
         val estimatedPose = limelightPoseEstimator.poseEstimate
         if (estimatedPose.isEmpty) {
             return
         }
 
         DogLog.log("Drivetrain/EstimatedPose", estimatedPose.get().pose)
-//        if (estimatedPose.get().pose.rotation.measureX > VisionConstants.rotationThreshold){
-//            return
-//        }
-//        if (estimatedPose.get().pose.rotation.measureY > VisionConstants.rotationThreshold){
-//            return
-//        }
         if (estimatedPose.get().pose.toPose2d().translation == Translation2d.kZero) {
             return
         }
@@ -280,8 +267,10 @@ object Drivetrain : SubsystemBase() {
         gyro.setYaw((rotation).measure)
     }
 
-    fun setModulePrevReference(){
-        moduleLockPrevReference = Array(4) { moduleStates[it].angle }
+    fun setCurrentLimit(current: Current){
+        modules.forEach {
+            it.driveMotorController.setStatorCurrentLimit(current)
+        }
     }
 
     fun runFFCharacterization(output:Double){
@@ -299,34 +288,22 @@ object Drivetrain : SubsystemBase() {
         return output / 4.0
     }
 
-    fun getRotationToHub(): Rotation2d{
-        val translation = getPose().translation
-        return if (DriverStation.getAlliance().getOrElse { Alliance.Blue } == Alliance.Blue) {
-            Rotation2d(
-                atan2(
-                    OtherConstsants.blueHubTranslation.y - translation.y,
-                    OtherConstsants.blueHubTranslation.x - translation.x
-                )
-            )
-                .rotateBy(Rotation2d.k180deg)
-        } else {
-            Rotation2d(atan2(OtherConstsants.redHubTranslation.y-translation.y, OtherConstsants.redHubTranslation.x-translation.x))
-                .rotateBy(Rotation2d.k180deg)
-        }
+    fun rotationTo(other: Translation2d): Rotation2d{
+        val driveTranslation = getPose().translation
+        return Rotation2d(atan2(other.y - driveTranslation.y, other.x - driveTranslation.x))
     }
 
+    fun distanceTo(translation2d: Translation2d): Distance {
+        return Meters.of(getPose().translation.getDistance(translation2d))
+    }
+
+    fun distanceToClosest(vararg translations: Translation2d): Distance{
+        return distanceTo(getPose().translation.nearest(translations.toSet()))
+    }
+
+    /* Game Specific */
     fun getIsMoving(): Boolean{
         val chassisSpeeds = getChassisSpeeds()
         return MetersPerSecond.of(hypot(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond)) > SwerveConstants.movingThreshold
-    }
-
-    fun getDistanceToHub(): Distance {
-        return Meters.of(getPose().translation.getDistance(OtherConstsants.blueHubTranslation))
-    }
-
-    fun setCurrentLimit(current: Current){
-        modules.forEach {
-            it.driveMotorController.setStatorCurrentLimit(current)
-        }
     }
 }

@@ -7,9 +7,10 @@ import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.Commands
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
+import org.sert2521.rebuilt2026.commands.HoodedShooterCommands
 import org.sert2521.rebuilt2026.commands.VisionRotationDrive
 import org.sert2521.rebuilt2026.subsystems.Grintake
-import org.sert2521.rebuilt2026.subsystems.hooded_shooter.Shooter
+import org.sert2521.rebuilt2026.subsystems.hooded_shooter.Flywheel
 import org.sert2521.rebuilt2026.subsystems.Indexer
 import org.sert2521.rebuilt2026.subsystems.drivetrain.Drivetrain
 import kotlin.jvm.optionals.getOrElse
@@ -41,8 +42,8 @@ object Input {
 
     init {
 
-        outtake.whileTrue(Indexer.pulse().unless { !Shooter.isRevved() })
-        stopRev.onTrue(Shooter.stop())
+        outtake.whileTrue(Indexer.pulse().unless { !Flywheel.isRevved() })
+        stopRev.onTrue(HoodedShooterCommands.stop())
         //outtake.onTrue(HoodedShooter.shoot())
 
         // intake.whileTrue(Indexer.manualIndex())
@@ -50,8 +51,8 @@ object Input {
         // intake.whileTrue(Grintake.intake().alongWith(Indexer.index().asProxy()))
         // intake.whileTrue(Grintake.intake())
         reverseIntake.whileTrue(Grintake.reverse().alongWith(Indexer.reverse().asProxy()))
-        rev.onTrue(Shooter.rev())
-        revPass.whileTrue(Shooter.revPass())
+        rev.onTrue(HoodedShooterCommands.revAndTrackHub())
+        revPass.whileTrue(HoodedShooterCommands.revAndTrackPass())
 
         reverseIndex.whileTrue(Indexer.reverse())
 

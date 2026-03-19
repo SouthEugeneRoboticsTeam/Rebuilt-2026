@@ -2,8 +2,23 @@ package org.sert2521.rebuilt2026
 
 import edu.wpi.first.math.geometry.Translation2d
 import edu.wpi.first.units.Units.*
+import org.sert2521.rebuilt2026.util.AllianceShiftUtil
+import org.sert2521.rebuilt2026.util.HSGoal
+import org.sert2521.rebuilt2026.util.HSMapDatapoint
 import yams.gearing.GearBox
 import yams.gearing.MechanismGearing
+import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity
+import yams.telemetry.MechanismTelemetry
+
+object TelemetryConstants {
+    val DRIVETRAIN_ANGLE_TELEMETRY = TelemetryVerbosity.LOW
+    val DRIVETRAIN_DRIVE_TELEMETRY = TelemetryVerbosity.LOW
+
+    val GRINTAKE_TELEMETRY = TelemetryVerbosity.LOW
+    val INDEXER_TELEMETRY = TelemetryVerbosity.MID
+
+    val HOODED_SHOOTER_TELEMETRY = TelemetryVerbosity.MID
+}
 
 object ElectronicIDs {
     const val GRINTAKE_ROLLER_MOTOR_ID = 21
@@ -15,6 +30,7 @@ object ElectronicIDs {
     const val FLYWHEEL_LEFT_ID = 41
     const val FLYWHEEL_RIGHT_ID = 42
     const val SHOOTER_ROLLER_MOTOR_ID = 43
+    const val HOOD_MOTOR_ID = 44
 
     const val INDEXER_BEAM_BREAK_ID = 1
 }
@@ -88,6 +104,14 @@ object ShooterConstants {
     const val F_V = 0.152
     const val F_A = 0.0
 
+    const val R_P = 0.0
+    const val R_D = 0.0
+    const val R_S = 0.0
+    const val R_V = 0.0
+
+    const val H_P = 0.0
+    const val H_D = 0.0
+
     val shooterGearing = MechanismGearing(
         GearBox.fromReductionStages(
             24.0 / 20.0
@@ -123,7 +147,30 @@ object OtherConstsants {
     val redHubTranslation = Translation2d(11.91766357421875, 4.037060737609863)
 
     val blueBumps = arrayOf(Translation2d(4.0, 2.0), Translation2d(4.0, 2.0).flipWidth())
-    val redBumps = arrayOf(blueBumps[0].flipAlliance(), blueBumps[1].flipAlliance(),)
+    val redBumps = arrayOf(blueBumps[0].flipAlliance(), blueBumps[1].flipAlliance())
+
+    val currentHub = if (AllianceShiftUtil.allianceIsBlue()) { blueHubTranslation } else { redHubTranslation }
+    val currentBumps = if (AllianceShiftUtil.allianceIsBlue()) { blueBumps } else { redBumps }
+
+    val dataHub = arrayOf(
+        HSMapDatapoint(
+            0.0,
+            2500.0,
+            2300.0,
+            2000.0,
+            0.0
+        )
+    )
+
+    val dataPass = arrayOf(
+        HSMapDatapoint(
+            0.0,
+            1000.0,
+            1000.0,
+            2000.0,
+            0.0
+        )
+    )
 }
 
 fun Translation2d.flipWidth(): Translation2d{

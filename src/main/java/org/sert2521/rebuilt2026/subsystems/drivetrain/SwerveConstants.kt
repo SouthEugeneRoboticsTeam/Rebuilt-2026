@@ -34,7 +34,6 @@ object SwerveConstants {
     val driveIDs = arrayOf(5, 6, 7, 8)
     val angleIDs = arrayOf(9, 10, 11, 12)
 
-    // TODO: Tune
     const val DRIVE_P = 0.4
     const val DRIVE_I = 0.0
     const val DRIVE_D = 0.005
@@ -48,17 +47,14 @@ object SwerveConstants {
     const val ANGLE_D = 0.0
     val angleCurrentLimit = Units.Amps.of(40.0)
 
-    // TODO: Tune
     const val AUTO_TRANSLATION_P = 4.0
     const val AUTO_TRANSLATION_I = 0.0
     const val AUTO_TRANSLATION_D = 0.4
 
-    // TODO: Tune
     const val AUTO_HEADING_P = 5.5
     const val AUTO_HEADING_I = 0.0
     const val AUTO_HEADING_D = 0.1
 
-    // TODO: Tune
     const val VISION_HEADING_P = 18.0
     const val VISION_HEADING_D = 2.0
 
@@ -73,7 +69,5 @@ object SwerveConstants {
 }
 
 object VisionConstants {
-    val rotationThreshold = Degrees.of(3.0)
-
     val visionStdv = VecBuilder.fill(0.3, 0.3, Double.POSITIVE_INFINITY)
 }
