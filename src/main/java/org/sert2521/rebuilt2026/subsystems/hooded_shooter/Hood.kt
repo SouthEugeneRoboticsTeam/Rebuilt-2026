@@ -1,7 +1,9 @@
 package org.sert2521.rebuilt2026.subsystems.hooded_shooter
 
+import com.ctre.phoenix6.hardware.CANcoder
 import com.revrobotics.spark.SparkLowLevel
 import com.revrobotics.spark.SparkMax
+import dev.doglog.DogLog
 import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.units.Units.Amps
 import edu.wpi.first.units.measure.Angle
@@ -14,10 +16,13 @@ import org.sert2521.rebuilt2026.TelemetryConstants
 import yams.motorcontrollers.SmartMotorControllerConfig
 import yams.motorcontrollers.local.SparkWrapper
 import yams.telemetry.MechanismTelemetry
+import java.time.temporal.TemporalQueries.offset
 import java.util.function.Supplier
 
 object Hood : SubsystemBase() {
     private val hoodMotor = SparkMax(ElectronicIDs.HOOD_MOTOR_ID, SparkLowLevel.MotorType.kBrushless)
+    private val absoluteEncoder = CANcoder(45)
+    private val absolutePosition = absoluteEncoder.position.asSupplier()
 
     private val hoodConfig = SmartMotorControllerConfig(this)
         .withIdleMode(SmartMotorControllerConfig.MotorMode.BRAKE)
@@ -35,6 +40,8 @@ object Hood : SubsystemBase() {
     }
 
     override fun periodic() {
+        // smc.setEncoderPosition(absolutePosition.get()+ShooterConstants.hoodOffset)
+        DogLog.log("Absolute Encoder", absolutePosition.get())
         smc.updateTelemetry()
     }
 

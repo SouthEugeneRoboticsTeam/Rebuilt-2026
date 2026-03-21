@@ -112,6 +112,8 @@ object ShooterConstants {
     const val H_P = 0.0
     const val H_D = 0.0
 
+    val hoodOffset = Rotations.of(0.0)
+
     val shooterGearing = MechanismGearing(
         GearBox.fromReductionStages(
             24.0 / 20.0
@@ -130,7 +132,7 @@ object ShooterConstants {
         )
     )
 
-    val primaryShootFlywheel = RPM.of(2500.0)
+    val primaryShootFlywheel = RPM.of(3100.0)
     val secondaryShootFlywheel = RPM.of(2300.0)
     val shootRollerDutyCycle = Volts.of(6.0)
 

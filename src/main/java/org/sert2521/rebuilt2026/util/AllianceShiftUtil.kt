@@ -4,9 +4,12 @@ import dev.doglog.DogLog
 import edu.wpi.first.wpilibj.DriverStation
 import kotlin.jvm.optionals.getOrElse
 import edu.wpi.first.wpilibj.util.Color
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController
 import kotlin.math.floor
 
 object AllianceShiftUtil {
+    private val driverController = CommandXboxController(0)
+
     enum class Shift{
         AUTO,
         TRANSITION,
@@ -82,6 +85,7 @@ object AllianceShiftUtil {
     fun update(){
         val time = DriverStation.getMatchTime()
         val shift = getAllianceShift(time)
+        val shiftTime = floor(getAllianceShiftTime(shift, time) * 10.0) / 10.0
         val dashboardTime = (floor(getAllianceShiftTime(shift, time) * 10.0) / 10.0).toString()
 
         DogLog.log("Alliance Shift/Timer",
