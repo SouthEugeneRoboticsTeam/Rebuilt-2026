@@ -3,12 +3,10 @@ package org.sert2521.rebuilt2026
 import edu.wpi.first.math.geometry.Translation2d
 import edu.wpi.first.units.Units.*
 import org.sert2521.rebuilt2026.util.AllianceShiftUtil
-import org.sert2521.rebuilt2026.util.HSGoal
 import org.sert2521.rebuilt2026.util.HSMapDatapoint
 import yams.gearing.GearBox
 import yams.gearing.MechanismGearing
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity
-import yams.telemetry.MechanismTelemetry
 
 object TelemetryConstants {
     val DRIVETRAIN_ANGLE_TELEMETRY = TelemetryVerbosity.LOW
@@ -17,7 +15,7 @@ object TelemetryConstants {
     val GRINTAKE_TELEMETRY = TelemetryVerbosity.LOW
     val INDEXER_TELEMETRY = TelemetryVerbosity.MID
 
-    val HOODED_SHOOTER_TELEMETRY = TelemetryVerbosity.MID
+    val HOODED_SHOOTER_TELEMETRY = TelemetryVerbosity.HIGH
 }
 
 object ElectronicIDs {
@@ -29,8 +27,8 @@ object ElectronicIDs {
 
     const val FLYWHEEL_LEFT_ID = 41
     const val FLYWHEEL_RIGHT_ID = 42
-    const val SHOOTER_ROLLER_MOTOR_ID = 43
-    const val HOOD_MOTOR_ID = 44
+    const val HOOD_MOTOR_ID = 43
+    const val HOOD_ABSOLUTE_ENCODER_ID = 44
 
     const val INDEXER_BEAM_BREAK_ID = 1
 }
@@ -60,7 +58,7 @@ object GrintakeConstants {
     val intakePosition = Rotations.of(0.42) - Degrees.of(10.0)
 
     val intakeVoltageAuto = Volts.of(12.0)
-    val intakeVoltage = Volts.of(6.0)
+    val intakeVoltage = Volts.of(8.0)
     val reverseVoltage = Volts.of(0.0)
 
     const val REZERO_SPEED = -0.2
@@ -86,7 +84,7 @@ object IndexerConstants {
     const val MAIN_INDEXING = 0.4
     const val KICKER_INDEXING = -0.4
 
-    const val MAIN_KICKING = 0.7
+    const val MAIN_KICKING = 0.5
     const val KICKER_KICKING = 0.9
     const val KICK_TIME = 0.0
 
@@ -98,21 +96,19 @@ object IndexerConstants {
 }
 
 object ShooterConstants {
-    const val F_P = 0.02
-    const val F_D = 0.001
+    const val F_P = 0.03
+    const val F_D = 0.008
     const val F_S = 0.0
     const val F_V = 0.152
     const val F_A = 0.0
 
-    const val R_P = 0.0
-    const val R_D = 0.0
-    const val R_S = 0.0
-    const val R_V = 0.0
+    const val H_S = 0.2
+    const val H_P = 10.0
+    const val H_D = 1.0
 
-    const val H_P = 0.0
-    const val H_D = 0.0
 
-    val hoodOffset = Rotations.of(0.0)
+    val hoodOffset = Rotations.of(-0.1389)
+    const val HOOD_ABSOLUTE_ENCODER_GEARING = 150.0/14.0
 
     val shooterGearing = MechanismGearing(
         GearBox.fromReductionStages(
@@ -120,25 +116,19 @@ object ShooterConstants {
         )
     )
 
-    val rollerGearing = MechanismGearing(
-        GearBox.fromReductionStages(
-            1.0
-        )
-    )
-
     val hoodGearing = MechanismGearing(
         GearBox.fromReductionStages(
-            1.0 // TODO: Change
+            150.0/14.0,
+            10.0
         )
     )
 
-    val primaryShootFlywheel = RPM.of(3100.0)
-    val secondaryShootFlywheel = RPM.of(2300.0)
-    val shootRollerDutyCycle = Volts.of(6.0)
+    val hoodMax = Rotations.of(0.075)
+    val hoodMin = Rotations.of(0.0)
+    val hoodSoftMax = hoodMax - Degrees.of(2.0)
+    val hoodSoftMin = hoodMin + Degrees.of(1.0)
 
-    val primaryPassFlywheel = RPM.of(2000.0)
-    val secondaryPassFlywheel = RPM.of(1000.0)
-    val passRollerDutyCycle = Volts.of(12.0)
+    val shotTime = Seconds.of(1.7)
 }
 
 object OtherConstsants {
@@ -155,12 +145,16 @@ object OtherConstsants {
     val currentBumps = if (AllianceShiftUtil.allianceIsBlue()) { blueBumps } else { redBumps }
 
     val dataHub = arrayOf(
+        // Remember to put in order of distance
         HSMapDatapoint(
-            0.0,
-            2500.0,
-            2300.0,
-            2000.0,
-            0.0
+            2.0,
+            2475.0,
+            0.024803
+        ),
+        HSMapDatapoint(
+            3.0,
+            2580.0,
+            0.05029
         )
     )
 
@@ -168,11 +162,11 @@ object OtherConstsants {
         HSMapDatapoint(
             0.0,
             1000.0,
-            1000.0,
-            2000.0,
             0.0
         )
     )
+
+    var flywheelLiveSetpoint = RPM.of(2600.0)
 }
 
 fun Translation2d.flipWidth(): Translation2d{

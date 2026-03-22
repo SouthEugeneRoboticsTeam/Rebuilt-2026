@@ -52,7 +52,9 @@ object Robot : TimedRobot() {
     override fun robotPeriodic() {
         CommandScheduler.getInstance().run()
         AllianceShiftUtil.update()
-        DogLog.log("Distance to Hub", Drivetrain.distanceTo(OtherConstsants.currentHub))
+        DogLog.log("Shooter Live Tuning/Distance to Hub", Drivetrain.distanceTo(OtherConstsants.currentHub))
+        DogLog.log("Shooter Live Tuning/Flywheel Setpoint", OtherConstsants.flywheelLiveSetpoint)
+        DogLog.log("Shooter Live Tuning/Hood Setpoint", ShooterConstants.hoodMax * Input.getGunnerSlider())
     }
 
     override fun disabledInit() {

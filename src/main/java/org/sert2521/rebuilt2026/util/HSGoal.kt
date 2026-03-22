@@ -5,4 +5,4 @@ import edu.wpi.first.units.measure.AngularVelocity
 
 // Stands for "Hooded Shooter Goal"
 // Allows you to encode all targets in one variable
-data class HSGoal(val firstFlywheelSpeed: AngularVelocity, val secondFlywheelSpeed: AngularVelocity, val rollerVelocity: AngularVelocity, val hoodAngle: Angle)
+data class HSGoal(val flywheelSpeed: AngularVelocity, val hoodAngle: Angle)

@@ -28,23 +28,13 @@ object HSMap {
 
         return HSGoal(
             RPM.of(MathUtil.interpolate(
-                lastDatapoint.hsGoal.firstFlywheelSpeed.`in`(RPM),
-                nextDatapoint.hsGoal.firstFlywheelSpeed.`in`(RPM),
+                lastDatapoint.hsGoal.flywheelSpeed.`in`(RPM),
+                nextDatapoint.hsGoal.flywheelSpeed.`in`(RPM),
                 p
             )),
-            RPM.of(MathUtil.interpolate(
-                lastDatapoint.hsGoal.secondFlywheelSpeed.`in`(RPM),
-                nextDatapoint.hsGoal.secondFlywheelSpeed.`in`(RPM),
-                p
-            )),
-            RPM.of(MathUtil.interpolate(
-                lastDatapoint.hsGoal.rollerVelocity.`in`(RPM),
-                nextDatapoint.hsGoal.rollerVelocity.`in`(RPM),
-                p
-            )),
-            Degrees.of(MathUtil.interpolate(
-                lastDatapoint.hsGoal.hoodAngle.`in`(Degrees),
-                nextDatapoint.hsGoal.hoodAngle.`in`(Degrees),
+            Rotations.of(MathUtil.interpolate(
+                lastDatapoint.hsGoal.hoodAngle.`in`(Rotations),
+                nextDatapoint.hsGoal.hoodAngle.`in`(Rotations),
                 p
             ))
         )

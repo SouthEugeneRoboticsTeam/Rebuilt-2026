@@ -4,9 +4,7 @@ import com.revrobotics.spark.SparkLowLevel
 import com.revrobotics.spark.SparkMax
 import edu.wpi.first.math.filter.Debouncer
 import edu.wpi.first.math.system.plant.DCMotor
-import edu.wpi.first.units.Units.Amps
-import edu.wpi.first.units.Units.Rotations
-import edu.wpi.first.units.Units.Volts
+import edu.wpi.first.units.Units.*
 import edu.wpi.first.units.measure.Angle
 import edu.wpi.first.units.measure.Voltage
 import edu.wpi.first.wpilibj2.command.Command
@@ -14,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.Commands
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.sert2521.rebuilt2026.ElectronicIDs
 import org.sert2521.rebuilt2026.GrintakeConstants
+import org.sert2521.rebuilt2026.Input
 import org.sert2521.rebuilt2026.TelemetryConstants
 import yams.motorcontrollers.SmartMotorControllerConfig
 import yams.motorcontrollers.local.SparkWrapper
@@ -82,19 +81,19 @@ object Grintake : SubsystemBase() {
         )
     }
 
-    fun reZero():Command{
+    fun reZero(): Command {
         return runOnce {
             setRollerMotor(Volts.zero())
             wristSMC.dutyCycle = GrintakeConstants.REZERO_SPEED
             currentDebouncer.calculate(false)
         }.andThen(
             Commands.idle()
-        ).until{
+        ).until {
             currentDebouncer.calculate(
                 wristSMC.statorCurrent > GrintakeConstants.reZeroThreshold
             )
         }.andThen(
-            runOnce{
+            runOnce {
                 wristSMC.setEncoderPosition(Rotations.zero())
             }
         ).andThen(
@@ -108,9 +107,22 @@ object Grintake : SubsystemBase() {
             setRollerMotor(GrintakeConstants.intakeVoltage)
         }.andThen(
             run {
-                setRollerMotor(GrintakeConstants.intakeVoltage)
+                setRollerMotor(
+                    if (Input.getIntaking()) {
+                        GrintakeConstants.intakeVoltage
+                    } else {
+                        Volts.zero()
+                    }
+                )
             }
         )
+    }
+
+    fun down(): Command {
+        return runOnce {
+            setWristMotorAngle(GrintakeConstants.intakePosition)
+            setRollerMotor(Volts.zero())
+        }
     }
 
     fun depotInter(): Command {
@@ -124,18 +136,18 @@ object Grintake : SubsystemBase() {
         )
     }
 
-    fun depot(): Command{
+    fun depot(): Command {
         return runOnce {
             setWristMotorAngle(GrintakeConstants.depotPosition)
             setRollerMotor(GrintakeConstants.intakeVoltageAuto)
         }.andThen(
-            run{
+            run {
                 setRollerMotor(GrintakeConstants.intakeVoltageAuto)
             }
         )
     }
 
-    fun intakeAuto():Command {
+    fun intakeAuto(): Command {
         return runOnce {
             setWristMotorAngle(GrintakeConstants.intakePosition)
             setRollerMotor(Volts.of(12.0))

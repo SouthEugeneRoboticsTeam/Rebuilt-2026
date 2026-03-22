@@ -2,12 +2,18 @@ package org.sert2521.rebuilt2026.subsystems.hooded_shooter
 
 import com.revrobotics.spark.SparkLowLevel
 import com.revrobotics.spark.SparkMax
+import dev.doglog.DogLog
 import edu.wpi.first.math.MathUtil
+import edu.wpi.first.math.controller.BangBangController
 import edu.wpi.first.math.controller.SimpleMotorFeedforward
 import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.units.Units
 import edu.wpi.first.units.Units.RPM
+import edu.wpi.first.units.Units.RotationsPerSecond
+import edu.wpi.first.units.Units.Seconds
+import edu.wpi.first.units.Units.Volts
 import edu.wpi.first.units.measure.AngularVelocity
+import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.Commands
 import edu.wpi.first.wpilibj2.command.SubsystemBase
@@ -22,6 +28,7 @@ import java.util.function.Supplier
 object Flywheel : SubsystemBase() {
     private val motorLeft = SparkMax(ElectronicIDs.FLYWHEEL_LEFT_ID, SparkLowLevel.MotorType.kBrushless)
     private val motorRight = SparkMax(ElectronicIDs.FLYWHEEL_RIGHT_ID, SparkLowLevel.MotorType.kBrushless)
+    private val bangBangController = BangBangController(10.0)
 
     private val flywheelMotorConfig = {
         SmartMotorControllerConfig(this)
@@ -50,6 +57,8 @@ object Flywheel : SubsystemBase() {
     private val telemetry = MechanismTelemetry()
     private var revved = false
 
+    private val shotTimer = Timer()
+
     init {
         telemetry.setupTelemetry("Flywheels", leftSMC)
         telemetry.setupTelemetry("Flywheels", rightSMC)
@@ -58,6 +67,9 @@ object Flywheel : SubsystemBase() {
     override fun periodic() {
         leftSMC.updateTelemetry()
         rightSMC.updateTelemetry()
+
+        DogLog.log("Revved", revved)
+
     }
 
     override fun simulationPeriodic() {
@@ -67,14 +79,33 @@ object Flywheel : SubsystemBase() {
 
     fun setVelocity(velocity:Supplier<AngularVelocity>):Command{
         return run {
-            leftSMC.setVelocity(velocity.get())
-            rightSMC.setVelocity(velocity.get())
-            revved = MathUtil.isNear(velocity.get().`in`(RPM), leftSMC.mechanismVelocity.`in`(RPM), 20.0)
+            val bangOutput = bangBangController.calculate(leftSMC.mechanismVelocity.`in`(RPM), velocity.get().`in`(RPM))
+            var outputAdded = Volts.of(1.2) * bangOutput * (ShooterConstants.shotTime.`in`(Seconds)-shotTimer.get()) / ShooterConstants.shotTime.`in`(Seconds)
+            if (outputAdded < Volts.zero()) {
+                outputAdded = Volts.zero()
+            }
+            leftSMC.voltage = outputAdded + Volts.of(velocity.get().`in`(RotationsPerSecond) * ShooterConstants.F_V)
+            rightSMC.voltage = outputAdded + Volts.of(velocity.get().`in`(RotationsPerSecond) * ShooterConstants.F_V)
+
+
+//            leftSMC.setVelocity(velocity.get())
+//            rightSMC.setVelocity(velocity.get())
+            revved = MathUtil.isNear(velocity.get().`in`(RPM), leftSMC.mechanismVelocity.`in`(RPM), 50.0)
         }
     }
 
+    fun startTimer() {
+        shotTimer.reset()
+        shotTimer.start()
+    }
+
+    fun stopTimer() {
+        shotTimer.reset()
+        shotTimer.stop()
+    }
+
     fun isRevved():Boolean {
-        return revved
+        return true
     }
 
     fun stop():Command{

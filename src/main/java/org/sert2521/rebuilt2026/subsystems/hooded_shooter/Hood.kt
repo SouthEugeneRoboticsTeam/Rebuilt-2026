@@ -1,9 +1,13 @@
 package org.sert2521.rebuilt2026.subsystems.hooded_shooter
 
+import com.ctre.phoenix6.configs.CANcoderConfiguration
+import com.ctre.phoenix6.configs.MagnetSensorConfigs
 import com.ctre.phoenix6.hardware.CANcoder
+import com.ctre.phoenix6.signals.SensorDirectionValue
 import com.revrobotics.spark.SparkLowLevel
 import com.revrobotics.spark.SparkMax
 import dev.doglog.DogLog
+import edu.wpi.first.math.controller.SimpleMotorFeedforward
 import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.units.Units.Amps
 import edu.wpi.first.units.measure.Angle
@@ -21,7 +25,7 @@ import java.util.function.Supplier
 
 object Hood : SubsystemBase() {
     private val hoodMotor = SparkMax(ElectronicIDs.HOOD_MOTOR_ID, SparkLowLevel.MotorType.kBrushless)
-    private val absoluteEncoder = CANcoder(45)
+    private val absoluteEncoder = CANcoder(ElectronicIDs.HOOD_ABSOLUTE_ENCODER_ID)
     private val absolutePosition = absoluteEncoder.position.asSupplier()
 
     private val hoodConfig = SmartMotorControllerConfig(this)
@@ -30,6 +34,7 @@ object Hood : SubsystemBase() {
         .withMotorInverted(false)
         .withStatorCurrentLimit(Amps.of(30.0))
         .withClosedLoopController(ShooterConstants.H_P, 0.0, ShooterConstants.H_D)
+        .withFeedforward(SimpleMotorFeedforward(ShooterConstants.H_S, 0.0))
         .withTelemetry("Hood Motor", TelemetryConstants.HOODED_SHOOTER_TELEMETRY)
 
     private val smc = SparkWrapper(hoodMotor, DCMotor.getNEO(1), hoodConfig)
@@ -37,11 +42,17 @@ object Hood : SubsystemBase() {
 
     init {
         telemetry.setupTelemetry("Hood", smc)
+        absoluteEncoder.configurator.apply(
+            MagnetSensorConfigs()
+                .withSensorDirection(SensorDirectionValue.Clockwise_Positive)
+                .withMagnetOffset(ShooterConstants.hoodOffset)
+        )
     }
 
     override fun periodic() {
-        // smc.setEncoderPosition(absolutePosition.get()+ShooterConstants.hoodOffset)
+        smc.setEncoderPosition(absolutePosition.get() / ShooterConstants.HOOD_ABSOLUTE_ENCODER_GEARING)
         DogLog.log("Absolute Encoder", absolutePosition.get())
+        DogLog.log("Absolute Encoder with gearing", absolutePosition.get() / ShooterConstants.HOOD_ABSOLUTE_ENCODER_GEARING)
         smc.updateTelemetry()
     }
 

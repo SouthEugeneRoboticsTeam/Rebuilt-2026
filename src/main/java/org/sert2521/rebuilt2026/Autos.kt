@@ -79,7 +79,6 @@ object Autos {
             Drivetrain
         )
 
-        autoChooser.addOption("Test", AutoBuilder.buildAuto("Test"))
         autoChooser.addOption("CL_N", AutoBuilder.buildAuto("CL_N"))
         autoChooser.addOption("CL_N_D", AutoBuilder.buildAuto("CL_N_D"))
         autoChooser.addOption("CL_D", AutoBuilder.buildAuto("CL_D"))
