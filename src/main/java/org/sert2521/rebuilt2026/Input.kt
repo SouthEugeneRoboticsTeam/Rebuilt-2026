@@ -11,9 +11,10 @@ import edu.wpi.first.wpilibj2.command.button.CommandJoystick
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
 import org.sert2521.rebuilt2026.commands.HoodedShooterCommands
 import org.sert2521.rebuilt2026.commands.VisionRotationDrive
-import org.sert2521.rebuilt2026.subsystems.Grintake
+import org.sert2521.rebuilt2026.subsystems.Intake
 import org.sert2521.rebuilt2026.subsystems.hooded_shooter.Flywheel
 import org.sert2521.rebuilt2026.subsystems.Indexer
+import org.sert2521.rebuilt2026.subsystems.Wrist
 import org.sert2521.rebuilt2026.subsystems.drivetrain.Drivetrain
 import org.sert2521.rebuilt2026.subsystems.hooded_shooter.Hood
 import kotlin.jvm.optionals.getOrElse
@@ -63,11 +64,12 @@ object Input {
         hoodDown.onTrue(Hood.setPosition { ShooterConstants.hoodMin })
         hoodUp.onTrue(Hood.setPosition { ShooterConstants.hoodMax })
 
-        // intake.whileTrue(Indexer.manualIndex())
-        wristDown.whileTrue(Grintake.intake())
-        // intake.whileTrue(Grintake.intake().alongWith(Indexer.index().asProxy()))
-        // intake.whileTrue(Grintake.intake())
-        reverseIntake.whileTrue(Grintake.reverse().alongWith(Indexer.reverse().asProxy()))
+        intake.whileTrue(Intake.intake())
+        wristDown.whileTrue(Wrist.down())
+        wristDown.onFalse(Wrist.up())
+
+
+        reverseIntake.whileTrue(Intake.reverse().alongWith(Indexer.reverse().asProxy()))
         rev.onTrue(HoodedShooterCommands.revAndTrackHub())
         revPass.whileTrue(HoodedShooterCommands.revAndTrackPass())
 

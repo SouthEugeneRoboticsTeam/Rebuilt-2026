@@ -5,6 +5,7 @@ import edu.wpi.first.math.geometry.Translation2d
 import edu.wpi.first.units.Units
 import edu.wpi.first.units.Units.Degrees
 import edu.wpi.first.units.Units.Rotations
+import edu.wpi.first.units.Units.Seconds
 import edu.wpi.first.units.measure.Distance
 import yams.gearing.GearBox
 import yams.gearing.MechanismGearing
@@ -66,6 +67,7 @@ object SwerveConstants {
     const val DRIVE_SPEED = 3.5
     const val ROT_SPEED = 4.5
 
+    val timeToFullSpeed = Seconds.of(0.7)
 }
 
 object VisionConstants {

@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj.util.WPILibVersion
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
-import org.sert2521.rebuilt2026.subsystems.Grintake
+import org.sert2521.rebuilt2026.subsystems.Wrist
 import org.sert2521.rebuilt2026.subsystems.drivetrain.Drivetrain
 import org.sert2521.rebuilt2026.util.AllianceShiftUtil
 
@@ -77,7 +77,7 @@ object Robot : TimedRobot() {
     override fun teleopInit() {
         Drivetrain.stopDrivePID()
         autonomousCommand?.cancel()
-        CommandScheduler.getInstance().schedule(Grintake.reZero())
+        CommandScheduler.getInstance().schedule(Wrist.reZero())
     }
 
     /** This method is called periodically during operator control.  */

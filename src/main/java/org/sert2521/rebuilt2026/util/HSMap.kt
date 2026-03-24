@@ -5,6 +5,7 @@ import edu.wpi.first.units.Units.*
 import edu.wpi.first.units.measure.Distance
 import org.sert2521.rebuilt2026.OtherConstsants
 import org.sert2521.rebuilt2026.subsystems.drivetrain.Drivetrain
+import kotlin.math.min
 
 object HSMap {
     private fun interpolateWithDistance(distance: Distance, dataset: Array<HSMapDatapoint>): HSGoal {
@@ -27,16 +28,16 @@ object HSMap {
         )
 
         return HSGoal(
-            RPM.of(MathUtil.interpolate(
+            RPM.of(min(MathUtil.interpolate(
                 lastDatapoint.hsGoal.flywheelSpeed.`in`(RPM),
                 nextDatapoint.hsGoal.flywheelSpeed.`in`(RPM),
                 p
-            )),
-            Rotations.of(MathUtil.interpolate(
+            ), nextDatapoint.hsGoal.flywheelSpeed.`in`(RPM))),
+            Rotations.of(min(MathUtil.interpolate(
                 lastDatapoint.hsGoal.hoodAngle.`in`(Rotations),
                 nextDatapoint.hsGoal.hoodAngle.`in`(Rotations),
                 p
-            ))
+            ), nextDatapoint.hsGoal.hoodAngle.`in`(Rotations))),
         )
     }
 
