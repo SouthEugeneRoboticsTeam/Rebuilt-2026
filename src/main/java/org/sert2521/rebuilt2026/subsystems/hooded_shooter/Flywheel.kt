@@ -79,8 +79,15 @@ object Flywheel : SubsystemBase() {
 
     fun setVelocity(velocity:Supplier<AngularVelocity>):Command{
         return run {
-            val bangOutput = bangBangController.calculate(leftSMC.mechanismVelocity.`in`(RPM), velocity.get().`in`(RPM))
-            var outputAdded = Volts.of(1.2) * bangOutput * (ShooterConstants.shotTime.`in`(Seconds)-shotTimer.get()) / ShooterConstants.shotTime.`in`(Seconds)
+            var bangOutput = bangBangController.calculate(leftSMC.mechanismVelocity.`in`(RPM), velocity.get().`in`(RPM))
+            if (shotTimer.get()<0.4 && shotTimer.isRunning){
+                bangOutput = 0.9
+            } else if (shotTimer.isRunning) {
+                bangOutput *= 0.55
+            } else {
+                bangOutput = 0.0
+            }
+            var outputAdded = Volts.of(1.2) * bangOutput
             if (outputAdded < Volts.zero()) {
                 outputAdded = Volts.zero()
             }

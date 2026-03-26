@@ -30,7 +30,7 @@ class JoystickDrive(private val fieldOriented: Boolean = true) : Command() {
     override fun execute() {
         val theta = atan2(Input.getLeftY(), Input.getLeftX())
         val mag = MathUtil.applyDeadband(hypot(Input.getLeftY(), Input.getLeftX()), 0.1)
-        if (mag<1.0){
+        if (mag<Input.maxSpeed()){
             val corrMag = mag.pow(3)
             val ratedMag = rateLimiter.calculate(corrMag)
             targetChassisSpeeds = ChassisSpeeds(
@@ -41,7 +41,7 @@ class JoystickDrive(private val fieldOriented: Boolean = true) : Command() {
         } else {
             val y = sin(theta)
             val x = cos(theta)
-            val ratedMag = rateLimiter.calculate(1.0)
+            val ratedMag = rateLimiter.calculate(Input.maxSpeed())
             targetChassisSpeeds = ChassisSpeeds(
                 y * SwerveConstants.DRIVE_SPEED * ratedMag,
                 x * SwerveConstants.DRIVE_SPEED * ratedMag,

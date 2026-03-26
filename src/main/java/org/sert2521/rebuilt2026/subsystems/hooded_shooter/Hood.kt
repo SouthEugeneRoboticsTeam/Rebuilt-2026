@@ -8,8 +8,10 @@ import com.revrobotics.spark.SparkLowLevel
 import com.revrobotics.spark.SparkMax
 import dev.doglog.DogLog
 import edu.wpi.first.math.controller.SimpleMotorFeedforward
+import edu.wpi.first.math.filter.Debouncer
 import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.units.Units.Amps
+import edu.wpi.first.units.Units.Rotations
 import edu.wpi.first.units.measure.Angle
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.Commands
@@ -37,6 +39,8 @@ object Hood : SubsystemBase() {
         .withFeedforward(SimpleMotorFeedforward(ShooterConstants.H_S, 0.0))
         .withTelemetry("Hood Motor", TelemetryConstants.HOODED_SHOOTER_TELEMETRY)
 
+    private val debouncer = Debouncer(0.4, Debouncer.DebounceType.kRising)
+
     private val smc = SparkWrapper(hoodMotor, DCMotor.getNEO(1), hoodConfig)
     private val telemetry = MechanismTelemetry()
 
@@ -45,12 +49,11 @@ object Hood : SubsystemBase() {
         absoluteEncoder.configurator.apply(
             MagnetSensorConfigs()
                 .withSensorDirection(SensorDirectionValue.Clockwise_Positive)
-                .withMagnetOffset(ShooterConstants.hoodOffset)
         )
     }
-
+    // 0.382
     override fun periodic() {
-        smc.setEncoderPosition(absolutePosition.get() / ShooterConstants.HOOD_ABSOLUTE_ENCODER_GEARING)
+        smc.setEncoderPosition((absolutePosition.get()+Rotations.of(0.432)) / ShooterConstants.HOOD_ABSOLUTE_ENCODER_GEARING)
         DogLog.log("Absolute Encoder", absolutePosition.get())
         DogLog.log("Absolute Encoder with gearing", absolutePosition.get() / ShooterConstants.HOOD_ABSOLUTE_ENCODER_GEARING)
         smc.updateTelemetry()
@@ -70,5 +73,19 @@ object Hood : SubsystemBase() {
         return runOnce {
             smc.dutyCycle = 0.0
         }.andThen(Commands.idle())
+    }
+
+    fun reZero():Command {
+        return runOnce {
+            smc.dutyCycle = -0.2
+        }.andThen(
+            Commands.idle()
+        ).until {
+            debouncer.calculate(smc.statorCurrent > Amps.of(20.0))
+        }.andThen(
+            runOnce{
+                absoluteEncoder.setPosition(Rotations.zero())
+            }
+        )
     }
 }

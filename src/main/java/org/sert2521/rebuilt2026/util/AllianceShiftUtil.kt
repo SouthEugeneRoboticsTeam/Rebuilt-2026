@@ -4,12 +4,12 @@ import dev.doglog.DogLog
 import edu.wpi.first.wpilibj.DriverStation
 import kotlin.jvm.optionals.getOrElse
 import edu.wpi.first.wpilibj.util.Color
+import edu.wpi.first.wpilibj2.command.CommandScheduler
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
+import org.sert2521.rebuilt2026.Input
 import kotlin.math.floor
 
 object AllianceShiftUtil {
-    private val driverController = CommandXboxController(0)
-
     enum class Shift{
         AUTO,
         TRANSITION,
@@ -19,6 +19,10 @@ object AllianceShiftUtil {
         SHIFT_FOUR,
         ENDGAME
     }
+
+    var shiftTime = 0.0
+    var blipStrength = 0.0
+    val rumbleBlip = Input.rumbleBlip { blipStrength }
 
 
     private fun getAllianceShift(time:Double): Shift{
@@ -85,8 +89,19 @@ object AllianceShiftUtil {
     fun update(){
         val time = DriverStation.getMatchTime()
         val shift = getAllianceShift(time)
-        val shiftTime = floor(getAllianceShiftTime(shift, time) * 10.0) / 10.0
+        shiftTime = floor(getAllianceShiftTime(shift, time) * 10.0) / 10.0
         val dashboardTime = (floor(getAllianceShiftTime(shift, time) * 10.0) / 10.0).toString()
+
+//        if (shiftTime in 0.0..5.0 && DriverStation.isEnabled()) {
+//            Input.setRumble(0.1)
+//        } else {
+//            Input.setRumble(0.0)
+//        }
+        if (shiftTime in arrayOf(1.0, 2.0, 3.0, 4.0, 5.0)){
+            blipStrength = 1.0/shiftTime
+            CommandScheduler.getInstance().schedule(rumbleBlip)
+        }
+
 
         DogLog.log("Alliance Shift/Timer",
             if ("." in dashboardTime){

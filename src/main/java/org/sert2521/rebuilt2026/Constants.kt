@@ -10,10 +10,10 @@ import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity
 
 object TelemetryConstants {
     val DRIVETRAIN_ANGLE_TELEMETRY = TelemetryVerbosity.LOW
-    val DRIVETRAIN_DRIVE_TELEMETRY = TelemetryVerbosity.MID
+    val DRIVETRAIN_DRIVE_TELEMETRY = TelemetryVerbosity.LOW
 
-    val GRINTAKE_TELEMETRY = TelemetryVerbosity.MID
-    val INDEXER_TELEMETRY = TelemetryVerbosity.MID
+    val GRINTAKE_TELEMETRY = TelemetryVerbosity.LOW
+    val INDEXER_TELEMETRY = TelemetryVerbosity.LOW
 
     val HOODED_SHOOTER_TELEMETRY = TelemetryVerbosity.HIGH
 }
@@ -52,7 +52,7 @@ object GrintakeConstants {
         )
     )
 
-    val stowPosition = Rotations.of(0.07)
+    val stowPosition = Rotations.of(0.07) - Degrees.of(8.0)
     val depotPosition = Rotations.of(0.393422)
     val depotInter = depotPosition - Degrees.of(10.0)
     val intakePosition = Rotations.of(0.42) - Degrees.of(10.0)
@@ -85,7 +85,7 @@ object IndexerConstants {
     const val KICKER_INDEXING = -0.4
 
     const val MAIN_KICKING = 0.5
-    const val KICKER_KICKING = 0.9
+    const val KICKER_KICKING = 0.7
     const val KICK_TIME = 0.0
 
     const val MAIN_REVERSE = -1.0
@@ -128,7 +128,7 @@ object ShooterConstants {
     val hoodSoftMax = hoodMax - Degrees.of(2.0)
     val hoodSoftMin = hoodMin + Degrees.of(1.0)
 
-    val shotTime = Seconds.of(1.7)
+    val shotTime = Seconds.of(999.9)
 }
 
 object OtherConstsants {
@@ -148,70 +148,68 @@ object OtherConstsants {
         // Remember to put in order of distance
         HSMapDatapoint(
             1.5,
-            2500.0,
+            2400.0,
             0.0
         ),
         HSMapDatapoint(
-            2.0,
-            2600.0,
-            0.013
+            1.8,
+            2400.0,
+            0.01
         ),
         HSMapDatapoint(
-            2.5,
-            2600.0,
-            0.015
+            2.28,
+            2400.0,
+            0.02
         ),
         HSMapDatapoint(
-            3.0,
-            2600.0,
-            0.0286
+            2.916,
+            2230.0,
+            0.04072
         ),
         HSMapDatapoint(
-            3.5,
-            2600.0,
-            0.039
+            3.4,
+            2410.0,
+            0.044
         ),
         HSMapDatapoint(
-            4.0,
-            2600.0,
-            0.075
-        ),
-        HSMapDatapoint(
-            4.5,
-            2675.0,
-            0.075
+            4.3,
+            2610.0,
+            0.052
         ),
         HSMapDatapoint(
             5.0,
-            2750.0,
-            0.075
-        ),
-        HSMapDatapoint(
-            5.5,
-            2825.0,
-            0.075
-        ),
-        HSMapDatapoint(
-            6.0,
-            2825.0,
-            0.075
-        ),
-        HSMapDatapoint(
-            6.5,
-            3500.0,
-            0.075
-        ),
+            2860.0,
+            0.06
+        )
     )
 
     val dataPass = arrayOf(
         HSMapDatapoint(
             0.0,
-            1000.0,
-            0.0
+            2500.0,
+            0.075
+        ),
+        HSMapDatapoint(
+            5.0,
+            3000.0,
+            0.075
+        ),
+        HSMapDatapoint(
+            8.0,
+            4000.0,
+            0.075
+        ),
+        HSMapDatapoint(
+            10.0,
+            4500.0,
+            0.075
         )
+
     )
 
     var flywheelLiveSetpoint = RPM.of(2600.0)
+
+    val distanceSpeedAdjustment = Seconds.of(1.4)
 }
 
 fun Translation2d.flipWidth(): Translation2d{

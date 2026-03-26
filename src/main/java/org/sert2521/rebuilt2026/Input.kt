@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.Commands.runOnce
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
 import org.sert2521.rebuilt2026.commands.HoodedShooterCommands
+import org.sert2521.rebuilt2026.commands.JoystickDrive
 import org.sert2521.rebuilt2026.commands.VisionRotationDrive
 import org.sert2521.rebuilt2026.subsystems.Intake
 import org.sert2521.rebuilt2026.subsystems.hooded_shooter.Flywheel
@@ -17,6 +18,7 @@ import org.sert2521.rebuilt2026.subsystems.Indexer
 import org.sert2521.rebuilt2026.subsystems.Wrist
 import org.sert2521.rebuilt2026.subsystems.drivetrain.Drivetrain
 import org.sert2521.rebuilt2026.subsystems.hooded_shooter.Hood
+import java.util.function.Supplier
 import kotlin.jvm.optionals.getOrElse
 
 object Input {
@@ -24,8 +26,9 @@ object Input {
     private val gunnerController = CommandJoystick(1)
 
     private val intake = driverController.rightTrigger()
-    private val wristDown = driverController.leftBumper()
-    private val reverseIntake = driverController.rightBumper()
+    private val wristDown = driverController.leftTrigger()
+    private val reverseIntake = driverController.leftBumper()
+    private val robotOriented = driverController.rightBumper()
     private val outtake = gunnerController.button(2)
     private val stopRev = gunnerController.button(8)
 
@@ -37,15 +40,14 @@ object Input {
 
     private val visionAlign = driverController.x()
 
-
     private val resetRotOffset = driverController.y()
     private val resetRotReal = driverController.b()
 
     private val hoodDown = gunnerController.button(7)
     private val hoodUp = gunnerController.button(6)
 
-    private val increaseFlywheel = driverController.pov(0)
-    private val decreaseFlywheel = driverController.pov(180)
+    private val increaseFlywheel = gunnerController.button(11)
+    private val decreaseFlywheel = gunnerController.button(16)
 
     private val startFlywheelLiveTuning = driverController.back()
     private val startFlywheelInterpolation = driverController.start()
@@ -60,11 +62,12 @@ object Input {
         outtake.onFalse(runOnce({ Flywheel.stopTimer() }))
         stopRev.onTrue(HoodedShooterCommands.stop())
 
+        robotOriented.whileTrue(JoystickDrive(false))
 
         hoodDown.onTrue(Hood.setPosition { ShooterConstants.hoodMin })
         hoodUp.onTrue(Hood.setPosition { ShooterConstants.hoodMax })
 
-        intake.whileTrue(Intake.intake())
+        intake.whileTrue(Intake.intake().alongWith(Indexer.manualIndex().asProxy()))
         wristDown.whileTrue(Wrist.down())
         wristDown.onFalse(Wrist.up())
 
@@ -82,7 +85,7 @@ object Input {
         increaseFlywheel.onTrue(runOnce({ OtherConstsants.flywheelLiveSetpoint += RPM.of(10.0) }))
         decreaseFlywheel.onTrue(runOnce({ OtherConstsants.flywheelLiveSetpoint -= RPM.of(10.0) }))
 
-        startFlywheelLiveTuning.toggleOnTrue(HoodedShooterCommands.liveTuning())
+        startFlywheelLiveTuning.onTrue(HoodedShooterCommands.liveTuning())
         startFlywheelInterpolation.onTrue(HoodedShooterCommands.revAndTrackHub())
 
         resetRotReal.onTrue(Commands.runOnce({
@@ -119,18 +122,26 @@ object Input {
         return rotationOffset
     }
 
-    private fun setRumble(amount: Double) {
+    fun setRumble(amount: Double) {
         driverController.setRumble(GenericHID.RumbleType.kBothRumble, amount)
     }
 
-    fun rumbleBlip(): Command {
-        return Commands.runOnce({ setRumble(0.8) })
-            .andThen(Commands.waitSeconds(0.2))
-            .andThen(Commands.runOnce({ setRumble(0.0) }))
+    fun rumbleBlip(strength: Supplier<Double>): Command {
+        return Commands.runOnce({ setRumble(strength.get()) })
+            .andThen(Commands.waitSeconds(strength.get()))
+            .andThen(Commands.runOnce({ setRumble(strength.get()) }))
     }
 
     fun getGunnerSlider(): Double{
         return (-gunnerController.getRawAxis(3) + 1.0)/2.0
+    }
+
+    fun maxSpeed():Double {
+        return if (outtake.asBoolean){
+            0.1
+        } else {
+            1.0
+        }
     }
 
     fun getIntaking():Boolean {

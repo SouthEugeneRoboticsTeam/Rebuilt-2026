@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.Commands
+import edu.wpi.first.wpilibj2.command.Commands.runOnce
 import edu.wpi.first.wpilibj2.command.ScheduleCommand
 import org.sert2521.rebuilt2026.commands.HoodedShooterCommands
 import org.sert2521.rebuilt2026.subsystems.Intake
@@ -20,13 +21,15 @@ import org.sert2521.rebuilt2026.subsystems.Indexer
 import org.sert2521.rebuilt2026.subsystems.Wrist
 import org.sert2521.rebuilt2026.subsystems.drivetrain.Drivetrain
 import org.sert2521.rebuilt2026.subsystems.drivetrain.SwerveConstants
+import org.sert2521.rebuilt2026.subsystems.hooded_shooter.Flywheel
+import org.sert2521.rebuilt2026.subsystems.hooded_shooter.Hood
 import kotlin.jvm.optionals.getOrElse
 
 object Autos {
     private val autoChooser = SendableChooser<Command>()
 
     private val namedCommandsList = mapOf(
-        "Rev Hub" to HoodedShooterCommands.revStatic().asProxy(),
+        "Rev Pass" to ScheduleCommand(HoodedShooterCommands.revAndTrackPass()).asProxy(),
         "Rev Stop" to HoodedShooterCommands.stop(),
 
         "Intake Down" to ScheduleCommand(Intake.fullSpeedIntake().alongWith(Wrist.down()).alongWith(Indexer.manualIndex())).asProxy(),
@@ -35,9 +38,9 @@ object Autos {
         "Depot Inter" to ScheduleCommand(Wrist.toDepotInter().alongWith(Intake.fullSpeedIntake()).alongWith(Indexer.manualIndex())).asProxy(),
         "Depot" to ScheduleCommand(Wrist.toDepot().alongWith(Intake.fullSpeedIntake()).alongWith(Indexer.manualIndex())).asProxy(),
 
-        "Rev" to ScheduleCommand(HoodedShooterCommands.revStatic()).asProxy(),
-        "Shoot" to ScheduleCommand(HoodedShooterCommands.revStatic().alongWith(Indexer.shoot())).asProxy(),
-        "Stop Shoot" to ScheduleCommand(HoodedShooterCommands.revStatic().alongWith(Indexer.index())).asProxy(),
+        "Rev" to ScheduleCommand(HoodedShooterCommands.revAndTrackHub()).asProxy(),
+        "Shoot" to ScheduleCommand(Indexer.pulse().alongWith(runOnce(Flywheel::startTimer))).asProxy(),
+        "Stop Shoot" to ScheduleCommand(Indexer.index().alongWith(runOnce(Flywheel::stopTimer))).asProxy(),
     )
 
     init {
@@ -78,9 +81,12 @@ object Autos {
             Drivetrain
         )
 
-        autoChooser.addOption("CL_N", AutoBuilder.buildAuto("CL_N"))
-        autoChooser.addOption("CL_N_D", AutoBuilder.buildAuto("CL_N_D"))
-        autoChooser.addOption("CL_D", AutoBuilder.buildAuto("CL_D"))
+        autoChooser.addOption("L_N", AutoBuilder.buildAuto("CL_N"))
+        autoChooser.addOption("L_N_D", AutoBuilder.buildAuto("CL_N_D"))
+        autoChooser.addOption("L_D", AutoBuilder.buildAuto("CL_D"))
+        autoChooser.addOption("R_N", AutoBuilder.buildAuto("CR_N"))
+        autoChooser.addOption("R_N_N", AutoBuilder.buildAuto("CR_N_N"))
+        autoChooser.addOption("L_N_N", AutoBuilder.buildAuto("CL_N_N"))
         autoChooser.setDefaultOption("None", Commands.none())
 
         SmartDashboard.putData("Autos", autoChooser)

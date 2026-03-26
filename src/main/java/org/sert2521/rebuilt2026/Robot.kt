@@ -1,6 +1,7 @@
 package org.sert2521.rebuilt2026
 
 import dev.doglog.DogLog
+import edu.wpi.first.cameraserver.CameraServer
 import edu.wpi.first.hal.FRCNetComm.tInstances
 import edu.wpi.first.hal.FRCNetComm.tResourceType
 import edu.wpi.first.hal.HAL
@@ -12,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
 import org.sert2521.rebuilt2026.subsystems.Wrist
 import org.sert2521.rebuilt2026.subsystems.drivetrain.Drivetrain
+import org.sert2521.rebuilt2026.subsystems.hooded_shooter.Hood
 import org.sert2521.rebuilt2026.util.AllianceShiftUtil
 
 /**
@@ -45,6 +47,7 @@ object Robot : TimedRobot() {
         Drivetrain
         Autos
         SmartDashboard.putData("PDH", PowerDistribution(20, PowerDistribution.ModuleType.kRev))
+        CameraServer.startAutomaticCapture()
     }
 
 
@@ -55,6 +58,7 @@ object Robot : TimedRobot() {
         DogLog.log("Shooter Live Tuning/Distance to Hub", Drivetrain.distanceTo(OtherConstsants.currentHub))
         DogLog.log("Shooter Live Tuning/Flywheel Setpoint", OtherConstsants.flywheelLiveSetpoint)
         DogLog.log("Shooter Live Tuning/Hood Setpoint", ShooterConstants.hoodMax * Input.getGunnerSlider())
+        DogLog.log("Shooter Live Tuning/Distance to Bump", Drivetrain.distanceToClosest(*OtherConstsants.currentBumps))
     }
 
     override fun disabledInit() {
@@ -78,6 +82,7 @@ object Robot : TimedRobot() {
         Drivetrain.stopDrivePID()
         autonomousCommand?.cancel()
         CommandScheduler.getInstance().schedule(Wrist.reZero())
+        // CommandScheduler.getInstance().schedule(Hood.reZero())
     }
 
     /** This method is called periodically during operator control.  */

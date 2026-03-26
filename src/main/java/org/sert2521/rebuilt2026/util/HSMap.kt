@@ -5,6 +5,8 @@ import edu.wpi.first.units.Units.*
 import edu.wpi.first.units.measure.Distance
 import org.sert2521.rebuilt2026.OtherConstsants
 import org.sert2521.rebuilt2026.subsystems.drivetrain.Drivetrain
+import javax.print.attribute.standard.MediaSize
+import kotlin.math.hypot
 import kotlin.math.min
 
 object HSMap {
@@ -43,6 +45,15 @@ object HSMap {
 
     fun getGoalHub(): HSGoal {
         return interpolateWithDistance(Drivetrain.distanceTo(OtherConstsants.currentHub), OtherConstsants.dataHub)
+    }
+
+    fun getGoalHubWithMovement(): HSGoal {
+        return interpolateWithDistance(
+            Drivetrain.distanceTo(OtherConstsants.currentHub) +
+                    Meters.of(hypot(Drivetrain.getChassisSpeeds().vxMetersPerSecond, Drivetrain.getChassisSpeeds().vyMetersPerSecond)
+                            * OtherConstsants.distanceSpeedAdjustment.`in`(Seconds)),
+            OtherConstsants.dataHub
+        )
     }
 
     fun getGoalPass(): HSGoal {
