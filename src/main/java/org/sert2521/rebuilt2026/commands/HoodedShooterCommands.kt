@@ -27,10 +27,6 @@ object HoodedShooterCommands {
         )
     }
 
-    fun revStatic(): Command {
-        return revAndTrackHub()
-    }
-
     fun liveTuning(): Command {
         return Commands.parallel(
             Flywheel.setVelocity { OtherConstsants.flywheelLiveSetpoint },
@@ -50,19 +46,5 @@ object HoodedShooterCommands {
             Flywheel.setVelocity { this.currentGoal.flywheelSpeed },
             Hood.setPosition { this.currentGoal.hoodAngle }
         ).alongWith(Commands.run(::updateGoalHub))
-    }
-
-    private fun sustainAndTrack(): Command {
-        return Commands.parallel(
-            Flywheel.setVelocity { this.currentGoal.flywheelSpeed } ,
-            Hood.setPosition { this.currentGoal.hoodAngle }
-        ).alongWith(Commands.run(::updateGoalHub))
-    }
-
-
-
-    fun shoot(): Command {
-        return revAndTrackHub().withTimeout(0.5).andThen(sustainAndTrack())
-            .alongWith(Commands.run(::updateGoalHub))
     }
 }

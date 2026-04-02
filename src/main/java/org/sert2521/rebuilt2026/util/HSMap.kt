@@ -11,10 +11,11 @@ import kotlin.math.min
 
 object HSMap {
     private fun interpolateWithDistance(distance: Distance, dataset: Array<HSMapDatapoint>): HSGoal {
-        var lastDatapoint = dataset[0]
-        var nextDatapoint = dataset[0]
+        var lastDatapoint = dataset.first()
+        var nextDatapoint = dataset.last()
 
         for (point in dataset){
+            // Remember that the dataset order should be in increasing distance
             if (point.distance > distance) {
                 nextDatapoint = point
                 break
