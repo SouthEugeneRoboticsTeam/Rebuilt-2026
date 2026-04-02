@@ -1,9 +1,9 @@
 package org.sert2521.rebuilt2026
 
+import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.geometry.Translation2d
 import edu.wpi.first.units.Units.*
-import org.sert2521.rebuilt2026.util.AllianceShiftUtil
-import org.sert2521.rebuilt2026.util.HSMapDatapoint
+import org.sert2521.rebuilt2026.util.*
 import yams.gearing.GearBox
 import yams.gearing.MechanismGearing
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity
@@ -135,14 +135,26 @@ object OtherConstsants {
     val fieldWidth = Inches.of(317.6875)
     val fieldLength = Inches.of(651.25)
 
+    val midline = fieldWidth / 2.0
+
+    val blueBoundary = Inches.zero()
+    val redBoundary = fieldLength - blueBoundary
+
+    val shallowAngle = Rotation2d.fromDegrees(10.0)
+    val fortyFiveAngle = Rotation2d.fromDegrees(45.0)
+    val shallowsCCW = Array(4){ (Rotation2d.kCCW_90deg * it.toDouble()) + shallowAngle }
+    val shallowsCW = Array(4){ (Rotation2d.kCCW_90deg * it.toDouble()) - shallowAngle }
+    val fortyFives = Array(4){ (Rotation2d.kCCW_90deg * it.toDouble()) + fortyFiveAngle }
+
+
     val blueHubTranslation = Translation2d(4.620755195617676,4.036807537078857)
     val redHubTranslation = Translation2d(11.91766357421875, 4.037060737609863)
 
     val blueBumps = arrayOf(Translation2d(4.0, 2.0), Translation2d(4.0, 2.0).flipWidth())
     val redBumps = arrayOf(blueBumps[0].flipAlliance(), blueBumps[1].flipAlliance())
 
-    val currentHub = if (AllianceShiftUtil.allianceIsBlue()) { blueHubTranslation } else { redHubTranslation }
-    val currentBumps = if (AllianceShiftUtil.allianceIsBlue()) { blueBumps } else { redBumps }
+    val currentHub = if (allianceIsBlue()) { blueHubTranslation } else { redHubTranslation }
+    val currentBumps = if (allianceIsBlue()) { blueBumps } else { redBumps }
 
     val dataHub = arrayOf(
         // Remember to put in order of distance
@@ -210,12 +222,4 @@ object OtherConstsants {
     var flywheelLiveSetpoint = RPM.of(2600.0)
 
     val distanceSpeedAdjustment = Seconds.of(1.4)
-}
-
-fun Translation2d.flipWidth(): Translation2d{
-    return Translation2d(this.x, OtherConstsants.fieldWidth.`in`(Meters) - this.y)
-}
-
-fun Translation2d.flipAlliance(): Translation2d{
-    return Translation2d(OtherConstsants.fieldLength.`in`(Meters)-this.x, this.y)
 }

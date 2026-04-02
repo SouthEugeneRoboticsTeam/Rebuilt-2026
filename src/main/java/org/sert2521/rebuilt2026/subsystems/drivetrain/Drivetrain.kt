@@ -30,6 +30,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase
 import limelight.Limelight
 import limelight.networktables.LimelightPoseEstimator
 import limelight.networktables.Orientation3d
+import org.sert2521.rebuilt2026.Input
 import org.sert2521.rebuilt2026.OtherConstsants
 import org.sert2521.rebuilt2026.TelemetryConstants
 import org.sert2521.rebuilt2026.commands.JoystickDrive
@@ -129,7 +130,7 @@ object Drivetrain : SubsystemBase() {
     init {
         SmartDashboard.putData(field)
 
-        defaultCommand = JoystickDrive()
+        defaultCommand = JoystickDrive(Input::getFieldOriented)
 
         gyro.configurator.apply(gyroConfig)
         poseEstimator.setVisionMeasurementStdDevs(VisionConstants.visionStdv)

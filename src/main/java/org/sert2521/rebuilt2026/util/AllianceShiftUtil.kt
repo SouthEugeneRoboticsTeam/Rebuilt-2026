@@ -118,8 +118,4 @@ object AllianceShiftUtil {
             }
         )
     }
-
-    fun allianceIsBlue():Boolean {
-        return DriverStation.getAlliance().getOrElse { DriverStation.Alliance.Blue } == DriverStation.Alliance.Blue
-    }
 }

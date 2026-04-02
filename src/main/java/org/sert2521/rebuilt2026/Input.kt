@@ -62,8 +62,6 @@ object Input {
         outtake.onFalse(runOnce({ Flywheel.stopTimer() }))
         stopRev.onTrue(HoodedShooterCommands.stop())
 
-        robotOriented.whileTrue(JoystickDrive(false))
-
         hoodDown.onTrue(Hood.setPosition { ShooterConstants.hoodMin })
         hoodUp.onTrue(Hood.setPosition { ShooterConstants.hoodMax })
 
@@ -80,7 +78,9 @@ object Input {
 
         manualIndex.whileTrue(Indexer.manualIndex())
 
-        visionAlign.whileTrue(VisionRotationDrive())
+        visionAlign.whileTrue(VisionRotationDrive(::getFieldOriented,
+            { Drivetrain.rotationTo(OtherConstsants.currentHub).rotateBy(Rotation2d.k180deg) }
+        ))
 
         increaseFlywheel.onTrue(runOnce({ OtherConstsants.flywheelLiveSetpoint += RPM.of(10.0) }))
         decreaseFlywheel.onTrue(runOnce({ OtherConstsants.flywheelLiveSetpoint -= RPM.of(10.0) }))
@@ -88,7 +88,7 @@ object Input {
         startFlywheelLiveTuning.onTrue(HoodedShooterCommands.liveTuning())
         startFlywheelInterpolation.onTrue(HoodedShooterCommands.revAndTrackHub())
 
-        resetRotReal.onTrue(Commands.runOnce({
+        resetRotReal.onTrue(runOnce({
             if (DriverStation.getAlliance().getOrElse { DriverStation.Alliance.Blue } == DriverStation.Alliance.Red) {
                 rotationOffset = Rotation2d.k180deg
                 Drivetrain.setRotation(Rotation2d.k180deg)
@@ -98,10 +98,11 @@ object Input {
             }
         }))
 
-        resetRotOffset.onTrue(Commands.runOnce({
+        resetRotOffset.onTrue(runOnce({
             rotationOffset = Drivetrain.getPose().rotation
         }))
     }
+
     fun getJoystickInputs(): Triple<Double, Double, Double> {
         return Triple(getLeftX(), getLeftY(), getRightRot())
     }
@@ -127,13 +128,17 @@ object Input {
     }
 
     fun rumbleBlip(strength: Supplier<Double>): Command {
-        return Commands.runOnce({ setRumble(strength.get()) })
+        return runOnce({ setRumble(strength.get()) })
             .andThen(Commands.waitSeconds(strength.get()))
-            .andThen(Commands.runOnce({ setRumble(strength.get()) }))
+            .andThen(runOnce({ setRumble(strength.get()) }))
     }
 
     fun getGunnerSlider(): Double{
         return (-gunnerController.getRawAxis(3) + 1.0)/2.0
+    }
+
+    fun getFieldOriented():Boolean {
+        return !robotOriented.asBoolean
     }
 
     fun maxSpeed():Double {

@@ -45,7 +45,7 @@ class DrivetrainFeedforwardSysId : SequentialCommandGroup(){
         )
     }
 
-    fun withStuff():Command{
+    fun withCalculations():Command{
         return this.finallyDo(
             Runnable {
                 val n = velocitySamples.size
@@ -66,6 +66,7 @@ class DrivetrainFeedforwardSysId : SequentialCommandGroup(){
                 println("********** Drive FF Characterization Results **********")
                 println("\tkS: " + formatter.format(kS))
                 println("\tkV: " + formatter.format(kV))
-            })
+            }
+        )
     }
 }
