@@ -15,7 +15,7 @@ object TelemetryConstants {
     val GRINTAKE_TELEMETRY = TelemetryVerbosity.LOW
     val INDEXER_TELEMETRY = TelemetryVerbosity.LOW
 
-    val HOODED_SHOOTER_TELEMETRY = TelemetryVerbosity.HIGH
+    val HOODED_SHOOTER_TELEMETRY = TelemetryVerbosity.LOW
 }
 
 object ElectronicIDs {
@@ -85,7 +85,7 @@ object IndexerConstants {
     const val KICKER_INDEXING = -0.4
 
     const val MAIN_KICKING = 0.5
-    const val KICKER_KICKING = 0.7
+    const val KICKER_KICKING = 0.8
     const val KICK_TIME = 0.0
 
     const val MAIN_REVERSE = -1.0
@@ -152,9 +152,10 @@ object OtherConstsants {
 
     val blueBumps = arrayOf(Translation2d(4.0, 2.0), Translation2d(4.0, 2.0).flipWidth())
     val redBumps = arrayOf(blueBumps[0].flipAlliance(), blueBumps[1].flipAlliance())
+    val fortyFiveRotations = Array(4){ Rotation2d(Degrees.of(45.0)) + (Rotation2d.kCW_Pi_2 * it.toDouble()) }
 
-    val currentHub = if (allianceIsBlue()) { blueHubTranslation } else { redHubTranslation }
-    val currentBumps = if (allianceIsBlue()) { blueBumps } else { redBumps }
+    fun currentHub() = if (allianceIsBlue()) { blueHubTranslation } else { redHubTranslation }
+    fun currentBumps() = if (allianceIsBlue()) { blueBumps } else { redBumps }
 
     val dataHub = arrayOf(
         // Remember to put in order of distance
@@ -169,9 +170,9 @@ object OtherConstsants {
             0.01
         ),
         HSMapDatapoint(
-            2.28,
-            2400.0,
-            0.02
+            2.31,
+            2300.0,
+            0.024
         ),
         HSMapDatapoint(
             2.916,
@@ -179,9 +180,19 @@ object OtherConstsants {
             0.04072
         ),
         HSMapDatapoint(
-            3.4,
+            3.235,
             2410.0,
-            0.044
+            0.043
+        ),
+        HSMapDatapoint(
+            3.5,
+            2520.0,
+            0.047
+        ),
+        HSMapDatapoint(
+            4.0,
+            2720.0,
+            0.05
         ),
         HSMapDatapoint(
             4.3,

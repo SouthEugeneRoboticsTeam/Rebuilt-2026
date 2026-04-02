@@ -45,12 +45,12 @@ object HSMap {
     }
 
     fun getGoalHub(): HSGoal {
-        return interpolateWithDistance(Drivetrain.distanceTo(OtherConstsants.currentHub), OtherConstsants.dataHub)
+        return interpolateWithDistance(Drivetrain.distanceTo(OtherConstsants.currentHub()), OtherConstsants.dataHub)
     }
 
     fun getGoalHubWithMovement(): HSGoal {
         return interpolateWithDistance(
-            Drivetrain.distanceTo(OtherConstsants.currentHub) +
+            Drivetrain.distanceTo(OtherConstsants.currentHub()) +
                     Meters.of(hypot(Drivetrain.getChassisSpeeds().vxMetersPerSecond, Drivetrain.getChassisSpeeds().vyMetersPerSecond)
                             * OtherConstsants.distanceSpeedAdjustment.`in`(Seconds)),
             OtherConstsants.dataHub
@@ -58,6 +58,6 @@ object HSMap {
     }
 
     fun getGoalPass(): HSGoal {
-        return interpolateWithDistance(Drivetrain.distanceToClosest(*OtherConstsants.currentBumps), OtherConstsants.dataPass)
+        return interpolateWithDistance(Drivetrain.distanceToClosest(*OtherConstsants.currentBumps()), OtherConstsants.dataPass)
     }
 }

@@ -11,30 +11,6 @@
           }
         },
         {
-          "type": "wait",
-          "data": {
-            "waitTime": 1.0
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shoot"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 1.5
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Stop Shoot"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "CL_N_D.0"
@@ -59,6 +35,12 @@
           }
         },
         {
+          "type": "path",
+          "data": {
+            "pathName": "CL_N_D.3"
+          }
+        },
+        {
           "type": "named",
           "data": {
             "name": "Intake Up"
@@ -67,7 +49,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "CL_N_D.3"
+            "pathName": "CL_N_D.4"
           }
         },
         {
@@ -97,7 +79,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "CL_N_D.4"
+            "pathName": "CL_N_D.5"
           }
         },
         {
@@ -113,7 +95,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "CL_N_D.5"
+                  "pathName": "CL_N_D.6"
                 }
               }
             ]

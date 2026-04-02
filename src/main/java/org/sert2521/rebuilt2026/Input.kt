@@ -12,13 +12,14 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController
 import org.sert2521.rebuilt2026.commands.HoodedShooterCommands
 import org.sert2521.rebuilt2026.commands.JoystickDrive
 import org.sert2521.rebuilt2026.commands.VisionRotationDrive
-import org.sert2521.rebuilt2026.subsystems.Intake
-import org.sert2521.rebuilt2026.subsystems.hooded_shooter.Flywheel
 import org.sert2521.rebuilt2026.subsystems.Indexer
+import org.sert2521.rebuilt2026.subsystems.Intake
 import org.sert2521.rebuilt2026.subsystems.Wrist
 import org.sert2521.rebuilt2026.subsystems.drivetrain.Drivetrain
+import org.sert2521.rebuilt2026.subsystems.hooded_shooter.Flywheel
 import org.sert2521.rebuilt2026.subsystems.hooded_shooter.Hood
 import java.util.function.Supplier
+import javax.print.attribute.standard.MediaSize
 import kotlin.jvm.optionals.getOrElse
 
 object Input {
@@ -39,9 +40,10 @@ object Input {
     private val manualIndex = gunnerController.button(1)
 
     private val visionAlign = driverController.x()
+    private val fortyFiveAlign = driverController.a()
 
-    private val resetRotOffset = driverController.y()
-    private val resetRotReal = driverController.b()
+    val resetRotOffset = driverController.y()
+    val resetRotReal = driverController.b()
 
     private val hoodDown = gunnerController.button(7)
     private val hoodUp = gunnerController.button(6)
@@ -54,6 +56,7 @@ object Input {
 
 
     private var rotationOffset = Rotation2d.kZero
+    private var passing = false
 
 
     init {
@@ -71,16 +74,19 @@ object Input {
 
 
         reverseIntake.whileTrue(Intake.reverse().alongWith(Indexer.reverse().asProxy()))
-        rev.onTrue(HoodedShooterCommands.revAndTrackHub())
-        revPass.whileTrue(HoodedShooterCommands.revAndTrackPass())
+        rev.onTrue(HoodedShooterCommands.revAndTrackHub().alongWith(runOnce({ passing = false })))
+        revPass.onTrue(HoodedShooterCommands.revAndTrackPass().alongWith(runOnce({ passing = true })))
 
         reverseIndex.whileTrue(Indexer.reverse())
 
         manualIndex.whileTrue(Indexer.manualIndex())
 
-        visionAlign.whileTrue(VisionRotationDrive(::getFieldOriented,
-            { Drivetrain.rotationTo(OtherConstsants.currentHub).rotateBy(Rotation2d.k180deg) }
-        ))
+        visionAlign.whileTrue(VisionRotationDrive(::getFieldOriented, {
+            Drivetrain.rotationTo(OtherConstsants.currentHub()).rotateBy(Rotation2d.k180deg)
+        }))
+        fortyFiveAlign.whileTrue(VisionRotationDrive(::getFieldOriented, {
+            Drivetrain.getClosestRotation(*OtherConstsants.fortyFiveRotations)
+        }))
 
         increaseFlywheel.onTrue(runOnce({ OtherConstsants.flywheelLiveSetpoint += RPM.of(10.0) }))
         decreaseFlywheel.onTrue(runOnce({ OtherConstsants.flywheelLiveSetpoint -= RPM.of(10.0) }))
@@ -102,7 +108,6 @@ object Input {
             rotationOffset = Drivetrain.getPose().rotation
         }))
     }
-
     fun getJoystickInputs(): Triple<Double, Double, Double> {
         return Triple(getLeftX(), getLeftY(), getRightRot())
     }
@@ -133,8 +138,8 @@ object Input {
             .andThen(runOnce({ setRumble(strength.get()) }))
     }
 
-    fun getGunnerSlider(): Double{
-        return (-gunnerController.getRawAxis(3) + 1.0)/2.0
+    fun getGunnerSlider(): Double {
+        return (-gunnerController.getRawAxis(3) + 1.0) / 2.0
     }
 
     fun getFieldOriented():Boolean {
@@ -142,14 +147,14 @@ object Input {
     }
 
     fun maxSpeed():Double {
-        return if (outtake.asBoolean){
+        return if (outtake.asBoolean && !passing){
             0.1
         } else {
             1.0
         }
     }
 
-    fun getIntaking():Boolean {
+    fun getIntaking(): Boolean {
         return intake.asBoolean
     }
 }

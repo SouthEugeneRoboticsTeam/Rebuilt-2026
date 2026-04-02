@@ -90,18 +90,13 @@ object AllianceShiftUtil {
         val time = DriverStation.getMatchTime()
         val shift = getAllianceShift(time)
         shiftTime = floor(getAllianceShiftTime(shift, time) * 10.0) / 10.0
-        val dashboardTime = (floor(getAllianceShiftTime(shift, time) * 10.0) / 10.0).toString()
+        val dashboardTime = (shiftTime).toString()
 
-//        if (shiftTime in 0.0..5.0 && DriverStation.isEnabled()) {
-//            Input.setRumble(0.1)
-//        } else {
-//            Input.setRumble(0.0)
-//        }
-        if (shiftTime in arrayOf(1.0, 2.0, 3.0, 4.0, 5.0)){
-            blipStrength = 1.0/shiftTime
-            CommandScheduler.getInstance().schedule(rumbleBlip)
+        if (shiftTime <= 5.0 && shiftTime >= 0.0 && DriverStation.isEnabled()) {
+            Input.setRumble(0.2)
+        } else {
+            Input.setRumble(0.0)
         }
-
 
         DogLog.log("Alliance Shift/Timer",
             if ("." in dashboardTime){

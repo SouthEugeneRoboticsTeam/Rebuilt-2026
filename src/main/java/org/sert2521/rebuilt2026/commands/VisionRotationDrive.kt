@@ -15,7 +15,13 @@ import org.sert2521.rebuilt2026.subsystems.drivetrain.Drivetrain
 import org.sert2521.rebuilt2026.subsystems.drivetrain.SwerveConstants
 import java.util.function.BooleanSupplier
 import java.util.function.Supplier
-import kotlin.math.*
+import kotlin.math.PI
+import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.hypot
+import kotlin.math.min
+import kotlin.math.pow
+import kotlin.math.sin
 
 class VisionRotationDrive(private val fieldOriented: BooleanSupplier, private val rotationTarget: Supplier<Rotation2d>) : Command() {
     companion object{

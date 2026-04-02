@@ -28,7 +28,7 @@ object Indexer : SubsystemBase() {
         .withGearing(IndexerConstants.indexerGearing)
         .withIdleMode(SmartMotorControllerConfig.MotorMode.BRAKE)
         .withTelemetry("Indexer Motor", TelemetryConstants.INDEXER_TELEMETRY)
-        .withStatorCurrentLimit(Amps.of(60.0))
+        .withStatorCurrentLimit(Amps.of(50.0))
         .withMotorInverted(true)
         .withOpenLoopRampRate(Seconds.of(0.25))
         .withClosedLoopRampRate(Seconds.of(0.25))

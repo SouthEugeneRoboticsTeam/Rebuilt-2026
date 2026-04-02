@@ -87,6 +87,7 @@ object Autos {
         autoChooser.addOption("R_N", AutoBuilder.buildAuto("CR_N"))
         autoChooser.addOption("R_N_N", AutoBuilder.buildAuto("CR_N_N"))
         autoChooser.addOption("L_N_N", AutoBuilder.buildAuto("CL_N_N"))
+        autoChooser.addOption("C_", AutoBuilder.buildAuto("C_"))
         autoChooser.setDefaultOption("None", Commands.none())
 
         SmartDashboard.putData("Autos", autoChooser)

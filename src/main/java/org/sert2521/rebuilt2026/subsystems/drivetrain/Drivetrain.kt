@@ -8,6 +8,7 @@ import com.revrobotics.spark.SparkMax
 import dev.doglog.DogLog
 import edu.wpi.first.math.controller.SimpleMotorFeedforward
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator
+import edu.wpi.first.math.filter.Debouncer
 import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.geometry.Rotation3d
@@ -21,8 +22,6 @@ import edu.wpi.first.units.Units.*
 import edu.wpi.first.units.measure.Angle
 import edu.wpi.first.units.measure.Current
 import edu.wpi.first.units.measure.Distance
-import edu.wpi.first.wpilibj.DriverStation
-import edu.wpi.first.wpilibj.DriverStation.Alliance
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj.smartdashboard.Field2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
@@ -38,8 +37,8 @@ import yams.mechanisms.config.SwerveModuleConfig
 import yams.mechanisms.swerve.SwerveModule
 import yams.motorcontrollers.SmartMotorControllerConfig
 import yams.motorcontrollers.local.SparkWrapper
-import kotlin.jvm.optionals.getOrElse
 import kotlin.math.PI
+import kotlin.math.abs
 import kotlin.math.atan2
 import kotlin.math.hypot
 
@@ -51,7 +50,13 @@ object Drivetrain : SubsystemBase() {
         val driveConfig = SmartMotorControllerConfig(this)
             .withIdleMode(SmartMotorControllerConfig.MotorMode.BRAKE)
             .withWheelRadius(SwerveConstants.wheelRadius)
-            .withFeedforward(SimpleMotorFeedforward(SwerveConstants.DRIVE_S, SwerveConstants.DRIVE_V, SwerveConstants.DRIVE_A))
+            .withFeedforward(
+                SimpleMotorFeedforward(
+                    SwerveConstants.DRIVE_S,
+                    SwerveConstants.DRIVE_V,
+                    SwerveConstants.DRIVE_A
+                )
+            )
             .withClosedLoopController(SwerveConstants.DRIVE_P, SwerveConstants.DRIVE_I, SwerveConstants.DRIVE_D)
             .withGearing(SwerveConstants.driveGearing)
             .withOpenLoopRampRate(Seconds.of(0.05))
@@ -98,7 +103,8 @@ object Drivetrain : SubsystemBase() {
         )
     }
 
-    private val gyroConfig = MountPoseConfigs().withMountPoseRoll(Degrees.of(-5.9324846267700195)).withMountPoseYaw(Degrees.of(118.74909210205078)).withMountPosePitch(Degrees.of(-79.23545837402344))
+    private val gyroConfig = MountPoseConfigs().withMountPoseRoll(Degrees.of(-0.4267374873161316))
+        .withMountPoseYaw(Degrees.of(178.08946228027344)).withMountPosePitch(Degrees.of(-0.06843218952417374))
     private val gyro = Pigeon2(13)
     private val gyroYaw = gyro.yaw.asSupplier()
     private val gyroPitch = gyro.pitch.asSupplier()
@@ -106,9 +112,13 @@ object Drivetrain : SubsystemBase() {
     private val gyroYawVel = gyro.angularVelocityZWorld.asSupplier()
     private val gyroRollVel = gyro.angularVelocityXWorld.asSupplier()
     private val gyroPitchVel = gyro.angularVelocityYWorld.asSupplier()
+    private val gyroConnectedDebouncer = Debouncer(0.5)
+    private var gyroHasDCed = false
 
     private val kinematics = SwerveDriveKinematics(*SwerveConstants.moduleTranslations)
     private var moduleStates = Array(4) { modules[it].state }
+    private var lastModulePositions = Array(4) { modules[it].position }
+    private var rawGyroRotation = Rotation2d(gyroYaw.get())
 
     private val moduleLock = { false }
     private var moduleLockPrevReference = Array(4) { Rotation2d.kZero }
@@ -121,8 +131,8 @@ object Drivetrain : SubsystemBase() {
     )
 
     private val limelight = Limelight("limelight-green")
-    private val limelightPoseEstimator = limelight.createPoseEstimator(LimelightPoseEstimator.EstimationMode.MEGATAG2)
-    private var gyroOffset = Rotations.zero()
+    private val limelightPoseEstimatorMT2 = limelight.createPoseEstimator(LimelightPoseEstimator.EstimationMode.MEGATAG2)
+    private val limelightPoseEstimatorMT1 = limelight.createPoseEstimator(LimelightPoseEstimator.EstimationMode.MEGATAG1)
     private var fed = false
 
     private val field = Field2d()
@@ -156,7 +166,7 @@ object Drivetrain : SubsystemBase() {
     }
 
     fun updatePoseEstimator(){
-        poseEstimator.update(Rotation2d(gyroYaw.get() - gyroOffset), getModulePositions())
+        poseEstimator.update(Rotation2d(gyroYaw.get()), getModulePositions())
 
         moduleStates = getModuleStates()
         DogLog.log("Drivetrain/SwerveModuleStates/Measured", moduleStates)
@@ -217,7 +227,7 @@ object Drivetrain : SubsystemBase() {
         return Array(4) { modules[it].state }
     }
 
-    fun updateVision(){
+    fun updateVision() {
         limelight.settings.withRobotOrientation(
             Orientation3d(
                 Rotation3d(gyroRoll.get(), gyroPitch.get(), gyroYaw.get()),
@@ -227,7 +237,7 @@ object Drivetrain : SubsystemBase() {
             )
         )
 
-        val estimatedPose = limelightPoseEstimator.poseEstimate
+        val estimatedPose = limelightPoseEstimatorMT2.poseEstimate
         if (estimatedPose.isEmpty) {
             return
         }
@@ -251,7 +261,7 @@ object Drivetrain : SubsystemBase() {
         }
     }
 
-    fun getChassisSpeeds():ChassisSpeeds{
+    fun getChassisSpeeds(): ChassisSpeeds {
         return kinematics.toChassisSpeeds(*moduleStates)
     }
 
@@ -265,23 +275,23 @@ object Drivetrain : SubsystemBase() {
     }
 
     fun setRotation(rotation: Rotation2d) {
-        gyro.setYaw((rotation).measure)
+        gyro.setYaw(rotation.measure)
     }
 
-    fun setCurrentLimit(current: Current){
+    fun setCurrentLimit(current: Current) {
         modules.forEach {
             it.driveMotorController.setStatorCurrentLimit(current)
         }
     }
 
-    fun runFFCharacterization(output:Double){
+    fun runFFCharacterization(output: Double) {
         modules.forEach {
             it.driveMotorController.voltage = Volts.of(output)
             it.azimuthMotorController.setPosition(Rotations.of(0.0))
         }
     }
 
-    fun getFFCharacterizationVelocity():Double{
+    fun getFFCharacterizationVelocity(): Double {
         var output = 0.0
         modules.forEach {
             output += it.driveMotorController.mechanismVelocity.`in`(RotationsPerSecond)
@@ -289,7 +299,7 @@ object Drivetrain : SubsystemBase() {
         return output / 4.0
     }
 
-    fun rotationTo(other: Translation2d): Rotation2d{
+    fun rotationTo(other: Translation2d): Rotation2d {
         val driveTranslation = getPose().translation
         return Rotation2d(atan2(other.y - driveTranslation.y, other.x - driveTranslation.x))
     }
@@ -298,13 +308,35 @@ object Drivetrain : SubsystemBase() {
         return Meters.of(getPose().translation.getDistance(translation2d))
     }
 
-    fun distanceToClosest(vararg translations: Translation2d): Distance{
+    fun rotationToClosest(vararg translations: Translation2d): Rotation2d {
+        return rotationTo(getPose().translation.nearest(translations.toSet()))
+    }
+
+    fun getClosestRotation(vararg rotations: Rotation2d): Rotation2d {
+        var closest = 1.0
+        var rotation = rotations[0]
+        rotations.forEach {
+            if (abs(it.rotations - getPose().rotation.rotations)<closest){
+                closest = abs(rotation.rotations - getPose().rotation.rotations)
+                rotation = it
+            }
+        }
+
+        return rotation
+    }
+
+    fun distanceToClosest(vararg translations: Translation2d): Distance {
         return distanceTo(getPose().translation.nearest(translations.toSet()))
     }
 
     /* Game Specific */
-    fun getIsMoving(): Boolean{
+    fun getIsMoving(): Boolean {
         val chassisSpeeds = getChassisSpeeds()
-        return MetersPerSecond.of(hypot(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond)) > SwerveConstants.movingThreshold
+        return MetersPerSecond.of(
+            hypot(
+                chassisSpeeds.vxMetersPerSecond,
+                chassisSpeeds.vyMetersPerSecond
+            )
+        ) > SwerveConstants.movingThreshold
     }
 }

@@ -1,10 +1,12 @@
 package org.sert2521.rebuilt2026
 
 import dev.doglog.DogLog
+import dev.doglog.DogLogOptions
 import edu.wpi.first.cameraserver.CameraServer
 import edu.wpi.first.hal.FRCNetComm.tInstances
 import edu.wpi.first.hal.FRCNetComm.tResourceType
 import edu.wpi.first.hal.HAL
+import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.PowerDistribution
 import edu.wpi.first.wpilibj.TimedRobot
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
@@ -55,10 +57,13 @@ object Robot : TimedRobot() {
     override fun robotPeriodic() {
         CommandScheduler.getInstance().run()
         AllianceShiftUtil.update()
-        DogLog.log("Shooter Live Tuning/Distance to Hub", Drivetrain.distanceTo(OtherConstsants.currentHub))
+        DogLog.log("Shooter Live Tuning/Distance to Hub", Drivetrain.distanceTo(OtherConstsants.currentHub()))
         DogLog.log("Shooter Live Tuning/Flywheel Setpoint", OtherConstsants.flywheelLiveSetpoint)
         DogLog.log("Shooter Live Tuning/Hood Setpoint", ShooterConstants.hoodMax * Input.getGunnerSlider())
-        DogLog.log("Shooter Live Tuning/Distance to Bump", Drivetrain.distanceToClosest(*OtherConstsants.currentBumps))
+        DogLog.log("Shooter Live Tuning/Distance to Bump", Drivetrain.distanceToClosest(*OtherConstsants.currentBumps()))
+        DogLog.log("Rot Offset", Input.getRotOffset())
+        DogLog.log("B", Input.resetRotReal.asBoolean)
+        DogLog.log("Y", Input.resetRotOffset.asBoolean)
     }
 
     override fun disabledInit() {
