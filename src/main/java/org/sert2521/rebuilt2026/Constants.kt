@@ -169,74 +169,22 @@ object OtherConstsants {
 
     val dataHub = arrayOf(
         // Remember to put in order of distance
-        HSMapDatapoint(
-            1.5,
-            2400.0,
-            0.0
-        ),
-        HSMapDatapoint(
-            1.8,
-            2400.0,
-            0.01
-        ),
-        HSMapDatapoint(
-            2.31,
-            2300.0,
-            0.024
-        ),
-        HSMapDatapoint(
-            2.916,
-            2230.0,
-            0.04072
-        ),
-        HSMapDatapoint(
-            3.235,
-            2410.0,
-            0.043
-        ),
-        HSMapDatapoint(
-            3.5,
-            2520.0,
-            0.047
-        ),
-        HSMapDatapoint(
-            4.0,
-            2720.0,
-            0.05
-        ),
-        HSMapDatapoint(
-            4.3,
-            2610.0,
-            0.052
-        ),
-        HSMapDatapoint(
-            5.0,
-            2860.0,
-            0.06
-        )
+        HSMapDatapoint(1.5, 2400.0, 0.0),
+        HSMapDatapoint(1.8, 2400.0, 0.01),
+        HSMapDatapoint(2.31, 2300.0, 0.024),
+        HSMapDatapoint(2.916, 2230.0, 0.04072),
+        HSMapDatapoint(3.235, 2410.0, 0.043),
+        HSMapDatapoint(3.5, 2520.0, 0.047),
+        HSMapDatapoint(4.0, 2720.0, 0.05),
+        HSMapDatapoint(4.3, 2610.0, 0.052),
+        HSMapDatapoint(5.0, 2860.0, 0.06)
     )
 
     val dataPass = arrayOf(
-        HSMapDatapoint(
-            0.0,
-            2500.0,
-            0.075
-        ),
-        HSMapDatapoint(
-            5.0,
-            3000.0,
-            0.075
-        ),
-        HSMapDatapoint(
-            8.0,
-            4000.0,
-            0.075
-        ),
-        HSMapDatapoint(
-            10.0,
-            4500.0,
-            0.075
-        )
+        HSMapDatapoint(0.0, 2500.0, 0.075),
+        HSMapDatapoint(5.0, 3000.0, 0.075),
+        HSMapDatapoint(8.0, 4000.0, 0.075),
+        HSMapDatapoint(10.0, 4500.0, 0.075)
     )
 
     var flywheelLiveSetpoint = RPM.of(2600.0)
