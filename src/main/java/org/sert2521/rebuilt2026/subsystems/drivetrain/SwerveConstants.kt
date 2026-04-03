@@ -38,7 +38,7 @@ object SwerveConstants {
     const val DRIVE_P = 0.4
     const val DRIVE_I = 0.0
     const val DRIVE_D = 0.005
-    const val DRIVE_S =	0.1
+    const val DRIVE_S = 0.1
     const val DRIVE_A = 0.0
     const val DRIVE_V = 0.82444
     val driveCurrentLimit = Units.Amps.of(60.0)

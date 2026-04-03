@@ -46,7 +46,7 @@ object Intake : SubsystemBase() {
         rollerSMC.voltage = voltage
     }
 
-    fun intake() :Command {
+    fun intake(): Command {
         return runOnce {
             setRollerMotor(GrintakeConstants.intakeVoltage)
         }.andThen(Commands.idle())
@@ -66,7 +66,7 @@ object Intake : SubsystemBase() {
         )
     }
 
-    fun stop():Command{
+    fun stop(): Command {
         return runOnce {
             setRollerMotor(Volts.zero())
         }.andThen(

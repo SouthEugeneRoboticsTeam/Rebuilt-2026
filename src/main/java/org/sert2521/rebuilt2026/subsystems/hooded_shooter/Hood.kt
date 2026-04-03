@@ -51,11 +51,15 @@ object Hood : SubsystemBase() {
                 .withSensorDirection(SensorDirectionValue.Clockwise_Positive)
         )
     }
+
     // 0.382
     override fun periodic() {
-        smc.setEncoderPosition((absolutePosition.get()+Rotations.of(0.432)) / ShooterConstants.HOOD_ABSOLUTE_ENCODER_GEARING)
+        smc.setEncoderPosition((absolutePosition.get() + Rotations.of(0.432)) / ShooterConstants.HOOD_ABSOLUTE_ENCODER_GEARING)
         DogLog.log("Absolute Encoder", absolutePosition.get())
-        DogLog.log("Absolute Encoder with gearing", absolutePosition.get() / ShooterConstants.HOOD_ABSOLUTE_ENCODER_GEARING)
+        DogLog.log(
+            "Absolute Encoder with gearing",
+            absolutePosition.get() / ShooterConstants.HOOD_ABSOLUTE_ENCODER_GEARING
+        )
         smc.updateTelemetry()
     }
 
@@ -69,13 +73,13 @@ object Hood : SubsystemBase() {
         }
     }
 
-    fun stop():Command {
+    fun stop(): Command {
         return runOnce {
             smc.dutyCycle = 0.0
         }.andThen(Commands.idle())
     }
 
-    fun reZero():Command {
+    fun reZero(): Command {
         return runOnce {
             smc.dutyCycle = -0.2
         }.andThen(
@@ -83,7 +87,7 @@ object Hood : SubsystemBase() {
         ).until {
             debouncer.calculate(smc.statorCurrent > Amps.of(20.0))
         }.andThen(
-            runOnce{
+            runOnce {
                 absoluteEncoder.setPosition(Rotations.zero())
             }
         )

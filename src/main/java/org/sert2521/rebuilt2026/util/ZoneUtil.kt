@@ -13,8 +13,8 @@ object ZoneUtil {
         OPPONENT
     }
 
-    fun getCurrentZone():Zone{
-        return if (allianceIsBlue()){
+    fun getCurrentZone(): Zone {
+        return if (allianceIsBlue()) {
             when (Drivetrain.getPose().x) {
                 in Double.MIN_VALUE..OtherConstsants.blueBoundary.`in`(Meters) -> Zone.ALLIANCE
                 in OtherConstsants.blueBoundary.`in`(Meters)..OtherConstsants.redBoundary.`in`(Meters) -> Zone.NEUTRAL
@@ -35,15 +35,15 @@ object ZoneUtil {
         return allianceIsBlue().xor(Drivetrain.getPose().y < OtherConstsants.midline.`in`(Meters))
     }
 
-    fun getShallows():Array<Rotation2d> {
-        return if (isLeft()){
+    fun getShallows(): Array<Rotation2d> {
+        return if (isLeft()) {
             OtherConstsants.shallowsCW
         } else {
             OtherConstsants.shallowsCCW
         }
     }
 
-    fun getTower():Rotation2d {
+    fun getTower(): Rotation2d {
         return if (allianceIsBlue()) {
             if (isLeft()) {
                 OtherConstsants.fortyFives[3]

@@ -10,7 +10,7 @@ import org.sert2521.rebuilt2026.Input
 import kotlin.math.floor
 
 object AllianceShiftUtil {
-    enum class Shift{
+    enum class Shift {
         AUTO,
         TRANSITION,
         SHIFT_ONE,
@@ -25,7 +25,7 @@ object AllianceShiftUtil {
     val rumbleBlip = Input.rumbleBlip { blipStrength }
 
 
-    private fun getAllianceShift(time:Double): Shift{
+    private fun getAllianceShift(time: Double): Shift {
         return when {
             time > 140.0 -> Shift.AUTO
             time in 130.0..140.0 -> Shift.TRANSITION
@@ -37,7 +37,7 @@ object AllianceShiftUtil {
         }
     }
 
-    private fun getAllianceShiftText(shift:Shift):String{
+    private fun getAllianceShiftText(shift: Shift): String {
         return when (shift) {
             Shift.AUTO -> "Auto"
             Shift.TRANSITION -> "Transition"
@@ -61,16 +61,16 @@ object AllianceShiftUtil {
         }
     }
 
-    private fun getAllianceShiftColor(shift: Shift):DriverStation.Alliance{
+    private fun getAllianceShiftColor(shift: Shift): DriverStation.Alliance {
         val alliance = DriverStation.getAlliance().getOrElse { DriverStation.Alliance.Blue }
 
-        val opponent = when (alliance){
+        val opponent = when (alliance) {
             DriverStation.Alliance.Blue -> DriverStation.Alliance.Red
             DriverStation.Alliance.Red -> DriverStation.Alliance.Blue
             else -> DriverStation.Alliance.Red
         }
 
-        val autoWon = if (DriverStation.getGameSpecificMessage() == "R"){
+        val autoWon = if (DriverStation.getGameSpecificMessage() == "R") {
             DriverStation.Alliance.Red
         } else {
             DriverStation.Alliance.Blue
@@ -78,15 +78,35 @@ object AllianceShiftUtil {
         return when (shift) {
             Shift.AUTO -> alliance
             Shift.TRANSITION -> alliance
-            Shift.SHIFT_ONE -> if (autoWon == alliance) { opponent } else { alliance }
-            Shift.SHIFT_TWO -> if (autoWon == alliance) { alliance } else { opponent }
-            Shift.SHIFT_THREE -> if (autoWon == alliance) { opponent } else { alliance }
-            Shift.SHIFT_FOUR -> if (autoWon == alliance) { alliance } else { opponent }
+            Shift.SHIFT_ONE -> if (autoWon == alliance) {
+                opponent
+            } else {
+                alliance
+            }
+
+            Shift.SHIFT_TWO -> if (autoWon == alliance) {
+                alliance
+            } else {
+                opponent
+            }
+
+            Shift.SHIFT_THREE -> if (autoWon == alliance) {
+                opponent
+            } else {
+                alliance
+            }
+
+            Shift.SHIFT_FOUR -> if (autoWon == alliance) {
+                alliance
+            } else {
+                opponent
+            }
+
             Shift.ENDGAME -> alliance
         }
     }
 
-    fun update(){
+    fun update() {
         val time = DriverStation.getMatchTime()
         val shift = getAllianceShift(time)
         shiftTime = floor(getAllianceShiftTime(shift, time) * 10.0) / 10.0
@@ -98,15 +118,17 @@ object AllianceShiftUtil {
             Input.setRumble(0.0)
         }
 
-        DogLog.log("Alliance Shift/Timer",
-            if ("." in dashboardTime){
+        DogLog.log(
+            "Alliance Shift/Timer",
+            if ("." in dashboardTime) {
                 dashboardTime
             } else {
                 "$dashboardTime.0"
             }
         )
         DogLog.log("Alliance Shift/Shift", getAllianceShiftText(shift))
-        DogLog.log("Alliance Shift/Current Scorer",
+        DogLog.log(
+            "Alliance Shift/Current Scorer",
             when (getAllianceShiftColor(shift)) {
                 DriverStation.Alliance.Blue -> Color.kBlue.toHexString()
                 DriverStation.Alliance.Red -> Color.kRed.toHexString()

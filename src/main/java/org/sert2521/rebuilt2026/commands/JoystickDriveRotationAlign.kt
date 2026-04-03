@@ -10,7 +10,6 @@ import org.sert2521.rebuilt2026.Input
 import org.sert2521.rebuilt2026.subsystems.drivetrain.Drivetrain
 import org.sert2521.rebuilt2026.subsystems.drivetrain.SwerveConstants
 import java.util.function.BooleanSupplier
-import java.util.function.DoubleSupplier
 import java.util.function.Supplier
 import kotlin.math.PI
 import kotlin.math.atan2
@@ -20,9 +19,12 @@ import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.sin
 
-class DriverAssist(private val xLineTargetMeters: DoubleSupplier) : Command() {
-    companion object{
-        private val driverAssistPID = PIDController(SwerveConstants.DRIVER_ASSIST_P, 0.0, SwerveConstants.DRIVER_ASSIST_D)
+open class JoystickDriveRotationAlign(
+    private val fieldOriented: BooleanSupplier,
+    private val rotationTarget: Supplier<Rotation2d>
+) : Command() {
+    companion object {
+        private val rotationPID = PIDController(SwerveConstants.VISION_HEADING_P, 0.0, SwerveConstants.VISION_HEADING_D)
     }
 
     private var targetChassisSpeeds = ChassisSpeeds()
@@ -31,11 +33,12 @@ class DriverAssist(private val xLineTargetMeters: DoubleSupplier) : Command() {
 
     init {
         addRequirements(Drivetrain)
-        SmartDashboard.putData("Driver Assist PID", driverAssistPID)
+        SmartDashboard.putData("Rotation PID", rotationPID)
+        rotationPID.enableContinuousInput(-PI, PI)
     }
 
     override fun initialize() {
-        driverAssistPID.reset()
+        rotationPID.reset()
     }
 
     override fun execute() {
@@ -44,14 +47,20 @@ class DriverAssist(private val xLineTargetMeters: DoubleSupplier) : Command() {
         val ratedMag = rateLimiter.calculate(min(mag.pow(3), Input.maxSpeed()))
 
         targetChassisSpeeds = ChassisSpeeds(
-            sin(theta) * SwerveConstants.DRIVE_SPEED * ratedMag + driverAssistPID.calculate(Drivetrain.getPose().translation.x, xLineTargetMeters.asDouble),
+            sin(theta) * SwerveConstants.DRIVE_SPEED * ratedMag,
             cos(theta) * SwerveConstants.DRIVE_SPEED * ratedMag,
-            Input.getRightRot().pow(3) * SwerveConstants.ROT_SPEED
+            rotationPID.calculate(Drivetrain.getPose().rotation.radians, rotationTarget.get().radians)
         )
 
-        Drivetrain.driveRobotRelative(ChassisSpeeds.fromFieldRelativeSpeeds(
-            targetChassisSpeeds,
-            Drivetrain.getPose().rotation.minus(Input.getRotOffset())
-        ))
+        Drivetrain.driveRobotRelative(
+            if (fieldOriented.asBoolean) {
+                ChassisSpeeds.fromFieldRelativeSpeeds(
+                    targetChassisSpeeds,
+                    Drivetrain.getPose().rotation.minus(Input.getRotOffset())
+                )
+            } else {
+                targetChassisSpeeds
+            }
+        )
     }
 }

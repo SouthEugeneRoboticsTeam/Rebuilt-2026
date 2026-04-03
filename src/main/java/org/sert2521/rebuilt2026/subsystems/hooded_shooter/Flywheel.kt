@@ -77,10 +77,10 @@ object Flywheel : SubsystemBase() {
         rightSMC.simIterate()
     }
 
-    fun setVelocity(velocity:Supplier<AngularVelocity>):Command{
+    fun setVelocity(velocity: Supplier<AngularVelocity>): Command {
         return run {
             var bangOutput = bangBangController.calculate(leftSMC.mechanismVelocity.`in`(RPM), velocity.get().`in`(RPM))
-            if (shotTimer.get()<0.4 && shotTimer.isRunning){
+            if (shotTimer.get() < 0.4 && shotTimer.isRunning) {
                 bangOutput = 0.9
             } else if (shotTimer.isRunning) {
                 bangOutput *= 0.55
@@ -110,12 +110,12 @@ object Flywheel : SubsystemBase() {
         shotTimer.stop()
     }
 
-    fun isRevved():Boolean {
+    fun isRevved(): Boolean {
         return true
     }
 
-    fun stop():Command{
-        return runOnce{
+    fun stop(): Command {
+        return runOnce {
             leftSMC.dutyCycle = 0.0
             rightSMC.dutyCycle = 0.0
         }.andThen(Commands.idle())

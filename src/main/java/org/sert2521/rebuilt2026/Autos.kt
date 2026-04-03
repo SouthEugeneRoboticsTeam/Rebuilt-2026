@@ -32,11 +32,17 @@ object Autos {
         "Rev Pass" to ScheduleCommand(HoodedShooterCommands.revAndTrackPass()).asProxy(),
         "Rev Stop" to HoodedShooterCommands.stop(),
 
-        "Intake Down" to ScheduleCommand(Intake.fullSpeedIntake().alongWith(Wrist.down()).alongWith(Indexer.manualIndex())).asProxy(),
+        "Intake Down" to ScheduleCommand(
+            Intake.fullSpeedIntake().alongWith(Wrist.down()).alongWith(Indexer.manualIndex())
+        ).asProxy(),
         "Intake Up" to ScheduleCommand(Wrist.up().alongWith(Intake.stop()).alongWith(Indexer.index())).asProxy(),
 
-        "Depot Inter" to ScheduleCommand(Wrist.toDepotInter().alongWith(Intake.fullSpeedIntake()).alongWith(Indexer.manualIndex())).asProxy(),
-        "Depot" to ScheduleCommand(Wrist.toDepot().alongWith(Intake.fullSpeedIntake()).alongWith(Indexer.manualIndex())).asProxy(),
+        "Depot Inter" to ScheduleCommand(
+            Wrist.toDepotInter().alongWith(Intake.fullSpeedIntake()).alongWith(Indexer.manualIndex())
+        ).asProxy(),
+        "Depot" to ScheduleCommand(
+            Wrist.toDepot().alongWith(Intake.fullSpeedIntake()).alongWith(Indexer.manualIndex())
+        ).asProxy(),
 
         "Rev" to ScheduleCommand(HoodedShooterCommands.revAndTrackHub()).asProxy(),
         "Shoot" to ScheduleCommand(Indexer.pulse().alongWith(runOnce(Flywheel::startTimer))).asProxy(),
@@ -93,7 +99,7 @@ object Autos {
         SmartDashboard.putData("Autos", autoChooser)
     }
 
-    fun getAutonomousCommand():Command{
+    fun getAutonomousCommand(): Command {
         return autoChooser.selected
     }
 }

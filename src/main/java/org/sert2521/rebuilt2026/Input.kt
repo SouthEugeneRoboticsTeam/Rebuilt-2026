@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj2.command.Commands.runOnce
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
 import org.sert2521.rebuilt2026.commands.HoodedShooterCommands
-import org.sert2521.rebuilt2026.commands.VisionRotationDrive
+import org.sert2521.rebuilt2026.commands.JoystickDriveRotationAlign
 import org.sert2521.rebuilt2026.subsystems.Indexer
 import org.sert2521.rebuilt2026.subsystems.Intake
 import org.sert2521.rebuilt2026.subsystems.Wrist
@@ -79,7 +79,7 @@ object Input {
 
         manualIndex.whileTrue(Indexer.manualIndex())
 
-        scoringAlign.whileTrue(VisionRotationDrive(::getFieldOriented) {
+        scoringAlign.whileTrue(JoystickDriveRotationAlign(::getFieldOriented) {
             when (ZoneUtil.getCurrentZone()) {
                 ZoneUtil.Zone.ALLIANCE -> Drivetrain.rotationTo(OtherConstsants.currentHub())
                     .rotateBy(Rotation2d.k180deg)
@@ -92,7 +92,7 @@ object Input {
             }
         })
 
-        utilAlign.whileTrue(VisionRotationDrive(::getFieldOriented) {
+        utilAlign.whileTrue(JoystickDriveRotationAlign(::getFieldOriented) {
             when (ZoneUtil.getCurrentZone()) {
                 ZoneUtil.Zone.ALLIANCE -> ZoneUtil.getTower()
                 ZoneUtil.Zone.NEUTRAL, ZoneUtil.Zone.OPPONENT -> Drivetrain.getClosestRotation(*ZoneUtil.getShallows())

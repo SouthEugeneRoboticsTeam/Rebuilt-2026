@@ -50,14 +50,14 @@ object Indexer : SubsystemBase() {
     private val fullDebouncer = Debouncer(0.1, Debouncer.DebounceType.kFalling)
     private var beambreakClear = true
 
-    private fun getBeamBreakBlocked():Boolean{
+    private fun getBeamBreakBlocked(): Boolean {
         return !beambreakClear
     }
 
     private val telemetry = MechanismTelemetry()
 
 
-    init{
+    init {
         defaultCommand = default()
 
         telemetry.setupTelemetry("Indexer", indexerSMC)
@@ -79,11 +79,12 @@ object Indexer : SubsystemBase() {
         indexerSMC.simIterate()
         kickerSMC.simIterate()
     }
-    fun setIndexerMotor (dutyCycle: Double){
-      indexerSMC.dutyCycle = dutyCycle
+
+    fun setIndexerMotor(dutyCycle: Double) {
+        indexerSMC.dutyCycle = dutyCycle
     }
 
-    fun setKickerMotor (dutyCycle: Double) {
+    fun setKickerMotor(dutyCycle: Double) {
         kickerSMC.dutyCycle = dutyCycle
     }
 
@@ -96,7 +97,7 @@ object Indexer : SubsystemBase() {
         )
     }
 
-    fun manualIndex():Command{
+    fun manualIndex(): Command {
         return runOnce {
             setIndexerMotor(IndexerConstants.MAIN_INDEXING)
             setKickerMotor(IndexerConstants.KICKER_INDEXING)
@@ -110,14 +111,14 @@ object Indexer : SubsystemBase() {
             if (getBeamBreakBlocked()) {
                 setIndexerMotor(IndexerConstants.MAIN_INDEXING)
                 setKickerMotor(IndexerConstants.KICKER_INDEXING)
-            }else {
+            } else {
                 setIndexerMotor(IndexerConstants.MAIN_DEFAULT)
                 setKickerMotor(IndexerConstants.KICKER_DEFAULT)
             }
         }
     }
 
-    fun shoot(): Command{
+    fun shoot(): Command {
         return runOnce {
             setIndexerMotor(IndexerConstants.MAIN_KICKING)
             setKickerMotor(IndexerConstants.KICKER_KICKING)
@@ -126,7 +127,7 @@ object Indexer : SubsystemBase() {
         )
     }
 
-    fun pulse(): Command{
+    fun pulse(): Command {
         return shoot().withTimeout(PULSE_SHOOT_TIME)
             .andThen(index().withTimeout(PULSE_DELAY_TIME))
             .repeatedly()

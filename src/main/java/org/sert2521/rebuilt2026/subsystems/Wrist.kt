@@ -16,7 +16,7 @@ import yams.motorcontrollers.SmartMotorControllerConfig
 import yams.motorcontrollers.local.SparkWrapper
 import yams.telemetry.MechanismTelemetry
 
-object Wrist: SubsystemBase() {
+object Wrist : SubsystemBase() {
     private val wristMotorConfig = SmartMotorControllerConfig(this)
         .withClosedLoopController(GrintakeConstants.WRIST_P, 0.0, GrintakeConstants.WRIST_D)
         .withTelemetry("Wrist Motor", TelemetryConstants.GRINTAKE_TELEMETRY)
@@ -57,26 +57,26 @@ object Wrist: SubsystemBase() {
         }
     }
 
-    fun down():Command {
+    fun down(): Command {
         return runOnce {
             setpoint = GrintakeConstants.intakePosition
         }
     }
 
-    fun toDepotInter():Command {
+    fun toDepotInter(): Command {
         return runOnce {
             setpoint = GrintakeConstants.depotInter
         }
     }
 
-    fun toDepot():Command {
+    fun toDepot(): Command {
         return runOnce {
             setpoint = GrintakeConstants.depotPosition
         }
     }
 
-    fun reZero():Command {
-        return runOnce{
+    fun reZero(): Command {
+        return runOnce {
             rezero = true
             wristSMC.dutyCycle = GrintakeConstants.REZERO_SPEED
             currentDebouncer.calculate(false)

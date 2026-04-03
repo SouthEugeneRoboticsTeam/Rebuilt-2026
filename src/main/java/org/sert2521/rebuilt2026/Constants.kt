@@ -39,16 +39,16 @@ object GrintakeConstants {
 
     val rollerGearing = MechanismGearing(
         GearBox.fromReductionStages(
-            24.0/12.0,
-            36.0/24.0
+            24.0 / 12.0,
+            36.0 / 24.0
         )
     )
     val wristGearing = MechanismGearing(
         GearBox.fromReductionStages(
             3.0,
             4.0,
-            54.0/24.0,
-            56.0/24.0
+            54.0 / 24.0,
+            56.0 / 24.0
         )
     )
 
@@ -69,7 +69,7 @@ object IndexerConstants {
     val indexerGearing = MechanismGearing(
         GearBox.fromReductionStages(
             4.0,
-            28.0/24.0
+            28.0 / 24.0
         )
     )
     val kickerGearing = MechanismGearing(
@@ -108,7 +108,7 @@ object ShooterConstants {
 
 
     val hoodOffset = Rotations.of(0.141)
-    const val HOOD_ABSOLUTE_ENCODER_GEARING = 150.0/14.0
+    const val HOOD_ABSOLUTE_ENCODER_GEARING = 150.0 / 14.0
 
     val shooterGearing = MechanismGearing(
         GearBox.fromReductionStages(
@@ -118,7 +118,7 @@ object ShooterConstants {
 
     val hoodGearing = MechanismGearing(
         GearBox.fromReductionStages(
-            150.0/14.0,
+            150.0 / 14.0,
             10.0
         )
     )
@@ -142,21 +142,30 @@ object OtherConstsants {
 
     private val shallowAngle = Rotation2d.fromDegrees(10.0)
     private val fortyFiveAngle = Rotation2d.fromDegrees(45.0)
-    val shallowsCCW = Array(4){ (Rotation2d.kCCW_90deg * it.toDouble()) + shallowAngle }
-    val shallowsCW = Array(4){ (Rotation2d.kCCW_90deg * it.toDouble()) - shallowAngle }
-    val fortyFives = Array(4){ (Rotation2d.kCCW_90deg * it.toDouble()) + fortyFiveAngle }
+    val shallowsCCW = Array(4) { (Rotation2d.kCCW_90deg * it.toDouble()) + shallowAngle }
+    val shallowsCW = Array(4) { (Rotation2d.kCCW_90deg * it.toDouble()) - shallowAngle }
+    val fortyFives = Array(4) { (Rotation2d.kCCW_90deg * it.toDouble()) + fortyFiveAngle }
 
     val driverAssistLineHub = Meters.zero()
     val driverAssistLineWall = Meters.zero()
 
-    val blueHubTranslation = Translation2d(Inches.of(182.11),fieldWidth/2.0)
+    val blueHubTranslation = Translation2d(Inches.of(182.11), fieldWidth / 2.0)
     val redHubTranslation = blueHubTranslation.flipAlliance()
 
     val blueBumps = arrayOf(Translation2d(4.0, 2.0), Translation2d(4.0, 2.0).flipWidth())
     val redBumps = arrayOf(blueBumps[0].flipAlliance(), blueBumps[1].flipAlliance())
 
-    fun currentHub() = if (allianceIsBlue()) { blueHubTranslation } else { redHubTranslation }
-    fun currentBumps() = if (allianceIsBlue()) { blueBumps } else { redBumps }
+    fun currentHub() = if (allianceIsBlue()) {
+        blueHubTranslation
+    } else {
+        redHubTranslation
+    }
+
+    fun currentBumps() = if (allianceIsBlue()) {
+        blueBumps
+    } else {
+        redBumps
+    }
 
     val dataHub = arrayOf(
         // Remember to put in order of distance

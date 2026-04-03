@@ -8,21 +8,21 @@ import edu.wpi.first.units.measure.Angle
 import edu.wpi.first.units.measure.AngularVelocity
 import edu.wpi.first.units.measure.Distance
 
-class HSMapDatapoint{
-    val distance:Distance
+class HSMapDatapoint {
+    val distance: Distance
     val hsGoal: HSGoal
 
-    constructor(hsGoal: HSGoal,distance:Distance){
+    constructor(hsGoal: HSGoal, distance: Distance) {
         this.distance = distance
         this.hsGoal = hsGoal
     }
 
-    constructor(distance:Double, primary:Double, hood:Double){
+    constructor(distance: Double, primary: Double, hood: Double) {
         this.distance = Meters.of(distance)
-        this.hsGoal = HSGoal(RPM.of(primary),Rotations.of(hood))
+        this.hsGoal = HSGoal(RPM.of(primary), Rotations.of(hood))
     }
 
-    constructor(primary:AngularVelocity, hood: Angle,distance:Distance){
+    constructor(primary: AngularVelocity, hood: Angle, distance: Distance) {
         this.distance = distance
         this.hsGoal = HSGoal(primary, hood)
     }

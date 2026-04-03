@@ -122,7 +122,8 @@ object Drivetrain : SubsystemBase() {
     )
 
     private val limelight = Limelight("limelight-green")
-    private val limelightPoseEstimatorMT2 = limelight.createPoseEstimator(LimelightPoseEstimator.EstimationMode.MEGATAG2)
+    private val limelightPoseEstimatorMT2 =
+        limelight.createPoseEstimator(LimelightPoseEstimator.EstimationMode.MEGATAG2)
     private var fed = false
 
     private val field = Field2d()
@@ -155,7 +156,7 @@ object Drivetrain : SubsystemBase() {
         DogLog.log("Drivetrain/RobotPose", getPose())
     }
 
-    fun updatePoseEstimator(){
+    fun updatePoseEstimator() {
         poseEstimator.update(Rotation2d(gyroYaw.get()), getModulePositions())
 
         moduleStates = getModuleStates()
@@ -301,7 +302,7 @@ object Drivetrain : SubsystemBase() {
         var closest = 1.0
         var rotation = rotations[0]
         rotations.forEach {
-            if (abs(it.rotations - getPose().rotation.rotations) % 1.0 < closest){
+            if (abs(it.rotations - getPose().rotation.rotations) % 1.0 < closest) {
                 closest = abs(rotation.rotations - getPose().rotation.rotations)
                 rotation = it
             }

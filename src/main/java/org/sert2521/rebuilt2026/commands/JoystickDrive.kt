@@ -13,8 +13,9 @@ import kotlin.math.*
 
 class JoystickDrive(private val fieldOriented: BooleanSupplier) : Command() {
     companion object {
-        val rateLimiter = SlewRateLimiter(1.0/SwerveConstants.timeToFullSpeed.`in`(Seconds), -99999.9, 0.0)
+        val rateLimiter = SlewRateLimiter(1.0 / SwerveConstants.timeToFullSpeed.`in`(Seconds), -99999.9, 0.0)
     }
+
     private var targetChassisSpeeds = ChassisSpeeds()
 
 

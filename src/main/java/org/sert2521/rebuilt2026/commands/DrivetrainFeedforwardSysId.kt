@@ -12,7 +12,7 @@ import java.text.NumberFormat
 import java.util.*
 
 
-class DrivetrainFeedforwardSysId : SequentialCommandGroup(){
+class DrivetrainFeedforwardSysId : SequentialCommandGroup() {
     val velocitySamples: MutableList<Double> = LinkedList()
     val voltageSamples: MutableList<Double> = LinkedList()
     val timer = Timer()
@@ -45,7 +45,7 @@ class DrivetrainFeedforwardSysId : SequentialCommandGroup(){
         )
     }
 
-    fun withCalculations():Command{
+    fun withCalculations(): Command {
         return this.finallyDo(
             Runnable {
                 val n = velocitySamples.size

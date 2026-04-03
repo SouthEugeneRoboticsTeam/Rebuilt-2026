@@ -11,9 +11,9 @@ fun Translation2d.flipWidth(): Translation2d {
 }
 
 fun Translation2d.flipAlliance(): Translation2d {
-    return Translation2d(OtherConstsants.fieldLength.`in`(Units.Meters)-this.x, this.y)
+    return Translation2d(OtherConstsants.fieldLength.`in`(Units.Meters) - this.x, this.y)
 }
 
-fun allianceIsBlue():Boolean {
+fun allianceIsBlue(): Boolean {
     return DriverStation.getAlliance().getOrElse { DriverStation.Alliance.Blue } == DriverStation.Alliance.Blue
 }

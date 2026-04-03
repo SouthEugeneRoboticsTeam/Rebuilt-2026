@@ -14,7 +14,7 @@ object HSMap {
         var lastDatapoint = dataset.first()
         var nextDatapoint = dataset.last()
 
-        for (point in dataset){
+        for (point in dataset) {
             // Remember that the dataset order should be in increasing distance
             if (point.distance > distance) {
                 nextDatapoint = point
@@ -31,16 +31,24 @@ object HSMap {
         )
 
         return HSGoal(
-            RPM.of(min(MathUtil.interpolate(
-                lastDatapoint.hsGoal.flywheelSpeed.`in`(RPM),
-                nextDatapoint.hsGoal.flywheelSpeed.`in`(RPM),
-                p
-            ), nextDatapoint.hsGoal.flywheelSpeed.`in`(RPM))),
-            Rotations.of(min(MathUtil.interpolate(
-                lastDatapoint.hsGoal.hoodAngle.`in`(Rotations),
-                nextDatapoint.hsGoal.hoodAngle.`in`(Rotations),
-                p
-            ), nextDatapoint.hsGoal.hoodAngle.`in`(Rotations))),
+            RPM.of(
+                min(
+                    MathUtil.interpolate(
+                        lastDatapoint.hsGoal.flywheelSpeed.`in`(RPM),
+                        nextDatapoint.hsGoal.flywheelSpeed.`in`(RPM),
+                        p
+                    ), nextDatapoint.hsGoal.flywheelSpeed.`in`(RPM)
+                )
+            ),
+            Rotations.of(
+                min(
+                    MathUtil.interpolate(
+                        lastDatapoint.hsGoal.hoodAngle.`in`(Rotations),
+                        nextDatapoint.hsGoal.hoodAngle.`in`(Rotations),
+                        p
+                    ), nextDatapoint.hsGoal.hoodAngle.`in`(Rotations)
+                )
+            ),
         )
     }
 
@@ -51,13 +59,21 @@ object HSMap {
     fun getGoalHubWithMovement(): HSGoal {
         return interpolateWithDistance(
             Drivetrain.distanceTo(OtherConstsants.currentHub()) +
-                    Meters.of(hypot(Drivetrain.getChassisSpeeds().vxMetersPerSecond, Drivetrain.getChassisSpeeds().vyMetersPerSecond)
-                            * OtherConstsants.distanceSpeedAdjustment.`in`(Seconds)),
+                    Meters.of(
+                        hypot(
+                            Drivetrain.getChassisSpeeds().vxMetersPerSecond,
+                            Drivetrain.getChassisSpeeds().vyMetersPerSecond
+                        )
+                                * OtherConstsants.distanceSpeedAdjustment.`in`(Seconds)
+                    ),
             OtherConstsants.dataHub
         )
     }
 
     fun getGoalPass(): HSGoal {
-        return interpolateWithDistance(Drivetrain.distanceToClosest(*OtherConstsants.currentBumps()), OtherConstsants.dataPass)
+        return interpolateWithDistance(
+            Drivetrain.distanceToClosest(*OtherConstsants.currentBumps()),
+            OtherConstsants.dataPass
+        )
     }
 }
