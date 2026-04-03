@@ -146,6 +146,8 @@ object OtherConstsants {
     val shallowsCW = Array(4){ (Rotation2d.kCCW_90deg * it.toDouble()) - shallowAngle }
     val fortyFives = Array(4){ (Rotation2d.kCCW_90deg * it.toDouble()) + fortyFiveAngle }
 
+    val driverAssistLineHub = Meters.zero()
+    val driverAssistLineWall = Meters.zero()
 
     val blueHubTranslation = Translation2d(Inches.of(182.11),fieldWidth/2.0)
     val redHubTranslation = blueHubTranslation.flipAlliance()
@@ -226,7 +228,6 @@ object OtherConstsants {
             4500.0,
             0.075
         )
-
     )
 
     var flywheelLiveSetpoint = RPM.of(2600.0)

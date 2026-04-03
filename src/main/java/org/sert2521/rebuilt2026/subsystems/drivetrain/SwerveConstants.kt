@@ -59,6 +59,9 @@ object SwerveConstants {
     const val VISION_HEADING_P = 10.0
     const val VISION_HEADING_D = 0.2
 
+    const val DRIVER_ASSIST_P = 0.0
+    const val DRIVER_ASSIST_D = 0.0
+
     val maxSpeed = Units.MetersPerSecond.of(4.571)
     val movingThreshold = Units.MetersPerSecond.of(0.2)
 

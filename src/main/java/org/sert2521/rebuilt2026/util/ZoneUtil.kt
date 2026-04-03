@@ -2,6 +2,7 @@ package org.sert2521.rebuilt2026.util
 
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.units.Units.Meters
+import edu.wpi.first.units.measure.Distance
 import org.sert2521.rebuilt2026.OtherConstsants
 import org.sert2521.rebuilt2026.subsystems.drivetrain.Drivetrain
 
@@ -54,6 +55,28 @@ object ZoneUtil {
                 OtherConstsants.fortyFives[1]
             } else {
                 OtherConstsants.fortyFives[2]
+            }
+        }
+    }
+
+    fun getDriverAssistLine(): Distance {
+        return when (getCurrentZone()) {
+            Zone.ALLIANCE -> if (allianceIsBlue()) {
+                OtherConstsants.driverAssistLineWall
+            } else {
+                OtherConstsants.fieldLength - OtherConstsants.driverAssistLineWall
+            }
+
+            Zone.NEUTRAL -> if (allianceIsBlue()) {
+                OtherConstsants.driverAssistLineHub
+            } else {
+                OtherConstsants.fieldLength - OtherConstsants.driverAssistLineHub
+            }
+
+            Zone.OPPONENT -> if (allianceIsBlue()) {
+                OtherConstsants.fieldLength - OtherConstsants.driverAssistLineWall
+            } else {
+                OtherConstsants.driverAssistLineWall
             }
         }
     }

@@ -82,20 +82,11 @@ object Flywheel : SubsystemBase() {
             var bangOutput = bangBangController.calculate(leftSMC.mechanismVelocity.`in`(RPM), velocity.get().`in`(RPM))
             if (shotTimer.get()<0.4 && shotTimer.isRunning){
                 bangOutput = 0.9
-//                var outputAdded = Volts.of(1.2) * bangOutput
-//                leftSMC.voltage = outputAdded + Volts.of(velocity.get().`in`(RotationsPerSecond) * ShooterConstants.F_V)
-//                rightSMC.voltage = outputAdded + Volts.of(velocity.get().`in`(RotationsPerSecond) * ShooterConstants.F_V)
             } else if (shotTimer.isRunning) {
                 bangOutput *= 0.55
             } else {
                 bangOutput = 0.0
             }
-
-//            } else {
-//                leftSMC.setVelocity(velocity.get())
-//                rightSMC.setVelocity(velocity.get())
-//            }
-
 
             var outputAdded = Volts.of(1.2) * bangOutput
             if (outputAdded < Volts.zero()) {
