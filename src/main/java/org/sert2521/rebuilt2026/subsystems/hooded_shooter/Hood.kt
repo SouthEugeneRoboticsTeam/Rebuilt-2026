@@ -1,6 +1,5 @@
 package org.sert2521.rebuilt2026.subsystems.hooded_shooter
 
-import com.ctre.phoenix6.configs.CANcoderConfiguration
 import com.ctre.phoenix6.configs.MagnetSensorConfigs
 import com.ctre.phoenix6.hardware.CANcoder
 import com.ctre.phoenix6.signals.SensorDirectionValue
@@ -15,14 +14,13 @@ import edu.wpi.first.units.Units.Rotations
 import edu.wpi.first.units.measure.Angle
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.Commands
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.sert2521.rebuilt2026.ElectronicIDs
 import org.sert2521.rebuilt2026.ShooterConstants
 import org.sert2521.rebuilt2026.TelemetryConstants
 import yams.motorcontrollers.SmartMotorControllerConfig
 import yams.motorcontrollers.local.SparkWrapper
 import yams.telemetry.MechanismTelemetry
-import java.time.temporal.TemporalQueries.offset
 import java.util.function.Supplier
 
 object Hood : SubsystemBase() {

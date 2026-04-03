@@ -41,8 +41,8 @@ object Input {
     private val scoringAlign = driverController.x()
     private val utilAlign = driverController.a()
 
-    val resetRotOffset = driverController.y()
-    val resetRotReal = driverController.b()
+    private val resetRotOffset = driverController.y()
+    private val resetRotReal = driverController.b()
 
     private val hoodDown = gunnerController.button(7)
     private val hoodUp = gunnerController.button(6)
@@ -118,10 +118,6 @@ object Input {
         resetRotOffset.onTrue(runOnce({
             rotationOffset = Drivetrain.getPose().rotation
         }))
-    }
-
-    fun getJoystickInputs(): Triple<Double, Double, Double> {
-        return Triple(getLeftX(), getLeftY(), getRightRot())
     }
 
     fun getLeftX(): Double {

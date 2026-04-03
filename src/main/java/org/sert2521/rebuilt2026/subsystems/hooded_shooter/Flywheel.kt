@@ -10,7 +10,6 @@ import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.units.Units
 import edu.wpi.first.units.Units.RPM
 import edu.wpi.first.units.Units.RotationsPerSecond
-import edu.wpi.first.units.Units.Seconds
 import edu.wpi.first.units.Units.Volts
 import edu.wpi.first.units.measure.AngularVelocity
 import edu.wpi.first.wpilibj.Timer

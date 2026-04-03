@@ -12,11 +12,11 @@ import org.sert2521.rebuilt2026.subsystems.hooded_shooter.Hood
 object HoodedShooterCommands {
     private var currentGoal = HSMap.getGoalHub()
 
-    fun updateGoalHub() {
+    private fun updateGoalHub() {
         currentGoal = HSMap.getGoalHub()
     }
 
-    fun updateGoalPass() {
+    private fun updateGoalPass() {
         currentGoal = HSMap.getGoalPass()
     }
 

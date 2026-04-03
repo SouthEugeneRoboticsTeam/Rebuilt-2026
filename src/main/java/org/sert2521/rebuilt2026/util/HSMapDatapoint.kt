@@ -1,6 +1,5 @@
 package org.sert2521.rebuilt2026.util
 
-import edu.wpi.first.units.Units.Degrees
 import edu.wpi.first.units.Units.Meters
 import edu.wpi.first.units.Units.RPM
 import edu.wpi.first.units.Units.Rotations

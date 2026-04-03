@@ -80,11 +80,11 @@ object Indexer : SubsystemBase() {
         kickerSMC.simIterate()
     }
 
-    fun setIndexerMotor(dutyCycle: Double) {
+    private fun setIndexerMotor(dutyCycle: Double) {
         indexerSMC.dutyCycle = dutyCycle
     }
 
-    fun setKickerMotor(dutyCycle: Double) {
+    private fun setKickerMotor(dutyCycle: Double) {
         kickerSMC.dutyCycle = dutyCycle
     }
 
@@ -118,7 +118,7 @@ object Indexer : SubsystemBase() {
         }
     }
 
-    fun shoot(): Command {
+    private fun shoot(): Command {
         return runOnce {
             setIndexerMotor(IndexerConstants.MAIN_KICKING)
             setKickerMotor(IndexerConstants.KICKER_KICKING)

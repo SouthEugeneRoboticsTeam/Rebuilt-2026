@@ -156,7 +156,7 @@ object Drivetrain : SubsystemBase() {
         DogLog.log("Drivetrain/RobotPose", getPose())
     }
 
-    fun updatePoseEstimator() {
+    private fun updatePoseEstimator() {
         poseEstimator.update(Rotation2d(gyroYaw.get()), getModulePositions())
 
         moduleStates = getModuleStates()
@@ -205,15 +205,15 @@ object Drivetrain : SubsystemBase() {
         return Array(4) { modules[it].config.getOptimizedState(states[it]) }
     }
 
-    fun getModulePositions(): Array<SwerveModulePosition> {
+    private fun getModulePositions(): Array<SwerveModulePosition> {
         return Array(4) { modules[it].position }
     }
 
-    fun getModuleStates(): Array<SwerveModuleState> {
+    private fun getModuleStates(): Array<SwerveModuleState> {
         return Array(4) { modules[it].state }
     }
 
-    fun updateVision() {
+    private fun updateVision() {
         limelight.settings.withRobotOrientation(
             Orientation3d(
                 Rotation3d(gyroRoll.get(), gyroPitch.get(), gyroYaw.get()),

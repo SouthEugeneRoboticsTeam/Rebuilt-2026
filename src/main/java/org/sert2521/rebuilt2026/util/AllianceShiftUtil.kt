@@ -4,8 +4,6 @@ import dev.doglog.DogLog
 import edu.wpi.first.wpilibj.DriverStation
 import kotlin.jvm.optionals.getOrElse
 import edu.wpi.first.wpilibj.util.Color
-import edu.wpi.first.wpilibj2.command.CommandScheduler
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController
 import org.sert2521.rebuilt2026.Input
 import kotlin.math.floor
 
@@ -20,10 +18,7 @@ object AllianceShiftUtil {
         ENDGAME
     }
 
-    var shiftTime = 0.0
-    var blipStrength = 0.0
-    val rumbleBlip = Input.rumbleBlip { blipStrength }
-
+    private var shiftTime = 0.0
 
     private fun getAllianceShift(time: Double): Shift {
         return when {
@@ -112,7 +107,7 @@ object AllianceShiftUtil {
         shiftTime = floor(getAllianceShiftTime(shift, time) * 10.0) / 10.0
         val dashboardTime = (shiftTime).toString()
 
-        if (shiftTime <= 5.0 && shiftTime >= 0.0 && DriverStation.isEnabled()) {
+        if (shiftTime in 0.0..5.0 && DriverStation.isEnabled()) {
             Input.setRumble(0.2)
         } else {
             Input.setRumble(0.0)

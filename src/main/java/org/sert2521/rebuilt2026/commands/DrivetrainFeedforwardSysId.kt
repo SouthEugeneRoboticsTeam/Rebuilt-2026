@@ -13,9 +13,9 @@ import java.util.*
 
 
 class DrivetrainFeedforwardSysId : SequentialCommandGroup() {
-    val velocitySamples: MutableList<Double> = LinkedList()
-    val voltageSamples: MutableList<Double> = LinkedList()
-    val timer = Timer()
+    private val velocitySamples: MutableList<Double> = LinkedList()
+    private val voltageSamples: MutableList<Double> = LinkedList()
+    private val timer = Timer()
 
     init {
         addCommands(

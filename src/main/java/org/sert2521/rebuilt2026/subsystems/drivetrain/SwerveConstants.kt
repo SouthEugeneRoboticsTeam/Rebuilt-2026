@@ -3,7 +3,6 @@ package org.sert2521.rebuilt2026.subsystems.drivetrain
 import edu.wpi.first.math.VecBuilder
 import edu.wpi.first.math.geometry.Translation2d
 import edu.wpi.first.units.Units
-import edu.wpi.first.units.Units.Degrees
 import edu.wpi.first.units.Units.Rotations
 import edu.wpi.first.units.Units.Seconds
 import edu.wpi.first.units.measure.Distance

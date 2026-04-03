@@ -1,12 +1,10 @@
 package org.sert2521.rebuilt2026
 
 import dev.doglog.DogLog
-import dev.doglog.DogLogOptions
 import edu.wpi.first.cameraserver.CameraServer
 import edu.wpi.first.hal.FRCNetComm.tInstances
 import edu.wpi.first.hal.FRCNetComm.tResourceType
 import edu.wpi.first.hal.HAL
-import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.PowerDistribution
 import edu.wpi.first.wpilibj.TimedRobot
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
@@ -15,8 +13,8 @@ import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
 import org.sert2521.rebuilt2026.subsystems.Wrist
 import org.sert2521.rebuilt2026.subsystems.drivetrain.Drivetrain
-import org.sert2521.rebuilt2026.subsystems.hooded_shooter.Hood
 import org.sert2521.rebuilt2026.util.AllianceShiftUtil
+import org.sert2521.rebuilt2026.util.ZoneUtil
 
 /**
  * The functions in this object (which basically functions as a singleton class) are called automatically
@@ -64,8 +62,7 @@ object Robot : TimedRobot() {
             Drivetrain.distanceToClosest(*OtherConstsants.currentBumps())
         )
         DogLog.log("Rot Offset", Input.getRotOffset())
-        DogLog.log("B", Input.resetRotReal.asBoolean)
-        DogLog.log("Y", Input.resetRotOffset.asBoolean)
+        DogLog.log("Is on Left side", ZoneUtil.isLeft())
     }
 
     override fun disabledInit() {
