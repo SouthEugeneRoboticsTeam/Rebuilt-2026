@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj2.command.Commands.runOnce
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
 import org.sert2521.rebuilt2026.commands.HoodedShooterCommands
-import org.sert2521.rebuilt2026.commands.JoystickDrive
 import org.sert2521.rebuilt2026.commands.VisionRotationDrive
 import org.sert2521.rebuilt2026.subsystems.Indexer
 import org.sert2521.rebuilt2026.subsystems.Intake
@@ -18,8 +17,8 @@ import org.sert2521.rebuilt2026.subsystems.Wrist
 import org.sert2521.rebuilt2026.subsystems.drivetrain.Drivetrain
 import org.sert2521.rebuilt2026.subsystems.hooded_shooter.Flywheel
 import org.sert2521.rebuilt2026.subsystems.hooded_shooter.Hood
+import org.sert2521.rebuilt2026.util.ZoneUtil
 import java.util.function.Supplier
-import javax.print.attribute.standard.MediaSize
 import kotlin.jvm.optionals.getOrElse
 
 object Input {
@@ -39,8 +38,8 @@ object Input {
 
     private val manualIndex = gunnerController.button(1)
 
-    private val visionAlign = driverController.x()
-    private val fortyFiveAlign = driverController.a()
+    private val scoringAlign = driverController.x()
+    private val utilAlign = driverController.a()
 
     val resetRotOffset = driverController.y()
     val resetRotReal = driverController.b()
@@ -72,7 +71,6 @@ object Input {
         wristDown.whileTrue(Wrist.down())
         wristDown.onFalse(Wrist.up())
 
-
         reverseIntake.whileTrue(Intake.reverse().alongWith(Indexer.reverse().asProxy()))
         rev.onTrue(HoodedShooterCommands.revAndTrackHub().alongWith(runOnce({ passing = false })))
         revPass.onTrue(HoodedShooterCommands.revAndTrackPass().alongWith(runOnce({ passing = true })))
@@ -81,12 +79,25 @@ object Input {
 
         manualIndex.whileTrue(Indexer.manualIndex())
 
-        visionAlign.whileTrue(VisionRotationDrive(::getFieldOriented, {
-            Drivetrain.rotationTo(OtherConstsants.currentHub()).rotateBy(Rotation2d.k180deg)
-        }))
-        fortyFiveAlign.whileTrue(VisionRotationDrive(::getFieldOriented, {
-            Drivetrain.getClosestRotation(*OtherConstsants.fortyFiveRotations)
-        }))
+        scoringAlign.whileTrue(VisionRotationDrive(::getFieldOriented) {
+            when (ZoneUtil.getCurrentZone()) {
+                ZoneUtil.Zone.ALLIANCE -> Drivetrain.rotationTo(OtherConstsants.currentHub())
+                    .rotateBy(Rotation2d.k180deg)
+
+                ZoneUtil.Zone.NEUTRAL -> Drivetrain.rotationTo(OtherConstsants.currentHub())
+                    .rotateBy(Rotation2d.k180deg)
+
+                ZoneUtil.Zone.OPPONENT -> Drivetrain.rotationToClosestTranslation(*OtherConstsants.currentBumps())
+                    .rotateBy(Rotation2d.k180deg)
+            }
+        })
+
+        utilAlign.whileTrue(VisionRotationDrive(::getFieldOriented) {
+            when (ZoneUtil.getCurrentZone()) {
+                ZoneUtil.Zone.ALLIANCE -> ZoneUtil.getTower()
+                ZoneUtil.Zone.NEUTRAL, ZoneUtil.Zone.OPPONENT -> Drivetrain.getClosestRotation(*ZoneUtil.getShallows())
+            }
+        })
 
         increaseFlywheel.onTrue(runOnce({ OtherConstsants.flywheelLiveSetpoint += RPM.of(10.0) }))
         decreaseFlywheel.onTrue(runOnce({ OtherConstsants.flywheelLiveSetpoint -= RPM.of(10.0) }))
@@ -108,6 +119,7 @@ object Input {
             rotationOffset = Drivetrain.getPose().rotation
         }))
     }
+
     fun getJoystickInputs(): Triple<Double, Double, Double> {
         return Triple(getLeftX(), getLeftY(), getRightRot())
     }
@@ -142,12 +154,12 @@ object Input {
         return (-gunnerController.getRawAxis(3) + 1.0) / 2.0
     }
 
-    fun getFieldOriented():Boolean {
+    fun getFieldOriented(): Boolean {
         return !robotOriented.asBoolean
     }
 
-    fun maxSpeed():Double {
-        return if (outtake.asBoolean && !passing){
+    fun maxSpeed(): Double {
+        return if (outtake.asBoolean && !passing) {
             0.1
         } else {
             1.0

@@ -140,8 +140,8 @@ object OtherConstsants {
     val blueBoundary = Inches.of(182.11)
     val redBoundary = fieldLength - blueBoundary
 
-    val shallowAngle = Rotation2d.fromDegrees(10.0)
-    val fortyFiveAngle = Rotation2d.fromDegrees(45.0)
+    private val shallowAngle = Rotation2d.fromDegrees(10.0)
+    private val fortyFiveAngle = Rotation2d.fromDegrees(45.0)
     val shallowsCCW = Array(4){ (Rotation2d.kCCW_90deg * it.toDouble()) + shallowAngle }
     val shallowsCW = Array(4){ (Rotation2d.kCCW_90deg * it.toDouble()) - shallowAngle }
     val fortyFives = Array(4){ (Rotation2d.kCCW_90deg * it.toDouble()) + fortyFiveAngle }
@@ -152,7 +152,6 @@ object OtherConstsants {
 
     val blueBumps = arrayOf(Translation2d(4.0, 2.0), Translation2d(4.0, 2.0).flipWidth())
     val redBumps = arrayOf(blueBumps[0].flipAlliance(), blueBumps[1].flipAlliance())
-    val fortyFiveRotations = Array(4){ Rotation2d(Degrees.of(45.0)) + (Rotation2d.kCW_Pi_2 * it.toDouble()) }
 
     fun currentHub() = if (allianceIsBlue()) { blueHubTranslation } else { redHubTranslation }
     fun currentBumps() = if (allianceIsBlue()) { blueBumps } else { redBumps }

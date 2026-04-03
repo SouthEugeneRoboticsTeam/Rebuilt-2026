@@ -8,7 +8,6 @@ import com.revrobotics.spark.SparkMax
 import dev.doglog.DogLog
 import edu.wpi.first.math.controller.SimpleMotorFeedforward
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator
-import edu.wpi.first.math.filter.Debouncer
 import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.geometry.Rotation3d
@@ -30,7 +29,6 @@ import limelight.Limelight
 import limelight.networktables.LimelightPoseEstimator
 import limelight.networktables.Orientation3d
 import org.sert2521.rebuilt2026.Input
-import org.sert2521.rebuilt2026.OtherConstsants
 import org.sert2521.rebuilt2026.TelemetryConstants
 import org.sert2521.rebuilt2026.commands.JoystickDrive
 import yams.mechanisms.config.SwerveModuleConfig
@@ -112,16 +110,9 @@ object Drivetrain : SubsystemBase() {
     private val gyroYawVel = gyro.angularVelocityZWorld.asSupplier()
     private val gyroRollVel = gyro.angularVelocityXWorld.asSupplier()
     private val gyroPitchVel = gyro.angularVelocityYWorld.asSupplier()
-    private val gyroConnectedDebouncer = Debouncer(0.5)
-    private var gyroHasDCed = false
 
     private val kinematics = SwerveDriveKinematics(*SwerveConstants.moduleTranslations)
     private var moduleStates = Array(4) { modules[it].state }
-    private var lastModulePositions = Array(4) { modules[it].position }
-    private var rawGyroRotation = Rotation2d(gyroYaw.get())
-
-    private val moduleLock = { false }
-    private var moduleLockPrevReference = Array(4) { Rotation2d.kZero }
 
     private val poseEstimator = SwerveDrivePoseEstimator(
         kinematics,
@@ -132,7 +123,6 @@ object Drivetrain : SubsystemBase() {
 
     private val limelight = Limelight("limelight-green")
     private val limelightPoseEstimatorMT2 = limelight.createPoseEstimator(LimelightPoseEstimator.EstimationMode.MEGATAG2)
-    private val limelightPoseEstimatorMT1 = limelight.createPoseEstimator(LimelightPoseEstimator.EstimationMode.MEGATAG1)
     private var fed = false
 
     private val field = Field2d()
@@ -209,12 +199,7 @@ object Drivetrain : SubsystemBase() {
 
     private fun setModuleStates(vararg states: SwerveModuleState): Array<SwerveModuleState> {
         modules.forEachIndexed { index, module ->
-            if (moduleLock()) {
-                states[index].angle = moduleLockPrevReference[index]
-                module.setSwerveModuleState(states[index])
-            } else {
-                module.setSwerveModuleState(states[index])
-            }
+            module.setSwerveModuleState(states[index])
         }
         return Array(4) { modules[it].config.getOptimizedState(states[it]) }
     }
@@ -308,7 +293,7 @@ object Drivetrain : SubsystemBase() {
         return Meters.of(getPose().translation.getDistance(translation2d))
     }
 
-    fun rotationToClosest(vararg translations: Translation2d): Rotation2d {
+    fun rotationToClosestTranslation(vararg translations: Translation2d): Rotation2d {
         return rotationTo(getPose().translation.nearest(translations.toSet()))
     }
 
@@ -316,7 +301,7 @@ object Drivetrain : SubsystemBase() {
         var closest = 1.0
         var rotation = rotations[0]
         rotations.forEach {
-            if (abs(it.rotations - getPose().rotation.rotations)<closest){
+            if (abs(it.rotations - getPose().rotation.rotations) % 1.0 < closest){
                 closest = abs(rotation.rotations - getPose().rotation.rotations)
                 rotation = it
             }
