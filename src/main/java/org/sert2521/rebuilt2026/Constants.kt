@@ -137,7 +137,7 @@ object OtherConstsants {
 
     val midline = fieldWidth / 2.0
 
-    val blueBoundary = Inches.zero()
+    val blueBoundary = Inches.of(182.11)
     val redBoundary = fieldLength - blueBoundary
 
     val shallowAngle = Rotation2d.fromDegrees(10.0)
@@ -147,8 +147,8 @@ object OtherConstsants {
     val fortyFives = Array(4){ (Rotation2d.kCCW_90deg * it.toDouble()) + fortyFiveAngle }
 
 
-    val blueHubTranslation = Translation2d(4.620755195617676,4.036807537078857)
-    val redHubTranslation = Translation2d(11.91766357421875, 4.037060737609863)
+    val blueHubTranslation = Translation2d(Inches.of(182.11),fieldWidth/2.0)
+    val redHubTranslation = blueHubTranslation.flipAlliance()
 
     val blueBumps = arrayOf(Translation2d(4.0, 2.0), Translation2d(4.0, 2.0).flipWidth())
     val redBumps = arrayOf(blueBumps[0].flipAlliance(), blueBumps[1].flipAlliance())
