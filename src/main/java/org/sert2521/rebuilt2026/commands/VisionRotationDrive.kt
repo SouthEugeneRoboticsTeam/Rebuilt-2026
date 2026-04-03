@@ -23,7 +23,7 @@ import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.sin
 
-class VisionRotationDrive(private val fieldOriented: BooleanSupplier, private val rotationTarget: Supplier<Rotation2d>) : Command() {
+open class VisionRotationDrive(private val fieldOriented: BooleanSupplier, private val rotationTarget: Supplier<Rotation2d>) : Command() {
     companion object{
         private val rotationPID = PIDController(SwerveConstants.VISION_HEADING_P, 0.0, SwerveConstants.VISION_HEADING_D)
     }
