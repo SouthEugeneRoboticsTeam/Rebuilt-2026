@@ -1,10 +1,12 @@
 package org.sert2521.rebuilt2026
 
 import dev.doglog.DogLog
+import dev.doglog.DogLogOptions
 import edu.wpi.first.cameraserver.CameraServer
 import edu.wpi.first.hal.FRCNetComm.tInstances
 import edu.wpi.first.hal.FRCNetComm.tResourceType
 import edu.wpi.first.hal.HAL
+import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.PowerDistribution
 import edu.wpi.first.wpilibj.TimedRobot
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
@@ -41,25 +43,34 @@ object Robot : TimedRobot() {
         // Report the use of the Kotlin Language for "FRC Usage Report" statistics.
         // Please retain this line so that Kotlin's growing use by teams is seen by FRC/WPI.
         HAL.report(tResourceType.kResourceType_Language, tInstances.kLanguage_Kotlin, 0, WPILibVersion.Version)
-        // Access the RobotContainer object so that it is initialized. This will perform all our
-        // button bindings, and put our autonomous chooser on the dashboard.
+
+        // Initialize certain objects that would otherwise not be initialized
         Input
         Drivetrain
         Autos
-        SmartDashboard.putData("PDH", PowerDistribution(20, PowerDistribution.ModuleType.kRev))
+
+        // Driver Cam
         CameraServer.startAutomaticCapture()
+
+        // Dog Log
+        DogLog.setOptions(DogLogOptions()
+            .withCaptureNt(true)
+            .withCaptureDs(true)
+        )
+        DogLog.setPdh(PowerDistribution(20, PowerDistribution.ModuleType.kRev))
     }
 
 
     override fun robotPeriodic() {
         CommandScheduler.getInstance().run()
         AllianceShiftUtil.update()
+
         DogLog.log("Shooter Live Tuning/Distance to Hub", Drivetrain.distanceTo(OtherConstsants.currentHub()))
         DogLog.log("Shooter Live Tuning/Flywheel Setpoint", OtherConstsants.flywheelLiveSetpoint)
         DogLog.log("Shooter Live Tuning/Hood Setpoint", ShooterConstants.hoodMax * Input.getGunnerSlider())
         DogLog.log(
             "Shooter Live Tuning/Distance to Bump",
-            Drivetrain.distanceToClosest(*OtherConstsants.currentBumps())
+            Drivetrain.distanceToClosest(*OtherConstsants.passTargetsClose())
         )
         DogLog.log("Rot Offset", Input.getRotOffset())
         DogLog.log("Is on Left side", ZoneUtil.isLeft())

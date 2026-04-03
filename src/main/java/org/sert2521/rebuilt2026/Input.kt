@@ -23,20 +23,14 @@ import kotlin.jvm.optionals.getOrElse
 
 object Input {
     private val driverController = CommandXboxController(0)
+    private val xboxGunnerController = CommandXboxController(1)
     private val gunnerController = CommandJoystick(1)
 
+    /* Driver */
     private val intake = driverController.rightTrigger()
     private val wristDown = driverController.leftTrigger()
     private val reverseIntake = driverController.leftBumper()
     private val robotOriented = driverController.rightBumper()
-    private val outtake = gunnerController.button(2)
-    private val stopRev = gunnerController.button(8)
-
-    private val reverseIndex = gunnerController.button(3) // Driver has control for reverse
-    private val rev = gunnerController.button(4)
-    private val revPass = gunnerController.button(9)
-
-    private val manualIndex = gunnerController.button(1)
 
     private val scoringAlign = driverController.x()
     private val utilAlign = driverController.a()
@@ -44,25 +38,35 @@ object Input {
     private val resetRotOffset = driverController.y()
     private val resetRotReal = driverController.b()
 
-    private val hoodDown = gunnerController.button(7)
-    private val hoodUp = gunnerController.button(6)
-
-    private val increaseFlywheel = gunnerController.button(11)
-    private val decreaseFlywheel = gunnerController.button(16)
-
     private val startFlywheelLiveTuning = driverController.back()
     private val startFlywheelInterpolation = driverController.start()
 
+    /* Gunner */
+    private val outtake = gunnerController.button(2)
+    private val stopRev = gunnerController.button(8)
+
+    private val manualIndex = xboxGunnerController.y()
+    private val reverseIndex = gunnerController.button(3)
+
+    private val revHub = gunnerController.button(4)
+    private val revPass = gunnerController.button(9)
+
+    // Debugging, on gunner
+    private val hoodUp = gunnerController.button(7)
+    private val hoodDown = gunnerController.button(6)
+
+    private val increaseFlywheel = gunnerController.button(11)
+    private val decreaseFlywheel = gunnerController.button(16)
 
     private var rotationOffset = Rotation2d.kZero
     private var passing = false
 
 
     init {
-
         outtake.whileTrue(Indexer.pulse().alongWith(runOnce({ Flywheel.startTimer() })).unless { !Flywheel.isRevved() })
         outtake.onFalse(runOnce({ Flywheel.stopTimer() }))
         stopRev.onTrue(HoodedShooterCommands.stop())
+
 
         hoodDown.onTrue(Hood.setPosition { ShooterConstants.hoodMin })
         hoodUp.onTrue(Hood.setPosition { ShooterConstants.hoodMax })
@@ -72,32 +76,15 @@ object Input {
         wristDown.onFalse(Wrist.up())
 
         reverseIntake.whileTrue(Intake.reverse().alongWith(Indexer.reverse().asProxy()))
-        rev.onTrue(HoodedShooterCommands.revAndTrackHub().alongWith(runOnce({ passing = false })))
+        revHub.onTrue(HoodedShooterCommands.revAndTrackHub().alongWith(runOnce({ passing = false })))
         revPass.onTrue(HoodedShooterCommands.revAndTrackPass().alongWith(runOnce({ passing = true })))
 
         reverseIndex.whileTrue(Indexer.reverse())
 
         manualIndex.whileTrue(Indexer.manualIndex())
 
-        scoringAlign.whileTrue(JoystickDriveRotationAlign(::getFieldOriented) {
-            when (ZoneUtil.getCurrentZone()) {
-                ZoneUtil.Zone.ALLIANCE -> Drivetrain.rotationTo(OtherConstsants.currentHub())
-                    .rotateBy(Rotation2d.k180deg)
-
-                ZoneUtil.Zone.NEUTRAL -> Drivetrain.rotationTo(OtherConstsants.currentHub())
-                    .rotateBy(Rotation2d.k180deg)
-
-                ZoneUtil.Zone.OPPONENT -> Drivetrain.rotationToClosestTranslation(*OtherConstsants.currentBumps())
-                    .rotateBy(Rotation2d.k180deg)
-            }
-        })
-
-        utilAlign.whileTrue(JoystickDriveRotationAlign(::getFieldOriented) {
-            when (ZoneUtil.getCurrentZone()) {
-                ZoneUtil.Zone.ALLIANCE -> ZoneUtil.getTower()
-                ZoneUtil.Zone.NEUTRAL, ZoneUtil.Zone.OPPONENT -> Drivetrain.getClosestRotation(*ZoneUtil.getShallows())
-            }
-        })
+        scoringAlign.whileTrue(JoystickDriveRotationAlign(::getFieldOriented, ZoneUtil::getScoringRotationTarget))
+        utilAlign.whileTrue(JoystickDriveRotationAlign(::getFieldOriented, ZoneUtil::getUtilRotationTarget))
 
         increaseFlywheel.onTrue(runOnce({ OtherConstsants.flywheelLiveSetpoint += RPM.of(10.0) }))
         decreaseFlywheel.onTrue(runOnce({ OtherConstsants.flywheelLiveSetpoint -= RPM.of(10.0) }))
@@ -136,8 +123,8 @@ object Input {
         return rotationOffset
     }
 
-    fun setRumble(amount: Double) {
-        driverController.setRumble(GenericHID.RumbleType.kBothRumble, amount)
+    fun setRumble(driver: Double) {
+        driverController.setRumble(GenericHID.RumbleType.kBothRumble, driver)
     }
 
     fun rumbleBlip(strength: Supplier<Double>): Command {

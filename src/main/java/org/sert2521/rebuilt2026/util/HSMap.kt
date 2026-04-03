@@ -71,7 +71,7 @@ object HSMap {
 
     fun getGoalPass(): HSGoal {
         return interpolateWithDistance(
-            Drivetrain.distanceToClosest(*OtherConstsants.currentBumps()),
+            Drivetrain.distanceToClosest(*OtherConstsants.passTargetsClose()),
             OtherConstsants.dataPass
         )
     }

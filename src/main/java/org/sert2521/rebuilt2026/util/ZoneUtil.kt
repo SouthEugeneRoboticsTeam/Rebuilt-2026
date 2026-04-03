@@ -80,4 +80,24 @@ object ZoneUtil {
             }
         }
     }
+
+    fun getScoringRotationTarget():Rotation2d {
+        return when (getCurrentZone()) {
+            Zone.ALLIANCE -> Drivetrain.rotationTo(OtherConstsants.currentHub())
+                .rotateBy(Rotation2d.k180deg)
+
+            Zone.NEUTRAL -> Drivetrain.rotationTo(OtherConstsants.currentHub())
+                .rotateBy(Rotation2d.k180deg)
+
+            Zone.OPPONENT -> Drivetrain.rotationToClosestTranslation(*OtherConstsants.passTargetsClose())
+                .rotateBy(Rotation2d.k180deg)
+        }
+    }
+
+    fun getUtilRotationTarget():Rotation2d {
+        return when (getCurrentZone()) {
+            Zone.ALLIANCE -> getTower()
+            Zone.NEUTRAL, Zone.OPPONENT -> Drivetrain.getClosestRotation(*getShallows())
+        }
+    }
 }

@@ -149,11 +149,14 @@ object OtherConstsants {
     val driverAssistLineHub = Meters.zero()
     val driverAssistLineWall = Meters.zero()
 
-    val blueHubTranslation = Translation2d(Inches.of(182.11), fieldWidth / 2.0)
-    val redHubTranslation = blueHubTranslation.flipAlliance()
+    private val blueHubTranslation = Translation2d(Inches.of(182.11), fieldWidth / 2.0)
+    private val redHubTranslation = blueHubTranslation.flipAlliance()
 
-    val blueBumps = arrayOf(Translation2d(4.0, 2.0), Translation2d(4.0, 2.0).flipWidth())
-    val redBumps = arrayOf(blueBumps[0].flipAlliance(), blueBumps[1].flipAlliance())
+    private val bluePassTargetsClose = arrayOf(Translation2d.kZero, Translation2d.kZero.flipWidth())
+    private val redPassTargetsClose = Array(2){ bluePassTargetsClose[it].flipAlliance() }
+
+    private val bluePassTargetsLong = arrayOf(Translation2d.kZero, Translation2d.kZero.flipWidth())
+    private val redPassTargetsLong = Array(2){ bluePassTargetsLong[it].flipAlliance() }
 
     fun currentHub() = if (allianceIsBlue()) {
         blueHubTranslation
@@ -161,10 +164,16 @@ object OtherConstsants {
         redHubTranslation
     }
 
-    fun currentBumps() = if (allianceIsBlue()) {
-        blueBumps
+    fun passTargetsClose() = if (allianceIsBlue()) {
+        bluePassTargetsClose
     } else {
-        redBumps
+        redPassTargetsClose
+    }
+
+    fun passTargetsLong() = if (allianceIsBlue()) {
+        bluePassTargetsLong
+    } else {
+        redPassTargetsLong
     }
 
     val dataHub = arrayOf(
