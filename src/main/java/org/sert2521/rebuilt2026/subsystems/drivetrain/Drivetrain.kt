@@ -101,6 +101,8 @@ object Drivetrain : SubsystemBase() {
         )
     }
 
+    private var driveOpenLoop = false
+
     private val gyroConfig = MountPoseConfigs().withMountPoseRoll(Degrees.of(-0.4267374873161316))
         .withMountPoseYaw(Degrees.of(178.08946228027344)).withMountPosePitch(Degrees.of(-0.06843218952417374))
     private val gyro = Pigeon2(13)
@@ -285,6 +287,7 @@ object Drivetrain : SubsystemBase() {
         return output / 4.0
     }
 
+    /* Game Specific */
     fun rotationTo(other: Translation2d): Rotation2d {
         val driveTranslation = getPose().translation
         return Rotation2d(atan2(other.y - driveTranslation.y, other.x - driveTranslation.x))
@@ -315,7 +318,6 @@ object Drivetrain : SubsystemBase() {
         return distanceTo(getPose().translation.nearest(translations.toSet()))
     }
 
-    /* Game Specific */
     fun getIsMoving(): Boolean {
         val chassisSpeeds = getChassisSpeeds()
         return MetersPerSecond.of(
