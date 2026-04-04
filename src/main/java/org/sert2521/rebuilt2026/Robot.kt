@@ -74,6 +74,7 @@ object Robot : TimedRobot() {
         )
         DogLog.log("Rot Offset", Input.getRotOffset())
         DogLog.log("Is on Left side", ZoneUtil.isLeft())
+        DogLog.log("Zone", ZoneUtil.getCurrentZone())
     }
 
     override fun disabledInit() {

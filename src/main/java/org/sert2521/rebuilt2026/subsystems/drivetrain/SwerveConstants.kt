@@ -24,10 +24,10 @@ object SwerveConstants {
         Translation2d(-Units.Meters.of(0.276225), -Units.Meters.of(0.276225))
     )
     val moduleZeroRotations = arrayOf(
-        Rotations.of(1.0 - 0.927734),
-        Rotations.of(1.0 - 0.652832),
-        Rotations.of(0.001465),
-        Rotations.of(-0.143066)
+        Rotations.of(0.070557), // 1.0 - 0.927734
+        Rotations.of(0.352295), //1.0 - 0.652832
+        Rotations.of(0.0),
+        Rotations.of(0.859375) //-0.143066
     )
 
     val encoderIDs = arrayOf(1, 2, 3, 4)
@@ -58,7 +58,7 @@ object SwerveConstants {
     const val VISION_HEADING_P = 10.0
     const val VISION_HEADING_D = 0.2
 
-    const val DRIVER_ASSIST_P = 0.0
+    const val DRIVER_ASSIST_P = 2.0
     const val DRIVER_ASSIST_D = 0.0
 
     val maxSpeed = Units.MetersPerSecond.of(4.571)
@@ -70,6 +70,7 @@ object SwerveConstants {
     const val ROT_SPEED = 4.5
 
     val timeToFullSpeed = Seconds.of(0.7)
+    val timeToZeroSpeed = Seconds.of(0.5)
 }
 
 object VisionConstants {

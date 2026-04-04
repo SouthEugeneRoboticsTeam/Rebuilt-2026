@@ -35,6 +35,11 @@ object ZoneUtil {
         return allianceIsBlue().xor(Drivetrain.getPose().y < OtherConstsants.midline.`in`(Meters))
     }
 
+    fun isDepot(): Boolean {
+        return OtherConstsants.blueDepotArea.intersects(Drivetrain.getPose().translation)
+                || OtherConstsants.redDepotArea.intersects(Drivetrain.getPose().translation)
+    }
+
     fun getShallows(): Array<Rotation2d> {
         return if (isLeft()) {
             OtherConstsants.shallowsCW
@@ -78,6 +83,14 @@ object ZoneUtil {
             } else {
                 OtherConstsants.driverAssistLineWall
             }
+        }
+    }
+
+    fun getDriverAssistRotation():Rotation2d {
+        return if (allianceIsBlue()) {
+            Rotation2d.k180deg
+        } else {
+            Rotation2d.kZero
         }
     }
 

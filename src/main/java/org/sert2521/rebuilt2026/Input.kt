@@ -1,6 +1,7 @@
 package org.sert2521.rebuilt2026
 
 import edu.wpi.first.math.geometry.Rotation2d
+import edu.wpi.first.units.Units.Meters
 import edu.wpi.first.units.Units.RPM
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.GenericHID
@@ -10,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.Commands.runOnce
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController
 import org.sert2521.rebuilt2026.commands.HoodedShooterCommands
+import org.sert2521.rebuilt2026.commands.JoystickDriveLineAssist
 import org.sert2521.rebuilt2026.commands.JoystickDriveRotationAlign
 import org.sert2521.rebuilt2026.subsystems.Indexer
 import org.sert2521.rebuilt2026.subsystems.Intake
@@ -33,13 +35,11 @@ object Input {
     private val robotOriented = driverController.rightBumper()
 
     private val scoringAlign = driverController.x()
-    private val utilAlign = driverController.a()
+    private val utilAlign = driverController.b()
+    private val lineAssist = driverController.a()
 
     private val resetRotOffset = driverController.y()
-    private val resetRotReal = driverController.b()
-
-    private val startFlywheelLiveTuning = driverController.back()
-    private val startFlywheelInterpolation = driverController.start()
+    private val resetRotReal = driverController.back()
 
     /* Gunner */
     private val outtake = gunnerController.button(2)
@@ -58,6 +58,9 @@ object Input {
     private val increaseFlywheel = gunnerController.button(11)
     private val decreaseFlywheel = gunnerController.button(16)
 
+    private val startFlywheelLiveTuning = gunnerController.povUp().multiPress(3, 2.0)
+    private val startFlywheelInterpolation = gunnerController.povDown().multiPress(3, 2.0)
+
     private var rotationOffset = Rotation2d.kZero
     private var passing = false
 
@@ -72,7 +75,7 @@ object Input {
         hoodUp.onTrue(Hood.setPosition { ShooterConstants.hoodMax })
 
         intake.whileTrue(Intake.intake().alongWith(Indexer.manualIndex().asProxy()))
-        wristDown.whileTrue(Wrist.down())
+        wristDown.whileTrue(Wrist.downSafeDepot())
         wristDown.onFalse(Wrist.up())
 
         reverseIntake.whileTrue(Intake.reverse().alongWith(Indexer.reverse().asProxy()))
@@ -85,6 +88,7 @@ object Input {
 
         scoringAlign.whileTrue(JoystickDriveRotationAlign(::getFieldOriented, ZoneUtil::getScoringRotationTarget))
         utilAlign.whileTrue(JoystickDriveRotationAlign(::getFieldOriented, ZoneUtil::getUtilRotationTarget))
+        lineAssist.whileTrue(JoystickDriveLineAssist({ ZoneUtil.getDriverAssistLine().`in`(Meters) }, ZoneUtil::getDriverAssistRotation))
 
         increaseFlywheel.onTrue(runOnce({ OtherConstsants.flywheelLiveSetpoint += RPM.of(10.0) }))
         decreaseFlywheel.onTrue(runOnce({ OtherConstsants.flywheelLiveSetpoint -= RPM.of(10.0) }))

@@ -21,7 +21,7 @@ class HSMapDatapoint {
         this.hsGoal = HSGoal(RPM.of(primary), Rotations.of(hood))
     }
 
-    constructor(primary: AngularVelocity, hood: Angle, distance: Distance) {
+    constructor(distance: Distance, primary: AngularVelocity, hood: Angle) {
         this.distance = distance
         this.hsGoal = HSGoal(primary, hood)
     }

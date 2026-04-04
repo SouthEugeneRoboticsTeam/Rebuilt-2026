@@ -1,5 +1,6 @@
 package org.sert2521.rebuilt2026
 
+import edu.wpi.first.math.geometry.Rectangle2d
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.geometry.Translation2d
 import edu.wpi.first.units.Units.*
@@ -146,8 +147,13 @@ object OtherConstsants {
     val shallowsCW = Array(4) { (Rotation2d.kCCW_90deg * it.toDouble()) - shallowAngle }
     val fortyFives = Array(4) { (Rotation2d.kCCW_90deg * it.toDouble()) + fortyFiveAngle }
 
-    val driverAssistLineHub = Meters.zero()
-    val driverAssistLineWall = Meters.zero()
+    val driverAssistLineHub = Meters.of(5.94)
+    val driverAssistLineWall = Meters.of(0.724) // 0.724
+
+    private val blueDepotA = Translation2d(1.6, 6.5)
+    private val blueDepotB = Translation2d(1.3, 5.4)
+    val blueDepotArea = Rectangle2d(blueDepotA, blueDepotB)
+    val redDepotArea = Rectangle2d(blueDepotA.flipAlliance(), blueDepotB.flipAlliance())
 
     private val blueHubTranslation = Translation2d(Inches.of(182.11), fieldWidth / 2.0)
     private val redHubTranslation = blueHubTranslation.flipAlliance()
@@ -188,13 +194,21 @@ object OtherConstsants {
         HSMapDatapoint(4.3, 2610.0, 0.052),
         HSMapDatapoint(5.0, 2860.0, 0.06)
     )
-
     val dataPass = arrayOf(
-        HSMapDatapoint(0.0, 2500.0, 0.075),
-        HSMapDatapoint(5.0, 3000.0, 0.075),
-        HSMapDatapoint(8.0, 4000.0, 0.075),
-        HSMapDatapoint(10.0, 4500.0, 0.075)
-    )
+        HSMapDatapoint(Inches.of(325.6), RPM.of(3850.0), Rotations.of(0.04951)),
+        HSMapDatapoint(Feet.of(35.0)+Inches.of(11.0), RPM.of(4850.0), Rotations.of(0.059765625)),
+        HSMapDatapoint(Feet.of(31.0)+Inches.of(2.0), RPM.of(4410.0), Rotations.of(0.0551))
+        )
+
+    val staticPass = HSGoal(RPM.of(1300.0), Rotations.of(0.075))
+    val farPass = HSGoal(RPM.of(4900.0), Rotations.of(0.075))
+
+//    val dataPass = arrayOf(
+//        HSMapDatapoint(0.0, 2500.0, 0.075),
+//        HSMapDatapoint(5.0, 3000.0, 0.075),
+//        HSMapDatapoint(8.0, 4000.0, 0.075),
+//        HSMapDatapoint(10.0, 4500.0, 0.075)
+//    )
 
     var flywheelLiveSetpoint = RPM.of(2600.0)
 

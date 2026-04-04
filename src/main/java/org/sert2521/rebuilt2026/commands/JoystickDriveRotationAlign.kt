@@ -24,7 +24,11 @@ open class JoystickDriveRotationAlign(
     private val rotationTarget: Supplier<Rotation2d>
 ) : Command() {
     companion object {
-        private val rotationPID = PIDController(SwerveConstants.VISION_HEADING_P, 0.0, SwerveConstants.VISION_HEADING_D)
+        val rotationPID = PIDController(SwerveConstants.VISION_HEADING_P, 0.0, SwerveConstants.VISION_HEADING_D)
+        init {
+            rotationPID.enableContinuousInput(-PI, PI)
+            SmartDashboard.putData("Rotation PID", rotationPID)
+        }
     }
 
     private var targetChassisSpeeds = ChassisSpeeds()
@@ -33,8 +37,6 @@ open class JoystickDriveRotationAlign(
 
     init {
         addRequirements(Drivetrain)
-        SmartDashboard.putData("Rotation PID", rotationPID)
-        rotationPID.enableContinuousInput(-PI, PI)
     }
 
     override fun initialize() {
@@ -49,7 +51,8 @@ open class JoystickDriveRotationAlign(
         targetChassisSpeeds = ChassisSpeeds(
             sin(theta) * SwerveConstants.DRIVE_SPEED * ratedMag,
             cos(theta) * SwerveConstants.DRIVE_SPEED * ratedMag,
-            rotationPID.calculate(Drivetrain.getPose().rotation.radians, rotationTarget.get().radians)
+            Input.getRightRot().pow(3) * SwerveConstants.ROT_SPEED +
+                    rotationPID.calculate(Drivetrain.getPose().rotation.radians, rotationTarget.get().radians)
         )
 
         Drivetrain.driveRobotRelative(

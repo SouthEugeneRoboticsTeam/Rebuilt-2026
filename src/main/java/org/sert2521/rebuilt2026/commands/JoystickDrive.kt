@@ -13,7 +13,8 @@ import kotlin.math.*
 
 class JoystickDrive(private val fieldOriented: BooleanSupplier) : Command() {
     companion object {
-        val rateLimiter = SlewRateLimiter(1.0 / SwerveConstants.timeToFullSpeed.`in`(Seconds), -99999.9, 0.0)
+        val rateLimiter = SlewRateLimiter(1.0 / SwerveConstants.timeToFullSpeed.`in`(Seconds),
+            -9999999999.9, 0.0)
     }
 
     private var targetChassisSpeeds = ChassisSpeeds()
@@ -28,7 +29,7 @@ class JoystickDrive(private val fieldOriented: BooleanSupplier) : Command() {
 
     override fun execute() {
         val theta = atan2(Input.getLeftY(), Input.getLeftX())
-        val mag = MathUtil.applyDeadband(hypot(Input.getLeftY(), Input.getLeftX()), 0.1)
+        val mag = MathUtil.applyDeadband(hypot(Input.getLeftY(), Input.getLeftX()), 0.2)
         val ratedMag = rateLimiter.calculate(min(mag.pow(3), Input.maxSpeed()))
 
         targetChassisSpeeds = ChassisSpeeds(

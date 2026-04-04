@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.sert2521.rebuilt2026.ElectronicIDs
 import org.sert2521.rebuilt2026.GrintakeConstants
 import org.sert2521.rebuilt2026.TelemetryConstants
+import org.sert2521.rebuilt2026.util.ZoneUtil
 import yams.motorcontrollers.SmartMotorControllerConfig
 import yams.motorcontrollers.local.SparkWrapper
 import yams.telemetry.MechanismTelemetry
@@ -61,6 +62,16 @@ object Wrist : SubsystemBase() {
         return runOnce {
             setpoint = GrintakeConstants.intakePosition
         }
+    }
+
+    fun downSafeDepot(): Command {
+        return (down()
+            .andThen(Commands.idle())
+            .until(ZoneUtil::isDepot)
+            .andThen(toDepotInter())
+            .andThen(Commands.idle())
+            .until{ !ZoneUtil.isDepot() })
+            .repeatedly()
     }
 
     fun toDepotInter(): Command {

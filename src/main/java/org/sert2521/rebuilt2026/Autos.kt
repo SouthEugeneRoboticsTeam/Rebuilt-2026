@@ -26,16 +26,22 @@ import org.sert2521.rebuilt2026.subsystems.hooded_shooter.Hood
 import kotlin.jvm.optionals.getOrElse
 
 object Autos {
+
+    // TODO: fix passing instead of shooting in auto alliance
+    // TODO: fix indexing instead of shooting in auto neutral
     private val autoChooser = SendableChooser<Command>()
 
     private val namedCommandsList = mapOf(
-        "Rev Pass" to ScheduleCommand(HoodedShooterCommands.revAndTrackPass()).asProxy(),
-        "Rev Stop" to HoodedShooterCommands.stop(),
+        "Rev Pass" to ScheduleCommand(HoodedShooterCommands.revStaticPass()).asProxy(),
+        "Rev Stop" to HoodedShooterCommands.stop().asProxy(),
 
         "Intake Down" to ScheduleCommand(
             Intake.fullSpeedIntake().alongWith(Wrist.down()).alongWith(Indexer.manualIndex())
         ).asProxy(),
-        "Intake Up" to ScheduleCommand(Wrist.up().alongWith(Intake.stop()).alongWith(Indexer.index())).asProxy(),
+        "Intake Up" to ScheduleCommand(Wrist.up().alongWith(Intake.stop()).alongWith(Indexer.index().asProxy())).asProxy(),
+
+        "Intake Full Through" to ScheduleCommand(Intake.fullSpeedIntake().alongWith(Wrist.down()).alongWith(Indexer.pulse()))
+            .asProxy(),
 
         "Depot Inter" to ScheduleCommand(
             Wrist.toDepotInter().alongWith(Intake.fullSpeedIntake()).alongWith(Indexer.manualIndex())
@@ -46,7 +52,10 @@ object Autos {
 
         "Rev" to ScheduleCommand(HoodedShooterCommands.revAndTrackHub()).asProxy(),
         "Shoot" to ScheduleCommand(Indexer.pulse().alongWith(runOnce(Flywheel::startTimer))).asProxy(),
+        "Shoot With Rev" to ScheduleCommand(Indexer.pulse()).asProxy(),
         "Stop Shoot" to ScheduleCommand(Indexer.index().alongWith(runOnce(Flywheel::stopTimer))).asProxy(),
+
+        "Crash" to runOnce({ null!! })
     )
 
     init {
@@ -94,6 +103,7 @@ object Autos {
         autoChooser.addOption("R_N_N", AutoBuilder.buildAuto("CR_N_N"))
         autoChooser.addOption("L_N_N", AutoBuilder.buildAuto("CL_N_N"))
         autoChooser.addOption("C_", AutoBuilder.buildAuto("C_"))
+        autoChooser.addOption("L_NP4_S1", AutoBuilder.buildAuto("L_NP4_S1"))
         autoChooser.setDefaultOption("None", Commands.none())
 
         SmartDashboard.putData("Autos", autoChooser)
