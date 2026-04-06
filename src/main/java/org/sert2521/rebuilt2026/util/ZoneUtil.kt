@@ -5,6 +5,7 @@ import edu.wpi.first.units.Units.Meters
 import edu.wpi.first.units.measure.Distance
 import org.sert2521.rebuilt2026.OtherConstsants
 import org.sert2521.rebuilt2026.subsystems.drivetrain.Drivetrain
+import javax.print.attribute.standard.MediaSize.Other
 
 object ZoneUtil {
     enum class Zone {
@@ -14,20 +15,10 @@ object ZoneUtil {
     }
 
     fun getCurrentZone(): Zone {
-        return if (allianceIsBlue()) {
-            when (Drivetrain.getPose().x) {
-                in Double.MIN_VALUE..OtherConstsants.blueBoundary.`in`(Meters) -> Zone.ALLIANCE
-                in OtherConstsants.blueBoundary.`in`(Meters)..OtherConstsants.redBoundary.`in`(Meters) -> Zone.NEUTRAL
-                in OtherConstsants.redBoundary.`in`(Meters)..Double.MAX_VALUE -> Zone.OPPONENT
-                else -> Zone.ALLIANCE
-            }
-        } else {
-            when (Drivetrain.getPose().x) {
-                in Double.MIN_VALUE..OtherConstsants.blueBoundary.`in`(Meters) -> Zone.OPPONENT
-                in OtherConstsants.blueBoundary.`in`(Meters)..OtherConstsants.redBoundary.`in`(Meters) -> Zone.NEUTRAL
-                in OtherConstsants.redBoundary.`in`(Meters)..Double.MAX_VALUE -> Zone.ALLIANCE
-                else -> Zone.ALLIANCE
-            }
+        return when {
+            Drivetrain.getPose().x in OtherConstsants.blueBoundary.`in`(Meters)..OtherConstsants.redBoundary.`in`(Meters) -> Zone.NEUTRAL
+            (Drivetrain.getPose().x in OtherConstsants.redBoundary.`in`(Meters)..Double.MAX_VALUE) xor allianceIsBlue()   -> Zone.ALLIANCE
+            else                                                                                                                -> Zone.OPPONENT
         }
     }
 

@@ -33,6 +33,7 @@ import org.sert2521.rebuilt2026.TelemetryConstants
 import org.sert2521.rebuilt2026.commands.JoystickDrive
 import yams.mechanisms.config.SwerveModuleConfig
 import yams.mechanisms.swerve.SwerveModule
+import yams.motorcontrollers.SmartMotorController
 import yams.motorcontrollers.SmartMotorControllerConfig
 import yams.motorcontrollers.local.SparkWrapper
 import kotlin.math.PI
@@ -55,7 +56,8 @@ object Drivetrain : SubsystemBase() {
                     SwerveConstants.DRIVE_A
                 )
             )
-            .withClosedLoopController(SwerveConstants.DRIVE_P, SwerveConstants.DRIVE_I, SwerveConstants.DRIVE_D)
+            .withClosedLoopController(SwerveConstants.DRIVE_P, SwerveConstants.DRIVE_I, SwerveConstants.DRIVE_D, SmartMotorController.ClosedLoopControllerSlot.SLOT_0)
+            .withClosedLoopController(0.0, 0.0, 0.0, SmartMotorController.ClosedLoopControllerSlot.SLOT_1)
             .withGearing(SwerveConstants.driveGearing)
             .withOpenLoopRampRate(Seconds.of(0.05))
             .withClosedLoopRampRate(Seconds.of(0.0))
@@ -239,13 +241,13 @@ object Drivetrain : SubsystemBase() {
 
     fun stopDrivePID() {
         modules.forEach {
-            it.config.driveMotor.setFeedback(0.0, 0.0, 0.0)
+            it.driveMotorController.setClosedLoopSlot(SmartMotorController.ClosedLoopControllerSlot.SLOT_1)
         }
     }
 
     fun startDrivePID() {
         modules.forEach {
-            it.config.driveMotor.setFeedback(SwerveConstants.DRIVE_P, 0.0, SwerveConstants.DRIVE_D)
+            it.driveMotorController.setClosedLoopSlot(SmartMotorController.ClosedLoopControllerSlot.SLOT_0)
         }
     }
 
