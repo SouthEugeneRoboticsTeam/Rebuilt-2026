@@ -25,7 +25,6 @@ import kotlin.jvm.optionals.getOrElse
 
 object Input {
     private val driverController = CommandXboxController(0)
-    private val xboxGunnerController = CommandXboxController(1)
     private val gunnerController = CommandJoystick(1)
 
     /* Driver */
@@ -39,13 +38,13 @@ object Input {
     private val lineAssist = driverController.a()
 
     private val resetRotOffset = driverController.y()
-    private val resetRotReal = driverController.back()
+    private val resetRotReal = driverController.start()
 
     /* Gunner */
     private val outtake = gunnerController.button(2)
     private val stopRev = gunnerController.button(8)
 
-    private val manualIndex = xboxGunnerController.y()
+    private val manualIndex = gunnerController.button(1)
     private val reverseIndex = gunnerController.button(3)
 
     private val revHub = gunnerController.button(4)
