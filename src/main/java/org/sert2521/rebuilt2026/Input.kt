@@ -152,8 +152,4 @@ object Input {
             1.0
         }
     }
-
-    fun getIntaking(): Boolean {
-        return intake.asBoolean
-    }
 }
