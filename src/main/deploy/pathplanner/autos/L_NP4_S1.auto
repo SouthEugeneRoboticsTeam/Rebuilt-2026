@@ -1,0 +1,115 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "Rev Pass"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "L_NP4_S1.0"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake Full Through"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "L_NP4_S1.1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake Down"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Rev"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "L_NP4_S1.2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "L_NP4_S1.3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "L_NP4_S1.4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 2.2
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Stop Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Depot Inter"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "L_NP4_S1.5"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake Down"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "L_NP4_S1.6"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": true
+}
