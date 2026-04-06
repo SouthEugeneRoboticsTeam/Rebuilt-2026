@@ -50,6 +50,7 @@ object Input {
 
     private val revHub = gunnerController.button(4)
     private val revPass = gunnerController.button(9)
+    private val revFull = gunnerController.button(10)
 
     // Debugging, on gunner
     private val hoodUp = gunnerController.button(7)
@@ -70,7 +71,6 @@ object Input {
         outtake.onFalse(runOnce({ Flywheel.stopTimer() }))
         stopRev.onTrue(HoodedShooterCommands.stop())
 
-
         hoodDown.onTrue(Hood.setPosition { ShooterConstants.hoodMin })
         hoodUp.onTrue(Hood.setPosition { ShooterConstants.hoodMax })
 
@@ -81,6 +81,7 @@ object Input {
         reverseIntake.whileTrue(Intake.reverse().alongWith(Indexer.reverse().asProxy()))
         revHub.onTrue(HoodedShooterCommands.revAndTrackHub().alongWith(runOnce({ passing = false })))
         revPass.onTrue(HoodedShooterCommands.revAndTrackPass().alongWith(runOnce({ passing = true })))
+        revFull.onTrue(HoodedShooterCommands.revFarPass().alongWith(runOnce({ passing = true })))
 
         reverseIndex.whileTrue(Indexer.reverse())
 

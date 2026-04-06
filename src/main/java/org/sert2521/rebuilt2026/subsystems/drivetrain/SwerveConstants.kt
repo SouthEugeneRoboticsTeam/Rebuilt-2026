@@ -58,8 +58,8 @@ object SwerveConstants {
     const val VISION_HEADING_P = 10.0
     const val VISION_HEADING_D = 0.2
 
-    const val DRIVER_ASSIST_P = 2.0
-    const val DRIVER_ASSIST_D = 0.0
+    const val DRIVER_ASSIST_P = 4.0
+    const val DRIVER_ASSIST_D = 0.3
 
     val maxSpeed = Units.MetersPerSecond.of(4.571)
     val movingThreshold = Units.MetersPerSecond.of(0.2)
@@ -67,7 +67,7 @@ object SwerveConstants {
     const val SYS_ID_FF_RAMP_RATE = 1.0
 
     const val DRIVE_SPEED = 3.5
-    const val ROT_SPEED = 4.5
+    const val ROT_SPEED = 5.5
 
     val timeToFullSpeed = Seconds.of(0.7)
     val timeToZeroSpeed = Seconds.of(0.5)

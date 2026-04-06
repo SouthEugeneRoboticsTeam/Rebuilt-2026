@@ -55,7 +55,7 @@ object Autos {
         "Shoot With Rev" to ScheduleCommand(Indexer.pulse()).asProxy(),
         "Stop Shoot" to ScheduleCommand(Indexer.index().alongWith(runOnce(Flywheel::stopTimer))).asProxy(),
 
-        "Crash" to runOnce({ null!! })
+        "Crash" to Commands.runOnce({ null!! })
     )
 
     init {

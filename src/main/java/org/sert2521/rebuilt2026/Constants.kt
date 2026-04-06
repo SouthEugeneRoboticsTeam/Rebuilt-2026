@@ -59,7 +59,7 @@ object GrintakeConstants {
     val intakePosition = Rotations.of(0.42) - Degrees.of(10.0)
 
     val intakeVoltageAuto = Volts.of(12.0)
-    val intakeVoltage = Volts.of(8.0)
+    val intakeVoltage = Volts.of(12.0)
     val reverseVoltage = Volts.of(0.0)
 
     const val REZERO_SPEED = -0.2
@@ -194,13 +194,14 @@ object OtherConstsants {
         HSMapDatapoint(4.3, 2610.0, 0.052),
         HSMapDatapoint(5.0, 2860.0, 0.06)
     )
+
     val dataPass = arrayOf(
         HSMapDatapoint(Inches.of(325.6), RPM.of(3850.0), Rotations.of(0.04951)),
-        HSMapDatapoint(Feet.of(35.0)+Inches.of(11.0), RPM.of(4850.0), Rotations.of(0.059765625)),
-        HSMapDatapoint(Feet.of(31.0)+Inches.of(2.0), RPM.of(4410.0), Rotations.of(0.0551))
-        )
+        HSMapDatapoint(Feet.of(31.0)+Inches.of(2.0), RPM.of(4410.0), Rotations.of(0.0551)),
+        HSMapDatapoint(Feet.of(35.0)+Inches.of(11.0), RPM.of(4850.0), Rotations.of(0.059765625))
+    )
 
-    val staticPass = HSGoal(RPM.of(1300.0), Rotations.of(0.075))
+    val staticPass = HSGoal(RPM.of(2600.0), Rotations.of(0.075))
     val farPass = HSGoal(RPM.of(4900.0), Rotations.of(0.075))
 
 //    val dataPass = arrayOf(

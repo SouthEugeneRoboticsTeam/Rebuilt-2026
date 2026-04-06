@@ -1,10 +1,12 @@
 package org.sert2521.rebuilt2026.commands
 
+import edu.wpi.first.units.Units.RPM
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.Commands
 import org.sert2521.rebuilt2026.Input
 import org.sert2521.rebuilt2026.OtherConstsants
 import org.sert2521.rebuilt2026.ShooterConstants
+import org.sert2521.rebuilt2026.subsystems.drivetrain.Drivetrain
 import org.sert2521.rebuilt2026.util.HSMap
 import org.sert2521.rebuilt2026.subsystems.hooded_shooter.Flywheel
 import org.sert2521.rebuilt2026.subsystems.hooded_shooter.Hood
@@ -51,7 +53,7 @@ object HoodedShooterCommands {
 
     fun revStaticPass(): Command {
         return Commands.parallel(
-            Flywheel.setVelocity { OtherConstsants.staticPass.flywheelSpeed },
+            Flywheel.setVelocity { OtherConstsants.staticPass.flywheelSpeed + (RPM.of(100.0) * Drivetrain.getChassisSpeeds().vxMetersPerSecond) },
             Hood.setPosition { OtherConstsants.staticPass.hoodAngle }
         )
     }
