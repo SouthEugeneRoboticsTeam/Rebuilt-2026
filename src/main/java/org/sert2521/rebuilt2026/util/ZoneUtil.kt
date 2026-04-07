@@ -90,7 +90,7 @@ object ZoneUtil {
             Zone.ALLIANCE -> Drivetrain.rotationTo(OtherConstsants.currentHub())
                 .rotateBy(Rotation2d.k180deg)
 
-            Zone.NEUTRAL -> Drivetrain.rotationTo(OtherConstsants.currentHub())
+            Zone.NEUTRAL -> Drivetrain.rotationToClosestTranslation(*OtherConstsants.passTargetsClose())
                 .rotateBy(Rotation2d.k180deg)
 
             Zone.OPPONENT -> Drivetrain.rotationToClosestTranslation(*OtherConstsants.passTargetsClose())

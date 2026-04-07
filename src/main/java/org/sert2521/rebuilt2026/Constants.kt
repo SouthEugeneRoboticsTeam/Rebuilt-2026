@@ -158,10 +158,10 @@ object OtherConstsants {
     private val blueHubTranslation = Translation2d(Inches.of(182.11), fieldWidth / 2.0)
     private val redHubTranslation = blueHubTranslation.flipAlliance()
 
-    private val bluePassTargetsClose = arrayOf(Translation2d.kZero, Translation2d.kZero.flipWidth())
+    private val bluePassTargetsClose = arrayOf(Translation2d(0.0, 7.0), Translation2d(0.0, 1.5))
     private val redPassTargetsClose = Array(2){ bluePassTargetsClose[it].flipAlliance() }
 
-    private val bluePassTargetsLong = arrayOf(Translation2d.kZero, Translation2d.kZero.flipWidth())
+    private val bluePassTargetsLong = bluePassTargetsClose
     private val redPassTargetsLong = Array(2){ bluePassTargetsLong[it].flipAlliance() }
 
     fun currentHub() = if (allianceIsBlue()) {
