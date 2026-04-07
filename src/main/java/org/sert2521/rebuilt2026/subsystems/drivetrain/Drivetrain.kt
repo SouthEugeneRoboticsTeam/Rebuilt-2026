@@ -57,7 +57,6 @@ object Drivetrain : SubsystemBase() {
                 )
             )
             .withClosedLoopController(SwerveConstants.DRIVE_P, SwerveConstants.DRIVE_I, SwerveConstants.DRIVE_D, SmartMotorController.ClosedLoopControllerSlot.SLOT_0)
-            .withClosedLoopController(0.0, 0.0, 0.0, SmartMotorController.ClosedLoopControllerSlot.SLOT_1)
             .withGearing(SwerveConstants.driveGearing)
             .withOpenLoopRampRate(Seconds.of(0.05))
             .withClosedLoopRampRate(Seconds.of(0.0))
@@ -241,13 +240,13 @@ object Drivetrain : SubsystemBase() {
 
     fun stopDrivePID() {
         modules.forEach {
-            it.driveMotorController.setClosedLoopSlot(SmartMotorController.ClosedLoopControllerSlot.SLOT_1)
+            it.driveMotorController.setFeedback(0.0, 0.0, 0.0)
         }
     }
 
     fun startDrivePID() {
         modules.forEach {
-            it.driveMotorController.setClosedLoopSlot(SmartMotorController.ClosedLoopControllerSlot.SLOT_0)
+            it.driveMotorController.setFeedback(SwerveConstants.DRIVE_P, 0.0, SwerveConstants.DRIVE_D)
         }
     }
 
