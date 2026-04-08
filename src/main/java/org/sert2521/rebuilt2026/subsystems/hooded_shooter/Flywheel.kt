@@ -45,10 +45,10 @@ object Flywheel : SubsystemBase() {
     }
 
     private val flywheelMotorConfigLeft = flywheelMotorConfig()
-        .withTelemetry("Flywheel Motor Left", TelemetryConstants.HOODED_SHOOTER_TELEMETRY)
+        .withTelemetry("Flywheel Motor Left", TelemetryConstants.hoodedShooterTelemetry)
         .withMotorInverted(false)
     private val flywheelMotorConfigRight = flywheelMotorConfig()
-        .withTelemetry("Flywheel Motor Right", TelemetryConstants.HOODED_SHOOTER_TELEMETRY)
+        .withTelemetry("Flywheel Motor Right", TelemetryConstants.hoodedShooterTelemetry)
         .withMotorInverted(true)
 
     private val leftSMC = SparkWrapper(motorLeft, DCMotor.getNEO(1), flywheelMotorConfigLeft)

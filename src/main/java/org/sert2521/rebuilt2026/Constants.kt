@@ -8,15 +8,29 @@ import org.sert2521.rebuilt2026.util.*
 import yams.gearing.GearBox
 import yams.gearing.MechanismGearing
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity
+import yams.telemetry.SmartMotorControllerTelemetryConfig
 
 object TelemetryConstants {
-    val DRIVETRAIN_ANGLE_TELEMETRY = TelemetryVerbosity.LOW
-    val DRIVETRAIN_DRIVE_TELEMETRY = TelemetryVerbosity.LOW
+    private val regularTelemetry = SmartMotorControllerTelemetryConfig()
+        .withNetworkTables(true)
+        .withTemperature()
+        .withMechanismPosition()
+        .withMechanismVelocity()
+        .withStatorCurrent()
+        .withOutputVoltage()
+        .withSetpointPosition()
+        .withSetpointVelocity()
 
-    val GRINTAKE_TELEMETRY = TelemetryVerbosity.LOW
-    val INDEXER_TELEMETRY = TelemetryVerbosity.LOW
+    private val noTelemetry = SmartMotorControllerTelemetryConfig()
+        .withNetworkTables(false)
 
-    val HOODED_SHOOTER_TELEMETRY = TelemetryVerbosity.LOW
+    val drivetrainAngleTelemetry = TelemetryVerbosity.LOW
+    val drivetrainDriveTelemetry = noTelemetry
+
+    val grintakeTelemetry = regularTelemetry
+    val indexerTelemetry = regularTelemetry
+
+    val hoodedShooterTelemetry = regularTelemetry
 }
 
 object ElectronicIDs {
@@ -58,8 +72,8 @@ object GrintakeConstants {
     val depotInter = depotPosition - Degrees.of(10.0)
     val intakePosition = Rotations.of(0.42) - Degrees.of(10.0)
 
-    val intakeVoltageAuto = Volts.of(12.0)
-    val intakeVoltage = Volts.of(12.0)
+    val intakeVoltageFull = Volts.of(12.0)
+    val intakeVoltage = Volts.of(6.0)
     val reverseVoltage = Volts.of(0.0)
 
     const val REZERO_SPEED = -0.2
@@ -108,7 +122,7 @@ object ShooterConstants {
     const val H_D = 1.0
 
 
-    val hoodOffset = Rotations.of(0.141)
+    val hoodOffset = Rotations.of(0.432)
     const val HOOD_ABSOLUTE_ENCODER_GEARING = 150.0 / 14.0
 
     val shooterGearing = MechanismGearing(
@@ -161,9 +175,6 @@ object OtherConstsants {
     private val bluePassTargetsClose = arrayOf(Translation2d(0.0, 7.0), Translation2d(0.0, 1.5))
     private val redPassTargetsClose = Array(2){ bluePassTargetsClose[it].flipAlliance() }
 
-    private val bluePassTargetsLong = bluePassTargetsClose
-    private val redPassTargetsLong = Array(2){ bluePassTargetsLong[it].flipAlliance() }
-
     fun currentHub() = if (allianceIsBlue()) {
         blueHubTranslation
     } else {
@@ -174,12 +185,6 @@ object OtherConstsants {
         bluePassTargetsClose
     } else {
         redPassTargetsClose
-    }
-
-    fun passTargetsLong() = if (allianceIsBlue()) {
-        bluePassTargetsLong
-    } else {
-        redPassTargetsLong
     }
 
     val dataHub = arrayOf(

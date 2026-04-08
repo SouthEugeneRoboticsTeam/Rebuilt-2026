@@ -35,7 +35,7 @@ object Hood : SubsystemBase() {
         .withStatorCurrentLimit(Amps.of(30.0))
         .withClosedLoopController(ShooterConstants.H_P, 0.0, ShooterConstants.H_D)
         .withFeedforward(SimpleMotorFeedforward(ShooterConstants.H_S, 0.0))
-        .withTelemetry("Hood Motor", TelemetryConstants.HOODED_SHOOTER_TELEMETRY)
+        .withTelemetry("Hood Motor", TelemetryConstants.hoodedShooterTelemetry)
 
     private val debouncer = Debouncer(0.4, Debouncer.DebounceType.kRising)
 
@@ -52,7 +52,7 @@ object Hood : SubsystemBase() {
 
     // 0.382
     override fun periodic() {
-        smc.setEncoderPosition((absolutePosition.get() + Rotations.of(0.432)) / ShooterConstants.HOOD_ABSOLUTE_ENCODER_GEARING)
+        smc.setEncoderPosition((absolutePosition.get() + ShooterConstants.hoodOffset) / ShooterConstants.HOOD_ABSOLUTE_ENCODER_GEARING)
         DogLog.log("Absolute Encoder", absolutePosition.get())
         DogLog.log(
             "Absolute Encoder with gearing",

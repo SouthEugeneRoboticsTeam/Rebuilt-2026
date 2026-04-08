@@ -22,7 +22,7 @@ object Intake : SubsystemBase() {
         .withGearing(GrintakeConstants.rollerGearing)
         .withMotorInverted(false)
         .withIdleMode(SmartMotorControllerConfig.MotorMode.BRAKE)
-        .withTelemetry("Roller Motor", TelemetryConstants.GRINTAKE_TELEMETRY)
+        .withTelemetry("Roller Motor", TelemetryConstants.grintakeTelemetry)
         .withControlMode(SmartMotorControllerConfig.ControlMode.OPEN_LOOP)
         .withStatorCurrentLimit(Amps.of(40.0))
 
@@ -54,7 +54,7 @@ object Intake : SubsystemBase() {
 
     fun fullSpeedIntake(): Command {
         return runOnce {
-            setRollerMotor(Volts.of(12.0))
+            setRollerMotor(GrintakeConstants.intakeVoltageFull)
         }.andThen(Commands.idle())
     }
 

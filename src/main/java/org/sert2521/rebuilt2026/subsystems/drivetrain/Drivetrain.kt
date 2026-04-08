@@ -54,15 +54,23 @@ object Drivetrain : SubsystemBase() {
                     SwerveConstants.DRIVE_S,
                     SwerveConstants.DRIVE_V,
                     SwerveConstants.DRIVE_A
-                )
+                ), SmartMotorController.ClosedLoopControllerSlot.SLOT_0
+            )
+            .withFeedforward(
+                SimpleMotorFeedforward(
+                    SwerveConstants.DRIVE_S,
+                    SwerveConstants.DRIVE_V,
+                    SwerveConstants.DRIVE_A
+                ), SmartMotorController.ClosedLoopControllerSlot.SLOT_1
             )
             .withClosedLoopController(SwerveConstants.DRIVE_P, SwerveConstants.DRIVE_I, SwerveConstants.DRIVE_D, SmartMotorController.ClosedLoopControllerSlot.SLOT_0)
+            .withClosedLoopController(0.0, 0.0, 0.0, SmartMotorController.ClosedLoopControllerSlot.SLOT_1)
             .withGearing(SwerveConstants.driveGearing)
             .withOpenLoopRampRate(Seconds.of(0.05))
             .withClosedLoopRampRate(Seconds.of(0.0))
             .withMotorInverted(true)
             .withStatorCurrentLimit(SwerveConstants.driveCurrentLimit)
-            .withTelemetry("$moduleName Drive Motor", TelemetryConstants.DRIVETRAIN_DRIVE_TELEMETRY)
+            .withTelemetry("$moduleName Drive Motor", TelemetryConstants.drivetrainDriveTelemetry)
 
         val angleConfig = SmartMotorControllerConfig(this)
             .withIdleMode(SmartMotorControllerConfig.MotorMode.BRAKE)
@@ -73,7 +81,7 @@ object Drivetrain : SubsystemBase() {
             .withOpenLoopRampRate(Seconds.of(0.25))
             .withClosedLoopRampRate(Seconds.of(0.0))
             .withMotorInverted(true)
-            .withTelemetry("$moduleName Angle Motor", TelemetryConstants.DRIVETRAIN_ANGLE_TELEMETRY)
+            .withTelemetry("$moduleName Angle Motor", TelemetryConstants.drivetrainAngleTelemetry)
 
         val driveSMC = SparkWrapper(driveMotor, DCMotor.getNEO(1), driveConfig)
         val angleSMC = SparkWrapper(angleMotor, DCMotor.getNEO(1), angleConfig)
@@ -240,13 +248,13 @@ object Drivetrain : SubsystemBase() {
 
     fun stopDrivePID() {
         modules.forEach {
-            it.driveMotorController.setFeedback(0.0, 0.0, 0.0)
+            it.driveMotorController.setClosedLoopSlot(SmartMotorController.ClosedLoopControllerSlot.SLOT_1)
         }
     }
 
     fun startDrivePID() {
         modules.forEach {
-            it.driveMotorController.setFeedback(SwerveConstants.DRIVE_P, 0.0, SwerveConstants.DRIVE_D)
+            it.driveMotorController.setClosedLoopSlot(SmartMotorController.ClosedLoopControllerSlot.SLOT_0)
         }
     }
 

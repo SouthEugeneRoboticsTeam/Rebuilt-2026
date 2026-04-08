@@ -20,7 +20,7 @@ import yams.telemetry.MechanismTelemetry
 object Wrist : SubsystemBase() {
     private val wristMotorConfig = SmartMotorControllerConfig(this)
         .withClosedLoopController(GrintakeConstants.WRIST_P, 0.0, GrintakeConstants.WRIST_D)
-        .withTelemetry("Wrist Motor", TelemetryConstants.GRINTAKE_TELEMETRY)
+        .withTelemetry("Wrist Motor", TelemetryConstants.grintakeTelemetry)
         .withMotorInverted(true)
         .withStatorCurrentLimit(Amps.of(40.0))
         .withIdleMode(SmartMotorControllerConfig.MotorMode.BRAKE)

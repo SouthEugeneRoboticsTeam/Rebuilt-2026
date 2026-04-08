@@ -107,9 +107,9 @@ object AllianceShiftUtil {
         shiftTime = floor(getAllianceShiftTime(shift, time) * 10.0) / 10.0
         val dashboardTime = (shiftTime).toString()
 
-        if (shiftTime in 0.0..5.0 && DriverStation.isEnabled()) {
+        if (shiftTime in 0.0..6.0 && DriverStation.isEnabled()) {
             when (shiftTime) {
-                5.0, 4.0, 3.0, 2.0, 1.0 -> Input.setRumble(0.4)
+                6.0, 5.0, 4.0, 3.0, 2.0, 1.0 -> Input.setRumble(0.4)
                 else -> Input.setRumble(0.2)
             }
         } else {

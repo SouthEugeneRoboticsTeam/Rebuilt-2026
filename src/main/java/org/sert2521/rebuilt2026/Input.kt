@@ -58,8 +58,7 @@ object Input {
     private val increaseFlywheel = gunnerController.button(11)
     private val decreaseFlywheel = gunnerController.button(16)
 
-    private val startFlywheelLiveTuning = gunnerController.povUp().multiPress(3, 2.0)
-    private val startFlywheelInterpolation = gunnerController.povDown().multiPress(3, 2.0)
+    private val startFlywheelLiveTuning = gunnerController.button(5).multiPress(3, 2.0)
 
     private var rotationOffset = Rotation2d.kZero
     private var passing = false
@@ -94,7 +93,6 @@ object Input {
         decreaseFlywheel.onTrue(runOnce({ OtherConstsants.flywheelLiveSetpoint -= RPM.of(10.0) }))
 
         startFlywheelLiveTuning.onTrue(HoodedShooterCommands.liveTuning())
-        startFlywheelInterpolation.onTrue(HoodedShooterCommands.revAndTrackHub())
 
         resetRotReal.onTrue(runOnce({
             if (DriverStation.getAlliance().getOrElse { DriverStation.Alliance.Blue } == DriverStation.Alliance.Red) {

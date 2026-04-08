@@ -6,6 +6,7 @@ import edu.wpi.first.cameraserver.CameraServer
 import edu.wpi.first.hal.FRCNetComm.tInstances
 import edu.wpi.first.hal.FRCNetComm.tResourceType
 import edu.wpi.first.hal.HAL
+import edu.wpi.first.networktables.BooleanTopic
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.PowerDistribution
 import edu.wpi.first.wpilibj.TimedRobot
@@ -60,7 +61,6 @@ object Robot : TimedRobot() {
         DogLog.setPdh(PowerDistribution(20, PowerDistribution.ModuleType.kRev))
     }
 
-
     override fun robotPeriodic() {
         CommandScheduler.getInstance().run()
         AllianceShiftUtil.update()
@@ -69,7 +69,7 @@ object Robot : TimedRobot() {
         DogLog.log("Shooter Live Tuning/Flywheel Setpoint", OtherConstsants.flywheelLiveSetpoint)
         DogLog.log("Shooter Live Tuning/Hood Setpoint", ShooterConstants.hoodMax * Input.getGunnerSlider())
         DogLog.log(
-            "Shooter Live Tuning/Distance to Bump",
+            "Shooter Live Tuning/Distance to Pass",
             Drivetrain.distanceToClosest(*OtherConstsants.passTargetsClose())
         )
         DogLog.log("Rot Offset", Input.getRotOffset())
